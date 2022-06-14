@@ -116,7 +116,7 @@ class Agent:
         self.ind_pioneer_waypoint = int(np.loadtxt(self.filename_ind_next))
         print("Ready to run!")
 
-    def run(self, step=0, share=False, agent_location=None):
+    def run(self, step=0, share=False, agent_location=None, other_agent=None):
         if not share:
             self.ind_sample_gmrf = self.get_ind_sample(self.ind_previous_waypoint, self.ind_current_waypoint)
             self.salinity_measured = self.simulated_truth[self.ind_sample_gmrf]
@@ -194,7 +194,8 @@ class Agent:
         figpath = FIGPATH + self.agent_name + "/birdview/"
         filename = figpath + "mean/P_{:03d}.jpg".format(step)
         fig_mu = self.plot_figure(mu_plot, filename, vmin=10, vmax=30, opacity=.4,
-                                  surface_count=6, cmap="BrBG", cbar_title="Salinity", share=share)
+                                  surface_count=6, cmap="BrBG", cbar_title="Salinity", share=share,
+                                  other_agent=other_agent)
 
         # filename = figpath + "var/P_{:03d}.jpg".format(step)
         # fig_var = self.plot_figure(var_plot, filename, vmin=0, vmax=1, opacity=.4,
@@ -272,7 +273,7 @@ class Agent:
         return ind_assimilated, vectorise(salinity_assimilated)
 
     def plot_figure(self, value, filename, vmin=None, vmax=None, opacity=None, surface_count=None, cmap=None,
-                    cbar_title=None, share=False):
+                    cbar_title=None, share=False, other_agent=None):
         points_int, values_int = interpolate_3d(self.xplot, self.yplot, self.zplot, value)
         fig = go.Figure(data=go.Volume(
             x=points_int[:, 0],
@@ -335,12 +336,37 @@ class Agent:
             marker=dict(color='black', size=4),
             line=dict(color='black', width=3)
         ))
+
+        # plot other agent
+        fig.add_trace(go.Scatter3d(name="Another agent's current waypoint",
+            x=[yrot[other_agent.ind_current_waypoint]],
+            y=[xrot[other_agent.ind_current_waypoint]],
+            z=[zrot[other_agent.ind_current_waypoint]],
+            mode='markers',
+            marker=dict(color='red', size=10, opacity=.4)
+        ))
+        fig.add_trace(go.Scatter3d(name="Another agent's trajectory",
+            x=yrot[other_agent.ind_visited_waypoint],
+            y=xrot[other_agent.ind_visited_waypoint],
+            z=zrot[other_agent.ind_visited_waypoint],
+            mode='markers+lines',
+            marker=dict(color='black', size=4),
+            line=dict(color='black', width=3),
+            opacity=.4,
+        ))
+
         if share:
             ind_measured_by_other_agent = self.ind_measured_by_other_agent.astype(int)
+            xrot = (self.gmrf_grid[ind_measured_by_other_agent, 0] * np.cos(ROTATED_ANGLE) -
+                    self.gmrf_grid[ind_measured_by_other_agent, 1] * np.sin(ROTATED_ANGLE))
+            yrot = (self.gmrf_grid[ind_measured_by_other_agent, 0] * np.sin(ROTATED_ANGLE) +
+                    self.gmrf_grid[ind_measured_by_other_agent, 1] * np.cos(ROTATED_ANGLE))
+            zrot = - self.gmrf_grid[ind_measured_by_other_agent, 2]
+
             fig.add_trace(go.Scatter3d(name="Shared waypoints",
-                                       x=self.gmrf_grid[ind_measured_by_other_agent, 1],
-                                       y=self.gmrf_grid[ind_measured_by_other_agent, 0],
-                                       z=-self.gmrf_grid[ind_measured_by_other_agent, 2],
+                                       x=yrot,
+                                       y=xrot,
+                                       z=zrot,
                                        mode='markers',
                                        marker=dict(color='cyan', size=4,
                                                    opacity=.5),

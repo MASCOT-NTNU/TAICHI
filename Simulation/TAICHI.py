@@ -56,6 +56,9 @@ class TAICHI:
 
             t1 = time.time()
             if i > 0 and i % DATA_SHARING_GAP == 0:
+                print("Sharing data")
+                blockPrint()
+
                 ag1_loc = self.ag1.waypoints[self.ag1.ind_current_waypoint]
                 ag2_loc = self.ag2.waypoints[self.ag2.ind_current_waypoint]
                 print("ag1 loc: ", ag1_loc)
@@ -73,15 +76,19 @@ class TAICHI:
                 self.ag2.load_data_from_agent("Yin")
 
                 # assimilate data, run function
-                self.ag1.run(step=i, share=True, agent_location=self.agent1_new_location)
-                self.ag2.run(step=i, share=True, agent_location=self.agent2_new_location)
+                self.ag1.run(step=i, share=True, agent_location=self.agent1_new_location, other_agent=self.ag2)
+                self.ag2.run(step=i, share=True, agent_location=self.agent2_new_location, other_agent=self.ag1)
 
                 # clear data after assimilation
                 self.ag1.clear_agent_data()
                 self.ag2.clear_agent_data()
+
+                enablePrint()
             else:
-                self.ag1.run(step=i)
-                self.ag2.run(step=i)
+                blockPrint()
+                self.ag1.run(step=i, other_agent=self.ag2)
+                self.ag2.run(step=i, other_agent=self.ag1)
+                enablePrint()
             t2 = time.time()
             print("Time consumed: ", t2 - t1)
 
