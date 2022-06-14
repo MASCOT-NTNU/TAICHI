@@ -42,6 +42,6 @@ LOITER_RADIUS = 15  # [m], radius for the loiter
 SAFETY_DISTANCE = 50  # [m], safety distance from the AUV
 AGENT1_START_LOCATION = [63.445625, 10.410138, .5]
 AGENT2_START_LOCATION = [63.454600, 10.426336, .5]
-
+DATA_SHARING_GAP = 7
 
 
