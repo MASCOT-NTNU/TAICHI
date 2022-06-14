@@ -6,7 +6,8 @@ Date: 2022-06-14
 """
 
 from usr_func import *
-from TAICHI.Simulation.Config.Config import LOITER_RADIUS, SAFETY_DISTANCE
+from TAICHI.Simulation.Config.Config import *
+from TAICHI.Simulation.Agent import Agent
 
 
 class TAICHI:
@@ -14,7 +15,16 @@ class TAICHI:
     def __init__(self):
         self.center_of_universe = [0, 0]
         self.radius_of_universe = LOITER_RADIUS + SAFETY_DISTANCE
+        self.setup_agents()
         print("Hello, this is TAICHI")
+
+    def setup_agents(self):
+        self.ag1 = Agent("Yin")
+        self.ag1.set_starting_location(AGENT1_START_LOCATION)
+        self.ag1.prepare_run()
+        self.ag2 = Agent("Yang")
+        self.ag2.set_starting_location(AGENT2_START_LOCATION)
+        self.ag2.prepare_run()
 
     def update_universe(self, agent1=None, agent2=None):
         if agent1 is None:
@@ -38,6 +48,44 @@ class TAICHI:
                                     self.center_of_universe[1] + self.radius_of_universe * np.cos(self.angle1)]
         self.agent2_new_location = [self.center_of_universe[0] + self.radius_of_universe * np.sin(self.angle2),
                                     self.center_of_universe[1] + self.radius_of_universe * np.cos(self.angle2)]
+        pass
+
+    def run(self):
+        for i in range(NUM_STEPS):
+            print("Step: ", i)
+
+            t1 = time.time()
+            if i > 0 and i % DATA_SHARING_GAP == 0:
+                ag1_loc = self.ag1.waypoints[self.ag1.ind_current_waypoint]
+                ag2_loc = self.ag2.waypoints[self.ag2.ind_current_waypoint]
+                print("ag1 loc: ", ag1_loc)
+                print("ag2 loc: ", ag2_loc)
+
+                self.update_universe(ag1_loc, ag2_loc)
+                self.get_taichi()
+
+                # save data from agent1, agent2
+                self.ag1.save_agent_data()
+                self.ag2.save_agent_data()
+
+                # load data from agent1, agent2
+                self.ag1.load_data_from_agent("Yang")
+                self.ag2.load_data_from_agent("Yin")
+
+                # assimilate data, run function
+                self.ag1.run(step=i, share=True, agent_location=self.agent1_new_location)
+                self.ag2.run(step=i, share=True, agent_location=self.agent2_new_location)
+
+                # clear data after assimilation
+                self.ag1.clear_agent_data()
+                self.ag2.clear_agent_data()
+            else:
+                self.ag1.run(step=i)
+                self.ag2.run(step=i)
+            t2 = time.time()
+            print("Time consumed: ", t2 - t1)
+
+            # enablePrint()
         pass
 
     def check_taichi(self):
@@ -83,6 +131,7 @@ class TAICHI:
 
 if __name__ == "__main__":
     tc = TAICHI()
-    tc.check_taichi()
+    # tc.check_taichi()
+    tc.run()
 
 
