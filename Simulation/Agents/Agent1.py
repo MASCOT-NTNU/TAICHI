@@ -164,16 +164,16 @@ class Agent1:
             #     mode='markers',
             #     marker=dict(color='black', size=1, opacity=.1)
             # ))
+            figpath = FIGPATH + "birdview/"
+            filename = figpath + "mean/P_{:03d}.jpg".format(i)
+            fig_mu = self.plot_figure(mu_plot, filename, vmin=10, vmax=30, opacity=.4,
+                                      surface_count=6, cmap="BrBG", cbar_title="Salinity")
 
-            filename = FIGPATH + "myopic3d/mean/P_{:03d}.jpg".format(i)
-            fig_mu = self.plot_figure(mu_plot, filename, vmin=5, vmax=self.gmrf_model.threshold, opacity=.5,
-                                      surface_count=5, cmap="BrBG", cbar_title="Salinity")
-
-            filename = FIGPATH + "myopic3d/var/P_{:03d}.jpg".format(i)
+            filename = figpath + "var/P_{:03d}.jpg".format(i)
             fig_var = self.plot_figure(var_plot, filename, vmin=0, vmax=1, opacity=.4,
                                       surface_count=4, cmap="RdBu", cbar_title="STD")
 
-            filename = FIGPATH + "myopic3d/ep/P_{:03d}.jpg".format(i)
+            filename = figpath + "ep/P_{:03d}.jpg".format(i)
             fig_ep = self.plot_figure(ep_plot, filename, vmin=0, vmax=1, opacity=.4,
                                       surface_count=10, cmap="Brwnyl", cbar_title="EP")
 
@@ -187,9 +187,9 @@ class Agent1:
             print("pioneer ind: ", self.ind_pioneer_waypoint)
 
             if i == NUM_STEPS-1:
-                plotly.offline.plot(fig_mu, filename=FIGPATH + "myopic3d/mean/P_mean.html", auto_open=True)
-                plotly.offline.plot(fig_var, filename=FIGPATH + "myopic3d/var/P_var.html", auto_open=True)
-                plotly.offline.plot(fig_ep, filename=FIGPATH + "myopic3d/ep/P_ep.html", auto_open=True)
+                plotly.offline.plot(fig_mu, filename=figpath + "mean/P_mean.html", auto_open=True)
+                plotly.offline.plot(fig_var, filename=figpath + "var/P_var.html", auto_open=True)
+                plotly.offline.plot(fig_ep, filename=figpath + "ep/P_ep.html", auto_open=True)
 
     def get_ind_sample(self, ind_start, ind_end):
         N = 20
@@ -305,7 +305,7 @@ class Agent1:
         camera = dict(
             up=dict(x=0, y=0, z=1),
             center=dict(x=0, y=0, z=0),
-            eye=dict(x=-1.25, y=-1.25, z=.5)
+            eye=dict(x=0, y=0, z=2)
         )
         fig.update_layout(coloraxis_colorbar_x=0.8)
         fig.update_layout(
@@ -343,6 +343,7 @@ class Agent1:
 if __name__ == "__main__":
     a = Agent1()
     a.run()
+
 
 
 
