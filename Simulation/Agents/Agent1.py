@@ -113,13 +113,13 @@ class Agent1:
                                     self.ind_current_waypoint,
                                     self.ind_previous_waypoint,
                                     self.ind_visited_waypoint)
-                self.ind_next_waypoint = int(np.loadtxt(FILEPATH + "Simulation/Waypoint/ind_next.txt"))
+                self.ind_next_waypoint = int(np.loadtxt(FILEPATH + "Simulation/Waypoint/Agent1/ind_next.txt"))
                 with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
                     executor.submit(self.myopic3d_planner.find_next_waypoint_using_min_eibv,
                                     self.ind_next_waypoint,
                                     self.ind_current_waypoint,
                                     self.ind_visited_waypoint)
-                self.ind_pioneer_waypoint = int(np.loadtxt(FILEPATH + "Simulation/Waypoint/ind_next.txt"))
+                self.ind_pioneer_waypoint = int(np.loadtxt(FILEPATH + "Simulation/Waypoint/Agent1/ind_next.txt"))
             else:
                 self.myopic3d_planner.update_planner(knowledge=self.knowledge, gmrf_model=self.gmrf_model)
                 with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
@@ -127,7 +127,7 @@ class Agent1:
                                     self.ind_next_waypoint,
                                     self.ind_current_waypoint,
                                     self.ind_visited_waypoint)
-                self.ind_pioneer_waypoint = int(np.loadtxt(FILEPATH + "Simulation/Waypoint/ind_next.txt"))
+                self.ind_pioneer_waypoint = int(np.loadtxt(FILEPATH + "Simulation/Waypoint/Agent1/ind_next.txt"))
 
             # == plot gmrf section
             xrot = self.gmrf_grid[:, 0] * np.cos(ROTATED_ANGLE) - self.gmrf_grid[:, 1] * np.sin(ROTATED_ANGLE)

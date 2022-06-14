@@ -46,7 +46,7 @@ class MyopicPlanning3D:
         self.gmrf_model = gmrf_model
         print("Planner is updated successfully!")
 
-    def find_next_waypoint_using_min_eibv(self, ind_current=None, ind_previous=None, ind_visited=None):
+    def find_next_waypoint_using_min_eibv(self, ind_current=None, ind_previous=None, ind_visited=None, filename=None):
         self.ind_current = ind_current
         self.ind_previous = ind_previous
         self.ind_visited = ind_visited
@@ -63,7 +63,7 @@ class MyopicPlanning3D:
             self.ind_next = self.ind_neighbours[np.random.randint(len(self.ind_neighbours))]
         t2 = time.time()
         print("Path planning takes: ", t2 - t1)
-        np.savetxt(FILEPATH + "Simulation/Waypoint/ind_next.txt", np.array([self.ind_next]))
+        np.savetxt(filename, np.array([self.ind_next]))
         print("ind_next is saved!")
         return self.ind_next
 
