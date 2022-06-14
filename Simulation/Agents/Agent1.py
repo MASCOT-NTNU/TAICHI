@@ -4,7 +4,6 @@ Author: Yaolin Ge
 Contact: yaolin.ge@ntnu.no
 Date: 2022-06-14
 """
-import os.path
 
 from usr_func import *
 from TAICHI.Simulation.Config.Config import *
