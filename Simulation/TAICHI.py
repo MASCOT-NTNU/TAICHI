@@ -19,10 +19,12 @@ class TAICHI:
         print("Hello, this is TAICHI")
 
     def setup_agents(self):
-        self.ag1 = Agent("Yin")
+        self.ag1_name = "A1"
+        self.ag2_name = "A2"
+        self.ag1 = Agent(self.ag1_name)
         self.ag1.set_starting_location(AGENT1_START_LOCATION)
         self.ag1.prepare_run()
-        self.ag2 = Agent("Yang")
+        self.ag2 = Agent(self.ag2_name)
         self.ag2.set_starting_location(AGENT2_START_LOCATION)
         self.ag2.prepare_run()
 
@@ -48,52 +50,53 @@ class TAICHI:
                                     self.center_of_universe[1] + self.radius_of_universe * np.cos(self.angle1)]
         self.agent2_new_location = [self.center_of_universe[0] + self.radius_of_universe * np.sin(self.angle2),
                                     self.center_of_universe[1] + self.radius_of_universe * np.cos(self.angle2)]
-        pass
 
     def run(self):
         for i in range(NUM_STEPS):
             print("Step: ", i)
+            share = False
+            pre_share = False
 
             t1 = time.time()
-            if i > 0 and i % DATA_SHARING_GAP == 0:
-                print("Sharing data")
-                blockPrint()
 
-                ag1_loc = self.ag1.waypoints[self.ag1.ind_current_waypoint]
-                ag2_loc = self.ag2.waypoints[self.ag2.ind_current_waypoint]
-                print("ag1 loc: ", ag1_loc)
-                print("ag2 loc: ", ag2_loc)
+            self.ag1.sample()
+            self.ag2.sample()
 
+            if (i + 2) % DATA_SHARING_GAP == 0:
+                print("only pre share")
+                pre_share = True
+
+                ag1_loc = self.ag1.waypoints[self.ag1.ind_next_waypoint]  # use next waypoint since system requires
+                ag2_loc = self.ag2.waypoints[self.ag2.ind_next_waypoint]  # pre-advanced calculation
                 self.update_universe(ag1_loc, ag2_loc)
                 self.get_taichi()
+
+                # update agent ind_pioneer waypoint to taichi position
+                self.ag1.update_pioneer_waypoint(waypoint_location=self.agent1_new_location)
+                self.ag2.update_pioneer_waypoint(waypoint_location=self.agent2_new_location)
+
+            elif i > 0 and i % DATA_SHARING_GAP == 0:
+                print("now share")
+                share = True
 
                 # save data from agent1, agent2
                 self.ag1.save_agent_data()
                 self.ag2.save_agent_data()
 
                 # load data from agent1, agent2
-                self.ag1.load_data_from_agent("Yang")
-                self.ag2.load_data_from_agent("Yin")
+                self.ag1.load_data_from_agent(self.ag2_name)
+                self.ag2.load_data_from_agent(self.ag1_name)
 
-                # assimilate data, run function
-                self.ag1.run(step=i, share=True, agent_location=self.agent1_new_location, other_agent=self.ag2)
-                self.ag2.run(step=i, share=True, agent_location=self.agent2_new_location, other_agent=self.ag1)
+            self.ag1.run(step=i, pre_share=pre_share, share=share, another_agent=self.ag2)
+            self.ag2.run(step=i, pre_share=pre_share, share=share, another_agent=self.ag1)
 
-                # clear data after assimilation
+            if share:
+                # clear data
                 self.ag1.clear_agent_data()
                 self.ag2.clear_agent_data()
 
-                enablePrint()
-            else:
-                blockPrint()
-                self.ag1.run(step=i, other_agent=self.ag2)
-                self.ag2.run(step=i, other_agent=self.ag1)
-                enablePrint()
             t2 = time.time()
             print("Time consumed: ", t2 - t1)
-
-            # enablePrint()
-        pass
 
     def check_taichi(self):
         a1 = [0, 0]
@@ -134,7 +137,6 @@ class TAICHI:
 
         plt.show()
         pass
-
 
 if __name__ == "__main__":
     tc = TAICHI()

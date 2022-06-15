@@ -23,7 +23,7 @@ GMRF_DISTANCE_NEIGHBOUR = 32
 # ==
 
 # == Path planner
-NUM_STEPS = 35
+NUM_STEPS = 50
 # ==
 
 # == Boundary box
@@ -36,12 +36,13 @@ xbox, ybox = latlon2xy(LAT_BOX, LON_BOX, LATITUDE_ORIGIN, LONGITUDE_ORIGIN)
 ROTATED_ANGLE = np.math.atan2(xbox[1] - xbox[0], ybox[1] - ybox[0])
 # ==
 
-
 # == TAICHI setup
 LOITER_RADIUS = 15  # [m], radius for the loiter
 SAFETY_DISTANCE = 50  # [m], safety distance from the AUV
-AGENT1_START_LOCATION = [63.445625, 10.410138, .5]
+AGENT1_START_LOCATION = [63.451841, 10.393658, .5]
 AGENT2_START_LOCATION = [63.454600, 10.426336, .5]
 DATA_SHARING_GAP = 7
+# ==
+
 
 

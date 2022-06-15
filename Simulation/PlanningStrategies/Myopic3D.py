@@ -109,35 +109,32 @@ class MyopicPlanning3D:
         return eibv
 
     def check_multiprocessing(self):
+        waypoints = pd.read_csv(FILEPATH + "Simulation/Config/WaypointGraph.csv").to_numpy()
+
+        neighbour_file = open(FILEPATH + "Simulation/Config/HashNeighbours.p", 'rb')
+        hash_neighbours = pickle.load(neighbour_file)
+        neighbour_file.close()
+
+        waypoint2gmrf_file = open(FILEPATH + "Simulation/Config/HashWaypoint2GMRF.p", 'rb')
+        hash_waypoint2gmrf = pickle.load(waypoint2gmrf_file)
+        waypoint2gmrf_file.close()
+        myopic3d_planner = MyopicPlanning3D(waypoints=waypoints, hash_neighbours=hash_neighbours,
+                                            hash_waypoint2gmrf=hash_waypoint2gmrf)
+
+        gmrf_grid = pd.read_csv(FILEPATH + "Simulation/Config/GMRFGrid.csv").to_numpy()
+        N_gmrf_grid = len(gmrf_grid)
+
+        gmrf_model = spde(model=2, reduce=True, method=2)
+
+        knowledge = Knowledge(gmrf_grid=gmrf_grid, mu=gmrf_model.mu, SigmaDiag=gmrf_model.mvar())
+        myopic3d_planner.update_planner(knowledge=knowledge, gmrf_model=gmrf_model)
+
+        myopic3d_planner.find_next_waypoint_using_min_eibv(ind_current=500, ind_previous=550, ind_visited=[])
         pass
 
 
 if __name__ == "__main__":
-    waypoints = pd.read_csv(FILEPATH + "Simulation/Config/WaypointGraph.csv").to_numpy()
-
-    neighbour_file = open(FILEPATH + "Simulation/Config/HashNeighbours.p", 'rb')
-    hash_neighbours = pickle.load(neighbour_file)
-    neighbour_file.close()
-
-    waypoint2gmrf_file = open(FILEPATH + "Simulation/Config/HashWaypoint2GMRF.p", 'rb')
-    hash_waypoint2gmrf = pickle.load(waypoint2gmrf_file)
-    waypoint2gmrf_file.close()
-    myopic3d_planner = MyopicPlanning3D(waypoints=waypoints, hash_neighbours=hash_neighbours,
-                                         hash_waypoint2gmrf=hash_waypoint2gmrf)
-
-    gmrf_grid = pd.read_csv(FILEPATH + "Simulation/Config/GMRFGrid.csv").to_numpy()
-    N_gmrf_grid = len(gmrf_grid)
-
-    gmrf_model = spde(model=2, reduce=True, method=2)
-
-    knowledge = Knowledge(gmrf_grid=gmrf_grid, mu=gmrf_model.mu, SigmaDiag=gmrf_model.mvar())
-    myopic3d_planner.update_planner(knowledge=knowledge, gmrf_model=gmrf_model)
-
-    myopic3d_planner.find_next_waypoint_using_min_eibv(ind_current=500, ind_previous=550, ind_visited=[])
-
-
-
-
-
+    my = MyopicPlanning3D()
+    my.check_multiprocessing()
 
 

@@ -4,7 +4,6 @@ Author: Yaolin Ge
 Contact: yaolin.ge@ntnu.no
 Date: 2022-06-14
 """
-import numpy as np
 
 from usr_func import *
 from TAICHI.Simulation.Config.Config import *
@@ -116,23 +115,55 @@ class Agent:
         self.ind_pioneer_waypoint = int(np.loadtxt(self.filename_ind_next))
         print("Ready to run!")
 
-    def run(self, step=0, share=False, agent_location=None, other_agent=None):
-        if not share:
-            self.ind_sample_gmrf = self.get_ind_sample(self.ind_previous_waypoint, self.ind_current_waypoint)
-            self.salinity_measured = self.simulated_truth[self.ind_sample_gmrf]
-            print("Salinity: ", self.salinity_measured.shape)
-            print("ind sample: ", self.ind_sample_gmrf.shape)
+        # save prior and ground truth
+        xrot = self.gmrf_grid[:, 0] * np.cos(ROTATED_ANGLE) - self.gmrf_grid[:, 1] * np.sin(ROTATED_ANGLE)
+        yrot = self.gmrf_grid[:, 0] * np.sin(ROTATED_ANGLE) + self.gmrf_grid[:, 1] * np.cos(ROTATED_ANGLE)
+        zrot = -self.gmrf_grid[:, 2]
 
-            self.data_agent = np.append(self.data_agent, np.hstack((vectorise(self.ind_sample_gmrf),
-                                                                    vectorise(self.salinity_measured))),
-                                         axis=0)
-        else:
-            x_agent, y_agent = agent_location
-            self.ind_current_waypoint = get_ind_at_location3d_xyz(self.waypoints, x_agent, y_agent, .5) # surface
-            self.ind_previous_waypoint = self.ind_current_waypoint
-            self.ind_sample_gmrf = self.get_ind_sample(self.ind_previous_waypoint, self.ind_current_waypoint)
-            self.salinity_measured = self.simulated_truth[self.ind_sample_gmrf]
+        ind_plot = np.where((zrot<0) * (zrot>=-5) * (xrot>70))[0]
+        mu_plot = self.knowledge.mu[ind_plot]
+        var_plot = self.knowledge.SigmaDiag[ind_plot]
+        ep_plot = get_excursion_prob(mu_plot.astype(np.float32), var_plot.astype(np.float32),
+                                     np.float32(self.gmrf_model.threshold))
+        self.yplot = xrot[ind_plot]
+        self.xplot = yrot[ind_plot]
+        self.zplot = zrot[ind_plot]
 
+        figpath = FIGPATH + self.agent_name + "/"
+        filename = figpath + "mean/Prior.jpg"
+        fig_mu = self.plot_figure(mu_plot, filename, vmin=10, vmax=27, opacity=.4,
+                                  surface_count=6, cmap="BrBG", cbar_title="Salinity")
+        filename = figpath + "mean/Prior.html"
+        wd = os.path.dirname(filename)
+        checkfolder(wd)
+        plotly.offline.plot(fig_mu, filename=filename, auto_open=True)
+
+        figpath = FIGPATH + self.agent_name + "/"
+        filename = figpath + "mean/GroundTruth.jpg"
+        mu_plot = self.simulated_truth[ind_plot]
+        fig_mu = self.plot_figure(mu_plot, filename, vmin=10, vmax=27, opacity=.4,
+                                  surface_count=6, cmap="BrBG", cbar_title="Salinity")
+        filename = figpath + "mean/GroundTruth.html"
+        wd = os.path.dirname(filename)
+        checkfolder(wd)
+        plotly.offline.plot(fig_mu, filename=filename, auto_open=True)
+
+    def update_pioneer_waypoint(self, waypoint_location=None):
+        x, y = waypoint_location
+        self.ind_pioneer_waypoint = get_ind_at_location3d_xyz(self.waypoints, x, y, .5)  # surface
+        print("ind pioneer waypoint is updated successfully!", self.ind_pioneer_waypoint)
+
+    def sample(self):
+        self.ind_sample_gmrf = self.get_ind_sample(self.ind_previous_waypoint, self.ind_current_waypoint)
+        self.salinity_measured = self.simulated_truth[self.ind_sample_gmrf]
+        print("Salinity: ", self.salinity_measured.shape)
+        print("ind sample: ", self.ind_sample_gmrf.shape)
+        self.data_agent = np.append(self.data_agent, np.hstack((vectorise(self.ind_sample_gmrf),
+                                                                vectorise(self.salinity_measured))),
+                                    axis=0)
+
+    def run(self, step=0, pre_share=False, share=False, another_agent=None):
+        if share:
             self.ind_measured_by_other_agent = self.data_from_other_agent[:, 0]
             self.salinity_measured_from_other_agent = vectorise(self.data_from_other_agent[:, 1])
 
@@ -147,14 +178,15 @@ class Agent:
         self.knowledge.mu = self.gmrf_model.mu
         self.knowledge.SigmaDiag = self.gmrf_model.mvar()
 
-        self.myopic3d_planner.update_planner(knowledge=self.knowledge, gmrf_model=self.gmrf_model)
-        with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
-            executor.submit(self.myopic3d_planner.find_next_waypoint_using_min_eibv,
-                            self.ind_next_waypoint,
-                            self.ind_current_waypoint,
-                            self.ind_visited_waypoint,
-                            filename=self.filename_ind_next)
-        self.ind_pioneer_waypoint = int(np.loadtxt(self.filename_ind_next))
+        if not pre_share:
+            self.myopic3d_planner.update_planner(knowledge=self.knowledge, gmrf_model=self.gmrf_model)
+            with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
+                executor.submit(self.myopic3d_planner.find_next_waypoint_using_min_eibv,
+                                self.ind_next_waypoint,
+                                self.ind_current_waypoint,
+                                self.ind_visited_waypoint,
+                                filename=self.filename_ind_next)
+            self.ind_pioneer_waypoint = int(np.loadtxt(self.filename_ind_next))
 
         # == plot gmrf section
         xrot = self.gmrf_grid[:, 0] * np.cos(ROTATED_ANGLE) - self.gmrf_grid[:, 1] * np.sin(ROTATED_ANGLE)
@@ -170,40 +202,18 @@ class Agent:
         self.xplot = yrot[ind_plot]
         self.zplot = zrot[ind_plot]
 
-        # fig = go.Figure(data=go.Scatter3d(
-        #     x=self.xplot,
-        #     y=self.yplot,
-        #     z=self.zplot,
-        #     mode='markers',
-        #     marker=dict(color=mu_plot, size=2, opacity=.0)
-        # ))
-        # fig.add_trace(go.Scatter3d(
-        #     x=self.xplot,
-        #     y=self.yplot,
-        #     z=self.zplot,
-        #     mode='markers',
-        #     marker=dict(color=mu_plot)
-        # ))
-        # fig.add_trace(go.Scatter3d(
-        #     x=self.waypoints[:, 1],
-        #     y=self.waypoints[:, 0],
-        #     z=-self.waypoints[:, 2],
-        #     mode='markers',
-        #     marker=dict(color='black', size=1, opacity=.1)
-        # ))
-        figpath = FIGPATH + self.agent_name + "/birdview/"
-        filename = figpath + "mean/P_{:03d}.jpg".format(step)
-        fig_mu = self.plot_figure(mu_plot, filename, vmin=10, vmax=30, opacity=.4,
-                                  surface_count=6, cmap="BrBG", cbar_title="Salinity", share=share,
-                                  other_agent=other_agent)
+        figpath = FIGPATH + self.agent_name + "/"
+        filename = figpath + "mean/jpg/P_{:03d}.jpg".format(step)
+        fig_mu = self.plot_figure(mu_plot, filename, vmin=10, vmax=27, opacity=.4, surface_count=6, cmap="BrBG",
+                                  cbar_title="Salinity", share=share, other_agent=another_agent, step=step)
 
-        # filename = figpath + "var/P_{:03d}.jpg".format(step)
-        # fig_var = self.plot_figure(var_plot, filename, vmin=0, vmax=1, opacity=.4,
-        #                           surface_count=4, cmap="RdBu", cbar_title="STD", share=share)
-        #
-        # filename = figpath + "ep/P_{:03d}.jpg".format(step)
-        # fig_ep = self.plot_figure(ep_plot, filename, vmin=0, vmax=1, opacity=.4,
-        #                           surface_count=10, cmap="Brwnyl", cbar_title="EP", share=share)
+        filename = figpath + "var/jpg/P_{:03d}.jpg".format(step)
+        fig_var = self.plot_figure(var_plot, filename, vmin=0, vmax=1, opacity=.4, surface_count=4, cmap="Blues",
+                                   cbar_title="STD", share=share, reverse_scale=True, step=step)
+
+        filename = figpath + "ep/jpg/P_{:03d}.jpg".format(step)
+        fig_ep = self.plot_figure(ep_plot, filename, vmin=0, vmax=1, opacity=.4, surface_count=10, cmap="Brwnyl",
+                                  cbar_title="EP", share=share, step=step)
 
         self.ind_previous_waypoint = self.ind_current_waypoint
         self.ind_current_waypoint = self.ind_next_waypoint
@@ -214,10 +224,20 @@ class Agent:
         print("next ind: ", self.ind_next_waypoint)
         print("pioneer ind: ", self.ind_pioneer_waypoint)
 
-        if step == NUM_STEPS-1:
-            plotly.offline.plot(fig_mu, filename=figpath + "mean/P_mean.html", auto_open=True)
-            # plotly.offline.plot(fig_var, filename=figpath + "var/P_var.html", auto_open=True)
-            # plotly.offline.plot(fig_ep, filename=figpath + "ep/P_ep.html", auto_open=True)
+        if step == NUM_STEPS-1 or share:
+            print("HTML is saved!")
+            filename = figpath + "mean/html/P_{:03d}.html".format(step)
+            wd = os.path.dirname(filename)
+            checkfolder(wd)
+            plotly.offline.plot(fig_mu, filename=filename, auto_open=False)
+            filename = figpath + "var/html/P_{:03d}.html".format(step)
+            wd = os.path.dirname(filename)
+            checkfolder(wd)
+            plotly.offline.plot(fig_var, filename=filename, auto_open=False)
+            filename = figpath + "ep/html/P_{:03d}.html".format(step)
+            wd = os.path.dirname(filename)
+            checkfolder(wd)
+            plotly.offline.plot(fig_ep, filename=filename, auto_open=False)
 
     def save_agent_data(self):
         datapath = FILEPATH + "Simulation/AgentsData/" + self.agent_name + ".npy"
@@ -273,33 +293,79 @@ class Agent:
         return ind_assimilated, vectorise(salinity_assimilated)
 
     def plot_figure(self, value, filename, vmin=None, vmax=None, opacity=None, surface_count=None, cmap=None,
-                    cbar_title=None, share=False, other_agent=None):
+                    cbar_title=None, share=False, other_agent=None, reverse_scale=False, step=0):
         points_int, values_int = interpolate_3d(self.xplot, self.yplot, self.zplot, value)
-        fig = go.Figure(data=go.Volume(
-            x=points_int[:, 0],
-            y=points_int[:, 1],
-            z=points_int[:, 2],
-            value=values_int.flatten(),
-            isomin=vmin,
-            isomax=vmax,
-            opacity=opacity,
-            surface_count=surface_count,
-            coloraxis="coloraxis",
-            caps=dict(x_show=False, y_show=False, z_show=False),
-        ),
-        )
 
-        # == plot waypoint section
+        # fig = make_subplots(rows=1, cols=1, specs=[[{'type': 'scene'},]])
+
+        # fig = go.Figure(data=go.Volume(
+        #     x=points_int[:, 0],
+        #     y=points_int[:, 1],
+        #     z=points_int[:, 2],
+        #     value=values_int.flatten(),
+        #     isomin=vmin,
+        #     isomax=vmax,
+        #     opacity=opacity,
+        #     surface_count=surface_count,
+        #     coloraxis="coloraxis",
+        #     caps=dict(x_show=False, y_show=False, z_show=False),
+        # ),
+        # )
+
+        # plot waypoint section first
         xrot = self.waypoints[:, 0] * np.cos(ROTATED_ANGLE) - self.waypoints[:, 1] * np.sin(ROTATED_ANGLE)
         yrot = self.waypoints[:, 0] * np.sin(ROTATED_ANGLE) + self.waypoints[:, 1] * np.cos(ROTATED_ANGLE)
         zrot = -self.waypoints[:, 2]
-        fig.add_trace(go.Scatter3d(name="Waypoint graph",
+        fig = go.Figure(data=go.Scatter3d(name="Waypoint graph",
             x=yrot,
             y=xrot,
             z=zrot,
             mode='markers',
             marker=dict(color='black', size=1, opacity=.1)
         ))
+
+        depth_layer = np.unique(points_int[:, 2])
+        for i in range(len(depth_layer)):
+            ind_depth = np.where(points_int[:, 2] == depth_layer[i])[0]
+            fig.add_trace(go.Isosurface(name="Salinity field at depth" + str(depth_layer[i]),
+                                        x=points_int[ind_depth, 0],
+                                        y=points_int[ind_depth, 1],
+                                        z=points_int[ind_depth, 2],
+                                        value=values_int[ind_depth].flatten(),
+                                        isomin=vmin,
+                                        isomax=vmax,
+                                        # opacity=opacity,
+                                        # surface_count=surface_count,
+                                        coloraxis="coloraxis",
+                                        # caps=dict(x_show=False, y_show=False, z_show=False),
+                                        ),
+                          )
+            # ind_depth = np.where(points_int[:, 2] == depth_layer[i])[0]
+            # fig.add_trace(go.Isosurface(name="Salinity field at depth" + str(depth_layer[i]),
+            #     x=points_int[ind_depth, 0],
+            #     y=points_int[ind_depth, 1],
+            #     z=points_int[ind_depth, 2],
+            #     value=values_int[ind_depth].flatten(),
+            #     isomin=vmin,
+            #     isomax=vmax,
+            #     opacity=opacity,
+            #     # surface_count=surface_count,
+            #     coloraxis="coloraxis",
+            #     caps=dict(x_show=False, y_show=False, z_show=False),
+            # ),
+            # )
+
+        # == plot waypoint section
+        # xrot = self.waypoints[:, 0] * np.cos(ROTATED_ANGLE) - self.waypoints[:, 1] * np.sin(ROTATED_ANGLE)
+        # yrot = self.waypoints[:, 0] * np.sin(ROTATED_ANGLE) + self.waypoints[:, 1] * np.cos(ROTATED_ANGLE)
+        # zrot = -self.waypoints[:, 2]
+        # fig.add_trace(go.Scatter3d(name="Waypoint graph",
+        #     x=yrot,
+        #     y=xrot,
+        #     z=zrot,
+        #     mode='markers',
+        #     marker=dict(color='black', size=1, opacity=.1)
+        # ))
         fig.add_trace(go.Scatter3d(name="Previous waypoint",
             x=[yrot[self.ind_previous_waypoint]],
             y=[xrot[self.ind_previous_waypoint]],
@@ -338,22 +404,23 @@ class Agent:
         ))
 
         # plot other agent
-        fig.add_trace(go.Scatter3d(name="Another agent's current waypoint",
-            x=[yrot[other_agent.ind_current_waypoint]],
-            y=[xrot[other_agent.ind_current_waypoint]],
-            z=[zrot[other_agent.ind_current_waypoint]],
-            mode='markers',
-            marker=dict(color='red', size=10, opacity=.4)
-        ))
-        fig.add_trace(go.Scatter3d(name="Another agent's trajectory",
-            x=yrot[other_agent.ind_visited_waypoint],
-            y=xrot[other_agent.ind_visited_waypoint],
-            z=zrot[other_agent.ind_visited_waypoint],
-            mode='markers+lines',
-            marker=dict(color='black', size=4),
-            line=dict(color='black', width=3),
-            opacity=.4,
-        ))
+        if other_agent:
+            fig.add_trace(go.Scatter3d(name="Another agent's current waypoint",
+                x=[yrot[other_agent.ind_current_waypoint]],
+                y=[xrot[other_agent.ind_current_waypoint]],
+                z=[zrot[other_agent.ind_current_waypoint]],
+                mode='markers',
+                marker=dict(color='brown', size=5, opacity=1)
+            ))
+            fig.add_trace(go.Scatter3d(name="Another agent's trajectory",
+                x=yrot[other_agent.ind_visited_waypoint],
+                y=xrot[other_agent.ind_visited_waypoint],
+                z=zrot[other_agent.ind_visited_waypoint],
+                mode='markers+lines',
+                marker=dict(color='grey', size=5),
+                line=dict(color='grey', width=3),
+                opacity=1,
+            ))
 
         if share:
             ind_measured_by_other_agent = self.ind_measured_by_other_agent.astype(int)
@@ -382,11 +449,20 @@ class Agent:
                                                               tickfont=dict(size=18, family="Times New Roman"),
                                                               title="Salinity",
                                                               titlefont=dict(size=18, family="Times New Roman")),
-                             colorbar_title=cbar_title)
+                             colorbar_title=cbar_title,
+                             reversescale=reverse_scale)
+
+        def rotate_z(x, y, z, theta):
+            w = x + 1j * y
+            return np.real(np.exp(1j * theta) * w), np.imag(np.exp(1j * theta) * w), z
+
+        xe, ye, ze = [-1.25, -1.25, .5]
+        xe, ye, ze = rotate_z(xe, ye, ze, -step * .1)
         camera = dict(
             up=dict(x=0, y=0, z=1),
             center=dict(x=0, y=0, z=0),
-            eye=dict(x=0, y=0, z=2)
+            # eye=dict(x=-1.25, y=-1.25, z=.5)
+            eye=dict(x=xe, y=ye, z=ze)
         )
         fig.update_layout(coloraxis_colorbar_x=0.8)
         fig.update_layout(
@@ -408,7 +484,7 @@ class Agent:
                 zaxis_title=dict(text="Z", font=dict(size=18, family="Times New Roman")),
             ),
             scene_aspectmode='manual',
-            scene_aspectratio=dict(x=1, y=1, z=.25),
+            scene_aspectratio=dict(x=1, y=1, z=.5),
             scene_camera=camera,
         )
 
@@ -430,40 +506,54 @@ class Agent:
 
 if __name__ == "__main__":
     a = Agent()
+    NUM_STEPS = 1
     a.check_agent()
 
-
-
-
-
 #%%
+# self = a
+# xrot = self.gmrf_grid[:, 0] * np.cos(ROTATED_ANGLE) - self.gmrf_grid[:, 1] * np.sin(ROTATED_ANGLE)
+# yrot = self.gmrf_grid[:, 0] * np.sin(ROTATED_ANGLE) + self.gmrf_grid[:, 1] * np.cos(ROTATED_ANGLE)
+# zrot = -self.gmrf_grid[:, 2]
+# ind_plot = np.where((zrot < 0) * (zrot >= -5) * (xrot > 70))[0]
+# mu_plot = self.knowledge.mu[ind_plot]
+# points_int, values_int = interpolate_3d(self.xplot, self.yplot, self.zplot, mu_plot)
+#
+# xrot = self.waypoints[:, 0] * np.cos(ROTATED_ANGLE) - self.waypoints[:, 1] * np.sin(ROTATED_ANGLE)
+# yrot = self.waypoints[:, 0] * np.sin(ROTATED_ANGLE) + self.waypoints[:, 1] * np.cos(ROTATED_ANGLE)
+# zrot = -self.waypoints[:, 2]
+# fig = go.Figure(data=go.Scatter3d(name="Waypoint graph",
+#                                   x=yrot,
+#                                   y=xrot,
+#                                   z=zrot,
+#                                   mode='markers',
+#                                   marker=dict(color='black', size=1, opacity=.1)))
+#
+# depth_layer = np.unique(points_int[:, 2])
+#
+# for i in range(len(depth_layer)):
+#     print("Depth: ", depth_layer[i])
+#     ind_depth = np.where(points_int[:, 2] == depth_layer[i])[0]
+#     print("ind_depth: ", ind_depth)
+#     print("ind_depth length: ", len(ind_depth))
+#     fig.add_trace(go.Isosurface(name="Salinity field at depth" + str(depth_layer[i]),
+#                                 x=points_int[ind_depth, 0],
+#                                 y=points_int[ind_depth, 1],
+#                                 z=points_int[ind_depth, 2],
+#                                 value=values_int[ind_depth].flatten(),
+#                                 isomin=10,
+#                                 isomax=27,
+#                                 # opacity=opacity,
+#                                 # surface_count=surface_count,
+#                                 coloraxis="coloraxis",
+#                                 # caps=dict(x_show=False, y_show=False, z_show=False),
+#                                 ),
+#                   )
+#     fig.update_coloraxes(colorscale="BrBG", colorbar=dict(lenmode='fraction', len=.5, thickness=20,
+#                                                         tickfont=dict(size=18, family="Times New Roman"),
+#                                                         title="Salinity",
+#                                                         titlefont=dict(size=18, family="Times New Roman")),
+#                          colorbar_title="Salinity")
+#
+# plotly.offline.plot(fig, filename=FIGPATH + "test_isosurface.html", auto_open=True)
 
-import plotly.graph_objects as go
-import numpy as np
-
-# Helix equation
-t = np.linspace(0, 20, 100)
-x, y, z = np.cos(t), np.sin(t), t
-
-fig = go.Figure(data=[go.Scatter3d(
-    x=x,
-    y=y,
-    z=z,
-    mode='markers + lines',
-    marker=dict(
-        size=12,
-        color=z,                # set color to an array/list of desired values
-        colorscale='Viridis',   # choose a colorscale
-        # opacity=0.8
-    ),
-    opacity=.4
-    # line=dict(
-    # width=2,
-    # ),
-
-)])
-
-# tight layout
-fig.update_layout(margin=dict(l=0, r=0, b=0, t=0))
-plotly.offline.plot(fig, filename=FIGPATH + "opacity.html", auto_open=True)
 
