@@ -5,7 +5,7 @@ TAICHI employs YinYang as a tool to determine the geometric location for each ag
 The boat surves as the WIFI base station to provide capable WIFI coverage. Each agent arrives at the desired data sharing location before they share data.
 
 
-![YINYANG](/fig/yinyang.jpg)
+![YINYANG](/fig/yinyang.png)
 
 ---
 Updated field from Yang agent
