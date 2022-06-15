@@ -15,7 +15,7 @@ class TAICHI:
     def __init__(self):
         self.center_of_universe = [0, 0]
         self.radius_of_universe = LOITER_RADIUS + SAFETY_DISTANCE
-        self.setup_agents()
+        # self.setup_agents()
         print("Hello, this is TAICHI")
 
     def setup_agents(self):
@@ -99,13 +99,13 @@ class TAICHI:
             print("Time consumed: ", t2 - t1)
 
     def check_taichi(self):
-        a1 = [0, 0]
-        a2 = [500, 800]
+        a1 = [250, 250]
+        a2 = [500, 600]
         self.update_universe(a1, a2)
         self.get_taichi()
         plt.figure(figsize=(5, 5))
 
-        plt.plot(self.center_of_universe[1], self.center_of_universe[0], 'g.')
+        plt.plot(self.center_of_universe[1], self.center_of_universe[0], '.', labal='Boat location, WIFI-base station')
         plt.gca().add_patch(self.taichi_circle)
         w0 = Wedge((self.center_of_universe[1], self.center_of_universe[0]), self.radius_of_universe*2,
                    rad2deg(self.angle2), rad2deg(self.angle2) + 180, fc='black', edgecolor='black')
@@ -140,7 +140,7 @@ class TAICHI:
 
 if __name__ == "__main__":
     tc = TAICHI()
-    # tc.check_taichi()
-    tc.run()
+    tc.check_taichi()
+    # tc.run()
 
 
