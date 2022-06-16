@@ -4,6 +4,7 @@ Author: Yaolin Ge
 Contact: yaolin.ge@ntnu.no
 Date: 2022-06-14
 """
+import numpy as np
 
 from usr_func import *
 from TAICHI.Simulation.Config.Config import *
@@ -12,12 +13,15 @@ from TAICHI.Simulation.Knowledge.Knowledge import Knowledge
 from TAICHI.spde import spde
 import pickle
 import concurrent.futures
+from sklearn.metrics import mean_squared_error
+import properscoring
 
 
 class Agent:
 
-    def __init__(self, name="Agent"):
+    def __init__(self, name="Agent", plot=False):
         self.agent_name = name
+        self.plot = plot
         self.load_waypoint()
         self.load_gmrf_grid()
         self.load_gmrf_model()
@@ -74,6 +78,10 @@ class Agent:
 
     def setup_data_container(self):
         self.data_agent = np.empty([0, 2])
+        self.ibv = []
+        self.uncertainty = []
+        self.crps = []
+        self.rmse = []
         print("S10: Data container is initialised successfully!")
 
     def set_starting_location(self, starting_location):
@@ -84,8 +92,12 @@ class Agent:
         self.z_start = depth
         print("Starting location is set up successfully!")
 
-    def prepare_run(self):
-        self.ind_current_waypoint = get_ind_at_location3d_xyz(self.waypoints, self.x_start, self.y_start, self.z_start)
+    def prepare_run(self, ind_start=None):
+        if not ind_start:
+            self.ind_current_waypoint = get_ind_at_location3d_xyz(self.waypoints, self.x_start, self.y_start, self.z_start)
+        else:
+            self.ind_current_waypoint = ind_start
+        print("startingh index: ", self.ind_current_waypoint)
         self.ind_previous_waypoint = self.ind_current_waypoint
         self.ind_pioneer_waypoint = self.ind_current_waypoint
         self.ind_next_waypoint = self.ind_current_waypoint
@@ -129,24 +141,25 @@ class Agent:
         self.xplot = yrot[ind_plot]
         self.zplot = zrot[ind_plot]
 
-        figpath = FIGPATH + self.agent_name + "/"
-        filename = figpath + "mean/Prior.jpg"
-        fig_mu = self.plot_figure(mu_plot, filename, vmin=10, vmax=27, opacity=.4,
-                                  surface_count=6, cmap="BrBG", cbar_title="Salinity")
-        filename = figpath + "mean/Prior.html"
-        wd = os.path.dirname(filename)
-        checkfolder(wd)
-        plotly.offline.plot(fig_mu, filename=filename, auto_open=True)
+        if self.plot:
+            figpath = FIGPATH + self.agent_name + "/"
+            filename = figpath + "mean/Prior.jpg"
+            fig_mu = self.plot_figure(mu_plot, filename, vmin=10, vmax=27, opacity=.4,
+                                      surface_count=6, cmap="BrBG", cbar_title="Salinity")
+            filename = figpath + "mean/Prior.html"
+            wd = os.path.dirname(filename)
+            checkfolder(wd)
+            plotly.offline.plot(fig_mu, filename=filename, auto_open=True)
 
-        figpath = FIGPATH + self.agent_name + "/"
-        filename = figpath + "mean/GroundTruth.jpg"
-        mu_plot = self.simulated_truth[ind_plot]
-        fig_mu = self.plot_figure(mu_plot, filename, vmin=10, vmax=27, opacity=.4,
-                                  surface_count=6, cmap="BrBG", cbar_title="Salinity")
-        filename = figpath + "mean/GroundTruth.html"
-        wd = os.path.dirname(filename)
-        checkfolder(wd)
-        plotly.offline.plot(fig_mu, filename=filename, auto_open=True)
+            figpath = FIGPATH + self.agent_name + "/"
+            filename = figpath + "mean/GroundTruth.jpg"
+            mu_plot = self.simulated_truth[ind_plot]
+            fig_mu = self.plot_figure(mu_plot, filename, vmin=10, vmax=27, opacity=.4,
+                                      surface_count=6, cmap="BrBG", cbar_title="Salinity")
+            filename = figpath + "mean/GroundTruth.html"
+            wd = os.path.dirname(filename)
+            checkfolder(wd)
+            plotly.offline.plot(fig_mu, filename=filename, auto_open=True)
 
     def update_pioneer_waypoint(self, waypoint_location=None):
         x, y = waypoint_location
@@ -162,7 +175,17 @@ class Agent:
                                                                 vectorise(self.salinity_measured))),
                                     axis=0)
 
-    def run(self, step=0, pre_share=False, share=False, another_agent=None):
+    def monitor_data(self):
+        truth = self.simulated_truth
+        truth[truth < 0] = 0
+        self.rmse.append(mean_squared_error(self.simulated_truth, self.knowledge.mu[1:], squared=True))
+        self.uncertainty.append(np.sum(self.knowledge.SigmaDiag))
+        self.ibv.append(self.myopic3d_planner.get_eibv_from_gmrf_model(self.ind_current_waypoint))
+        self.crps.append(np.sum(properscoring.crps_gaussian(self.simulated_truth[self.ind_current_waypoint],
+                                                            self.knowledge.mu, self.knowledge.SigmaDiag)))
+
+    def run(self, step=0, pre_share=False, share=False, other_agents=None):
+        self.monitor_data()
         if share:
             self.ind_measured_by_other_agent = self.data_from_other_agent[:, 0]
             self.salinity_measured_from_other_agent = vectorise(self.data_from_other_agent[:, 1])
@@ -189,31 +212,48 @@ class Agent:
             self.ind_pioneer_waypoint = int(np.loadtxt(self.filename_ind_next))
 
         # == plot gmrf section
-        xrot = self.gmrf_grid[:, 0] * np.cos(ROTATED_ANGLE) - self.gmrf_grid[:, 1] * np.sin(ROTATED_ANGLE)
-        yrot = self.gmrf_grid[:, 0] * np.sin(ROTATED_ANGLE) + self.gmrf_grid[:, 1] * np.cos(ROTATED_ANGLE)
-        zrot = -self.gmrf_grid[:, 2]
+        if self.plot:
+            xrot = self.gmrf_grid[:, 0] * np.cos(ROTATED_ANGLE) - self.gmrf_grid[:, 1] * np.sin(ROTATED_ANGLE)
+            yrot = self.gmrf_grid[:, 0] * np.sin(ROTATED_ANGLE) + self.gmrf_grid[:, 1] * np.cos(ROTATED_ANGLE)
+            zrot = -self.gmrf_grid[:, 2]
 
-        ind_plot = np.where((zrot<0) * (zrot>=-5) * (xrot>70))[0]
-        mu_plot = self.knowledge.mu[ind_plot]
-        var_plot = self.knowledge.SigmaDiag[ind_plot]
-        ep_plot = get_excursion_prob(mu_plot.astype(np.float32), var_plot.astype(np.float32),
-                                     np.float32(self.gmrf_model.threshold))
-        self.yplot = xrot[ind_plot]
-        self.xplot = yrot[ind_plot]
-        self.zplot = zrot[ind_plot]
+            ind_plot = np.where((zrot<0) * (zrot>=-5) * (xrot>70))[0]
+            mu_plot = self.knowledge.mu[ind_plot]
+            var_plot = self.knowledge.SigmaDiag[ind_plot]
+            ep_plot = get_excursion_prob(mu_plot.astype(np.float32), var_plot.astype(np.float32),
+                                         np.float32(self.gmrf_model.threshold))
+            self.yplot = xrot[ind_plot]
+            self.xplot = yrot[ind_plot]
+            self.zplot = zrot[ind_plot]
 
-        figpath = FIGPATH + self.agent_name + "/"
-        filename = figpath + "mean/jpg/P_{:03d}.jpg".format(step)
-        fig_mu = self.plot_figure(mu_plot, filename, vmin=10, vmax=27, opacity=.4, surface_count=6, cmap="BrBG",
-                                  cbar_title="Salinity", share=share, other_agent=another_agent, step=step)
+            figpath = FIGPATH + self.agent_name + "/"
+            filename = figpath + "mean/jpg/P_{:03d}.jpg".format(step)
+            fig_mu = self.plot_figure(mu_plot, filename, vmin=10, vmax=27, opacity=.4, surface_count=6, cmap="BrBG",
+                                      cbar_title="Salinity", share=share, other_agents=other_agents, step=step)
 
-        filename = figpath + "var/jpg/P_{:03d}.jpg".format(step)
-        fig_var = self.plot_figure(var_plot, filename, vmin=0, vmax=1, opacity=.4, surface_count=4, cmap="Blues",
-                                   cbar_title="STD", share=share, reverse_scale=True, step=step)
+            filename = figpath + "var/jpg/P_{:03d}.jpg".format(step)
+            fig_var = self.plot_figure(var_plot, filename, vmin=0, vmax=.5, opacity=.4, surface_count=4, cmap="Blues",
+                                       cbar_title="STD", share=share, other_agents=other_agents, reverse_scale=True,
+                                       step=step)
 
-        filename = figpath + "ep/jpg/P_{:03d}.jpg".format(step)
-        fig_ep = self.plot_figure(ep_plot, filename, vmin=0, vmax=1, opacity=.4, surface_count=10, cmap="Brwnyl",
-                                  cbar_title="EP", share=share, step=step)
+            filename = figpath + "ep/jpg/P_{:03d}.jpg".format(step)
+            fig_ep = self.plot_figure(ep_plot, filename, vmin=0, vmax=1, opacity=.4, surface_count=10, cmap="Brwnyl",
+                                      cbar_title="EP", other_agents=other_agents, share=share, step=step)
+
+            if step == NUM_STEPS - 1 or share:
+                print("HTML is saved!")
+                filename = figpath + "mean/html/P_{:03d}.html".format(step)
+                wd = os.path.dirname(filename)
+                checkfolder(wd)
+                plotly.offline.plot(fig_mu, filename=filename, auto_open=False)
+                filename = figpath + "var/html/P_{:03d}.html".format(step)
+                wd = os.path.dirname(filename)
+                checkfolder(wd)
+                plotly.offline.plot(fig_var, filename=filename, auto_open=False)
+                filename = figpath + "ep/html/P_{:03d}.html".format(step)
+                wd = os.path.dirname(filename)
+                checkfolder(wd)
+                plotly.offline.plot(fig_ep, filename=filename, auto_open=False)
 
         self.ind_previous_waypoint = self.ind_current_waypoint
         self.ind_current_waypoint = self.ind_next_waypoint
@@ -224,33 +264,18 @@ class Agent:
         print("next ind: ", self.ind_next_waypoint)
         print("pioneer ind: ", self.ind_pioneer_waypoint)
 
-        if step == NUM_STEPS-1 or share:
-            print("HTML is saved!")
-            filename = figpath + "mean/html/P_{:03d}.html".format(step)
-            wd = os.path.dirname(filename)
-            checkfolder(wd)
-            plotly.offline.plot(fig_mu, filename=filename, auto_open=False)
-            filename = figpath + "var/html/P_{:03d}.html".format(step)
-            wd = os.path.dirname(filename)
-            checkfolder(wd)
-            plotly.offline.plot(fig_var, filename=filename, auto_open=False)
-            filename = figpath + "ep/html/P_{:03d}.html".format(step)
-            wd = os.path.dirname(filename)
-            checkfolder(wd)
-            plotly.offline.plot(fig_ep, filename=filename, auto_open=False)
-
     def save_agent_data(self):
         datapath = FILEPATH + "Simulation/AgentsData/" + self.agent_name + ".npy"
         np.save(datapath, self.data_agent)
         print("Data from " + self.agent_name + " is saved successfully!")
 
-    def load_data_from_agent(self, agent_name="Agent"):
-        datapath = FILEPATH + "Simulation/AgentsData/" + agent_name + ".npy"
-        if not os.path.exists(datapath):
-            self.data_from_other_agent = np.empty(0, 2)
-        else:
-            self.data_from_other_agent = np.load(datapath)
-        print("Data from " + agent_name + " is loaded successfully!")
+    def load_data_from_agents(self, ags):
+        self.data_from_other_agent = np.empty([0, 2])
+        for ag in ags:
+            agent_name = ag.agent_name
+            datapath = FILEPATH + "Simulation/AgentsData/" + agent_name + ".npy"
+            self.data_from_other_agent = np.append(self.data_from_other_agent, np.load(datapath), axis=0)
+            print("Data from " + agent_name + " is loaded successfully!")
 
     def clear_agent_data(self):
         self.data_agent = np.empty([0, 2])
@@ -293,7 +318,7 @@ class Agent:
         return ind_assimilated, vectorise(salinity_assimilated)
 
     def plot_figure(self, value, filename, vmin=None, vmax=None, opacity=None, surface_count=None, cmap=None,
-                    cbar_title=None, share=False, other_agent=None, reverse_scale=False, step=0):
+                    cbar_title=None, share=False, other_agents=None, reverse_scale=False, step=0):
         points_int, values_int = interpolate_3d(self.xplot, self.yplot, self.zplot, value)
 
         # fig = make_subplots(rows=1, cols=1, specs=[[{'type': 'scene'},]])
@@ -404,23 +429,24 @@ class Agent:
         ))
 
         # plot other agent
-        if other_agent:
-            fig.add_trace(go.Scatter3d(name="Another agent's current waypoint",
-                x=[yrot[other_agent.ind_current_waypoint]],
-                y=[xrot[other_agent.ind_current_waypoint]],
-                z=[zrot[other_agent.ind_current_waypoint]],
-                mode='markers',
-                marker=dict(color='brown', size=5, opacity=1)
-            ))
-            fig.add_trace(go.Scatter3d(name="Another agent's trajectory",
-                x=yrot[other_agent.ind_visited_waypoint],
-                y=xrot[other_agent.ind_visited_waypoint],
-                z=zrot[other_agent.ind_visited_waypoint],
-                mode='markers+lines',
-                marker=dict(color='grey', size=5),
-                line=dict(color='grey', width=3),
-                opacity=1,
-            ))
+        if other_agents:
+            for other_agent in other_agents:
+                fig.add_trace(go.Scatter3d(name=other_agent.agent_name + "\'s current waypoint",
+                    x=[yrot[other_agent.ind_current_waypoint]],
+                    y=[xrot[other_agent.ind_current_waypoint]],
+                    z=[zrot[other_agent.ind_current_waypoint]],
+                    mode='markers',
+                    marker=dict(color='brown', size=5, opacity=1)
+                ))
+                fig.add_trace(go.Scatter3d(name=other_agent.agent_name + "\'s trajectory",
+                    x=yrot[other_agent.ind_visited_waypoint],
+                    y=xrot[other_agent.ind_visited_waypoint],
+                    z=zrot[other_agent.ind_visited_waypoint],
+                    mode='markers+lines',
+                    marker=dict(color='grey', size=5),
+                    line=dict(color='grey', width=3),
+                    opacity=1,
+                ))
 
         if share:
             ind_measured_by_other_agent = self.ind_measured_by_other_agent.astype(int)
@@ -500,7 +526,8 @@ class Agent:
     def check_agent(self):
         self.set_starting_location(AGENT1_START_LOCATION)
         self.prepare_run()
-        self.run()
+        # self.run()
+        self.monitor_data()
         pass
 
 
@@ -509,51 +536,5 @@ if __name__ == "__main__":
     NUM_STEPS = 1
     a.check_agent()
 
-#%%
-# self = a
-# xrot = self.gmrf_grid[:, 0] * np.cos(ROTATED_ANGLE) - self.gmrf_grid[:, 1] * np.sin(ROTATED_ANGLE)
-# yrot = self.gmrf_grid[:, 0] * np.sin(ROTATED_ANGLE) + self.gmrf_grid[:, 1] * np.cos(ROTATED_ANGLE)
-# zrot = -self.gmrf_grid[:, 2]
-# ind_plot = np.where((zrot < 0) * (zrot >= -5) * (xrot > 70))[0]
-# mu_plot = self.knowledge.mu[ind_plot]
-# points_int, values_int = interpolate_3d(self.xplot, self.yplot, self.zplot, mu_plot)
-#
-# xrot = self.waypoints[:, 0] * np.cos(ROTATED_ANGLE) - self.waypoints[:, 1] * np.sin(ROTATED_ANGLE)
-# yrot = self.waypoints[:, 0] * np.sin(ROTATED_ANGLE) + self.waypoints[:, 1] * np.cos(ROTATED_ANGLE)
-# zrot = -self.waypoints[:, 2]
-# fig = go.Figure(data=go.Scatter3d(name="Waypoint graph",
-#                                   x=yrot,
-#                                   y=xrot,
-#                                   z=zrot,
-#                                   mode='markers',
-#                                   marker=dict(color='black', size=1, opacity=.1)))
-#
-# depth_layer = np.unique(points_int[:, 2])
-#
-# for i in range(len(depth_layer)):
-#     print("Depth: ", depth_layer[i])
-#     ind_depth = np.where(points_int[:, 2] == depth_layer[i])[0]
-#     print("ind_depth: ", ind_depth)
-#     print("ind_depth length: ", len(ind_depth))
-#     fig.add_trace(go.Isosurface(name="Salinity field at depth" + str(depth_layer[i]),
-#                                 x=points_int[ind_depth, 0],
-#                                 y=points_int[ind_depth, 1],
-#                                 z=points_int[ind_depth, 2],
-#                                 value=values_int[ind_depth].flatten(),
-#                                 isomin=10,
-#                                 isomax=27,
-#                                 # opacity=opacity,
-#                                 # surface_count=surface_count,
-#                                 coloraxis="coloraxis",
-#                                 # caps=dict(x_show=False, y_show=False, z_show=False),
-#                                 ),
-#                   )
-#     fig.update_coloraxes(colorscale="BrBG", colorbar=dict(lenmode='fraction', len=.5, thickness=20,
-#                                                         tickfont=dict(size=18, family="Times New Roman"),
-#                                                         title="Salinity",
-#                                                         titlefont=dict(size=18, family="Times New Roman")),
-#                          colorbar_title="Salinity")
-#
-# plotly.offline.plot(fig, filename=FIGPATH + "test_isosurface.html", auto_open=True)
 
 
