@@ -201,7 +201,7 @@ if __name__ == "__main__":
     tc = TAICHI()
     # tc.check_taichi()
     # tc.run()
-    tc.run_simulator()
+    tc.run_simulator(50)
 
 #%%
 
