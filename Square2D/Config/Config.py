@@ -9,9 +9,9 @@ Date: 2022-06-17
 import os
 
 # == GP kernel
-SIGMA = 1
-LATERAL_RANGE = .5
-NUGGET = .1
+SIGMA = .5
+LATERAL_RANGE = 1
+NUGGET = .01
 THRESHOLD = .7
 # ==
 
