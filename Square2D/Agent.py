@@ -1,0 +1,257 @@
+"""
+This script simulates Agent Yin's behaviour
+Author: Yaolin Ge
+Contact: yaolin.ge@ntnu.no
+Date: 2022-06-14
+"""
+
+from usr_func import *
+from TAICHI.Square2D.Config.Config import FILEPATH, FIGPATH, CMAP, THRESHOLD
+from TAICHI.Square2D.Myopic2D import MyopicPlanning2D
+from TAICHI.Square2D.GRF import GRF
+from TAICHI.Square2D.PlotFunc import plotf_vector
+import pickle
+from sklearn.metrics import mean_squared_error
+import properscoring
+
+
+class Agent:
+
+    def __init__(self, name="Agent", plot=False):
+        self.agent_name = name
+        self.plot = plot
+        self.load_waypoint()
+        self.load_grf_grid()
+        self.load_grf_model()
+        self.load_hash_neighbours()
+        self.load_hash_waypoint2grf()
+        self.initialise_function_calls()
+        self.setup_data_container()
+        print("S1-S5 complete!" + self.agent_name + " is initialised successfully!")
+
+    def load_waypoint(self):
+        self.waypoints = pd.read_csv(FILEPATH + "Config/WaypointGraph.csv").to_numpy()
+        print("S1: Waypoint is loaded successfully!")
+
+    def load_grf_grid(self):
+        self.grf_grid = pd.read_csv(FILEPATH + "Config/GRFGrid.csv").to_numpy()
+        self.N_grf_grid = len(self.grf_grid)
+        print("S2: GRF grid is loaded successfully!")
+
+    def load_grf_model(self):
+        self.grf_model = GRF()
+        print("S3: GRF model is loaded successfully!")
+
+    def load_hash_neighbours(self):
+        neighbour_file = open(FILEPATH + "Config/HashNeighbours.p", 'rb')
+        self.hash_neighbours = pickle.load(neighbour_file)
+        neighbour_file.close()
+        print("S4: Neighbour hash table is loaded successfully!")
+
+    def load_hash_waypoint2grf(self):
+        waypoint2grf_file = open(FILEPATH + "Config/HashWaypoint2GRF.p", 'rb')
+        self.hash_waypoint2grf = pickle.load(waypoint2grf_file)
+        waypoint2grf_file.close()
+        print("S5: Waypoint2GRF hash table is loaded successfully!")
+
+    def initialise_function_calls(self):
+        get_ind_at_location2d_xy(self.waypoints, 1, 2)  # used to initialise the function call
+        print("S6: Function calls are initialised successfully!")
+
+    def setup_data_container(self):
+        self.data_agent = np.empty([0, 2])
+        self.ibv = []
+        self.uncertainty = []
+        self.crps = []
+        self.rmse = []
+        print("S7: Data container is initialised successfully!")
+
+    def set_starting_location(self, starting_location):
+        x, y = starting_location
+        self.x_start = x
+        self.y_start = y
+        print("Starting location is set up successfully!")
+
+    def prepare_run(self, ind_start=None):
+        if not ind_start:
+            self.ind_current_waypoint = get_ind_at_location2d_xy(self.waypoints, self.x_start, self.y_start)
+        else:
+            self.ind_current_waypoint = ind_start
+        print("startingh index: ", self.ind_current_waypoint)
+        self.ind_previous_waypoint = self.ind_current_waypoint
+        self.ind_next_waypoint = self.ind_current_waypoint
+        self.ind_visited_waypoint = []
+        self.ind_visited_waypoint.append(self.ind_current_waypoint)
+
+        self.m2_planner = MyopicPlanning2D(grf_model=self.grf_model, waypoint_graph=self.waypoints,
+                                           hash_neighbours=self.hash_neighbours, echo=False)
+
+        self.ind_next_waypoint = self.m2_planner.find_next_waypoint_using_min_eibv(ind_current=self.ind_current_waypoint,
+                                                                                   ind_previous=self.ind_previous_waypoint,
+                                                                                   ind_visited=self.ind_visited_waypoint)
+
+        print("Ready to run!")
+        figpath = FIGPATH + self.agent_name + "/"
+        title = "GroundTruth"
+        filename = figpath + "mean/" + title + ".jpg"
+        x = self.grf_grid[:, 0]
+        y = self.grf_grid[:, 1]
+        plt.figure()
+        # self.plotf(x, y, self.grf_model.mu_truth, vmin=0, vmax=1, cmap=get_cmap("BrBG", 10), filename=filename)
+        plotf_vector(x, y, self.grf_model.mu_truth, title=title, cmap=get_cmap("BrBG", 10), vmin=0, vmax=1.5,
+                     stepsize=.1, cbar_title="Test", threshold=THRESHOLD, xlabel='x', ylabel='y')
+        wd = os.path.dirname(filename)
+        checkfolder(wd)
+        plt.savefig(filename)
+        plt.show()
+
+        title = "Prior"
+        filename = figpath + "mean/" + title + ".jpg"
+        x = self.grf_grid[:, 0]
+        y = self.grf_grid[:, 1]
+        plt.figure()
+        plotf_vector(x, y, self.grf_model.mu_prior, title=title, cmap=get_cmap("BrBG", 10), vmin=0, vmax=1.5,
+                     stepsize=.1, cbar_title="Test", threshold=THRESHOLD, xlabel='x', ylabel='y')
+        wd = os.path.dirname(filename)
+        checkfolder(wd)
+        plt.savefig(filename)
+        plt.show()
+
+    def sample(self):
+        self.ind_sample_grf = self.get_ind_sample(self.ind_previous_waypoint, self.ind_current_waypoint)
+        self.salinity_measured = self.grf_model.mu_truth[self.ind_sample_grf]
+        self.data_agent = np.append(self.data_agent, np.hstack((vectorise(self.ind_sample_grf),
+                                                                vectorise(self.salinity_measured))),
+                                    axis=0)
+
+    def monitor_data(self):
+        truth = self.grf_model.mu_truth
+        self.rmse.append(mean_squared_error(truth, self.grf_model.mu_cond, squared=True))
+        self.uncertainty.append(np.sum(np.diag(self.grf_model.Sigma_cond)))
+        self.ibv.append(self.m2_planner.get_eibv_from_grf_model(self.ind_current_waypoint))
+        self.crps.append(np.sum(properscoring.crps_gaussian(truth[self.ind_current_waypoint],
+                                                            self.grf_model.mu_cond,
+                                                            np.diag(self.grf_model.Sigma_cond))))
+
+    def run(self, step=0, pre_share=False, share=False, other_agents=None):
+        self.monitor_data()
+        if share:
+            self.ind_measured_by_other_agent = self.data_from_other_agent[:, 0]
+            self.salinity_measured_from_other_agent = vectorise(self.data_from_other_agent[:, 1])
+
+            self.ind_sample_grf = np.append(self.ind_measured_by_other_agent, self.ind_sample_grf, axis=0)
+            self.salinity_measured = np.append(self.salinity_measured_from_other_agent, self.salinity_measured, axis=0)
+
+        t1 = time.time()
+        self.grf_model.update_grf_model(ind_measured=self.ind_sample_grf, salinity_measured=self.salinity_measured)
+        t2 = time.time()
+        print("Update consumed: ", t2 - t1)
+
+        if not pre_share:
+            self.ind_next_waypoint = self.m2_planner.find_next_waypoint_using_min_eibv(ind_current=self.ind_current_waypoint,
+                                                                                       ind_previous=self.ind_previous_waypoint,
+                                                                                       ind_visited=self.ind_visited_waypoint)
+
+
+        figpath = FIGPATH + self.agent_name + "/"
+        filename = figpath + "mean/jpg/P_{:03d}.jpg".format(step)
+        title = "Updated field after {:d} iterations".format(step)
+
+        plt.figure(figsize=(15, 8))
+        plt.subplot(121)
+        plotf_vector(self.grf_grid[:, 0], self.grf_grid[:, 1], self.grf_model.mu_cond, title=title, vmin=0, vmax=1.5,
+                     stepsize=.1, cmap=get_cmap("BrBG", 10), cbar_title="Test", threshold=THRESHOLD, xlabel='x',
+                     ylabel='y')
+        x = self.waypoints[:, 0]
+        y = self.waypoints[:, 1]
+        plt.plot(self.grf_grid[self.ind_sample_grf, 0], self.grf_grid[self.ind_sample_grf, 1], 'c.')
+        plt.plot(x[self.ind_visited_waypoint], y[self.ind_visited_waypoint], 'k.-')
+        plt.plot(x[self.m2_planner.ind_candidates], y[self.m2_planner.ind_candidates], 'y.')
+        plt.plot(x[self.ind_current_waypoint], y[self.ind_current_waypoint], 'r.')
+        plt.plot(x[self.ind_next_waypoint], y[self.ind_next_waypoint], 'b*')
+        plt.plot(x[self.ind_previous_waypoint], y[self.ind_previous_waypoint], 'g^')
+
+        plt.subplot(122)
+        plotf_vector(self.grf_grid[:, 0], self.grf_grid[:, 1], np.diag(self.grf_model.Sigma_cond), title=title, vmin=0,
+                     vmax=.25, cmap=get_cmap("BrBG", 10), cbar_title="Test", xlabel='x', ylabel='y')
+        x = self.waypoints[:, 0]
+        y = self.waypoints[:, 1]
+        plt.plot(self.grf_grid[self.ind_sample_grf, 0], self.grf_grid[self.ind_sample_grf, 1], 'c.')
+        plt.plot(x[self.ind_visited_waypoint], y[self.ind_visited_waypoint], 'k.-')
+        plt.plot(x[self.m2_planner.ind_candidates], y[self.m2_planner.ind_candidates], 'y.')
+        plt.plot(x[self.ind_current_waypoint], y[self.ind_current_waypoint], 'r.')
+        plt.plot(x[self.ind_next_waypoint], y[self.ind_next_waypoint], 'b*')
+        plt.plot(x[self.ind_previous_waypoint], y[self.ind_previous_waypoint], 'g^')
+
+        wd = os.path.dirname(filename)
+        checkfolder(wd)
+        plt.savefig(filename)
+        # plt.show()
+        plt.close("all")
+
+        self.ind_previous_waypoint = self.ind_current_waypoint
+        self.ind_current_waypoint = self.ind_next_waypoint
+        self.ind_visited_waypoint.append(self.ind_current_waypoint)
+
+    def save_agent_data(self):
+        datapath = FILEPATH + "Simulation/AgentsData/" + self.agent_name + ".npy"
+        np.save(datapath, self.data_agent)
+        print("Data from " + self.agent_name + " is saved successfully!")
+
+    def load_data_from_agents(self, ags):
+        self.data_from_other_agent = np.empty([0, 2])
+        for ag in ags:
+            agent_name = ag.agent_name
+            datapath = FILEPATH + "Simulation/AgentsData/" + agent_name + ".npy"
+            self.data_from_other_agent = np.append(self.data_from_other_agent, np.load(datapath), axis=0)
+            print("Data from " + agent_name + " is loaded successfully!")
+
+    def clear_agent_data(self):
+        self.data_agent = np.empty([0, 2])
+        print("Data from " + self.agent_name + " is cleared successfully!", self.data_agent)
+
+    def get_ind_sample(self, ind_start, ind_end):
+        N = 20
+        x_start, y_start = self.waypoints[ind_start, :]
+        x_end, y_end = self.waypoints[ind_end, :]
+        x_path = np.linspace(x_start, x_end, N)
+        y_path = np.linspace(y_start, y_end, N)
+        dataset = np.vstack((x_path, y_path, np.zeros_like(x_path))).T
+        ind, value = self.assimilate_data(dataset)
+        return ind
+
+    def assimilate_data(self, dataset):
+        t1 = time.time()
+        dx = (vectorise(dataset[:, 0]) @ np.ones([1, self.N_grf_grid]) -
+              np.ones([dataset.shape[0], 1]) @ vectorise(self.grf_grid[:, 0]).T) ** 2
+        dy = (vectorise(dataset[:, 1]) @ np.ones([1, self.N_grf_grid]) -
+              np.ones([dataset.shape[0], 1]) @ vectorise(self.grf_grid[:, 1]).T) ** 2
+        dist = dx + dy
+        ind_min_distance = np.argmin(dist, axis=1)
+        t2 = time.time()
+        ind_assimilated = np.unique(ind_min_distance)
+        salinity_assimilated = np.zeros(len(ind_assimilated))
+        for i in range(len(ind_assimilated)):
+            ind_selected = np.where(ind_min_distance == ind_assimilated[i])[0]
+            salinity_assimilated[i] = np.mean(dataset[ind_selected, 2])
+        print("Data assimilation takes: ", t2 - t1)
+        self.auv_data = []
+        print("Reset auv_data: ", self.auv_data)
+        return ind_assimilated, vectorise(salinity_assimilated)
+
+    def check_agent(self):
+        self.prepare_run(np.random.randint(self.waypoints.shape[0]))
+        for i in range(20):
+            print("Step: ", i)
+            self.sample()
+            self.run(i)
+
+
+if __name__ == "__main__":
+    np.random.seed(0)
+    a = Agent()
+    # a.prepare_run(10)
+    a.check_agent()
+
+
+
