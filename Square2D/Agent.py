@@ -83,40 +83,40 @@ class Agent:
         self.ind_visited_waypoint = []
         self.ind_visited_waypoint.append(self.ind_current_waypoint)
 
-        self.m2_planner = MyopicPlanning2D(grf_model=self.grf_model, waypoint_graph=self.waypoints,
-                                           hash_neighbours=self.hash_neighbours, hash_waypoint2grf=self.hash_waypoint2grf,
-                                           echo=False)
+        # self.m2_planner = MyopicPlanning2D(grf_model=self.grf_model, waypoint_graph=self.waypoints,
+        #                                    hash_neighbours=self.hash_neighbours, hash_waypoint2grf=self.hash_waypoint2grf,
+        #                                    echo=False)
+        #
+        # self.ind_next_waypoint = self.m2_planner.find_next_waypoint_using_min_eibv(ind_current=self.ind_current_waypoint,
+        #                                                                            ind_previous=self.ind_previous_waypoint,
+        #                                                                            ind_visited=self.ind_visited_waypoint)
 
-        self.ind_next_waypoint = self.m2_planner.find_next_waypoint_using_min_eibv(ind_current=self.ind_current_waypoint,
-                                                                                   ind_previous=self.ind_previous_waypoint,
-                                                                                   ind_visited=self.ind_visited_waypoint)
-
-        print("Ready to run!")
-        figpath = FIGPATH + self.agent_name + "/"
-        title = "GroundTruth"
-        filename = figpath + "mean/" + title + ".jpg"
-        x = self.grf_grid[:, 0]
-        y = self.grf_grid[:, 1]
-        plt.figure()
-        # self.plotf(x, y, self.grf_model.mu_truth, vmin=0, vmax=1, cmap=get_cmap("BrBG", 10), filename=filename)
-        plotf_vector(x, y, self.grf_model.mu_truth, title=title, cmap=get_cmap("BrBG", 10), vmin=0, vmax=1.5,
-                     stepsize=.1, cbar_title="Test", threshold=THRESHOLD, xlabel='x', ylabel='y')
-        wd = os.path.dirname(filename)
-        checkfolder(wd)
-        plt.savefig(filename)
-        plt.show()
-
-        title = "Prior"
-        filename = figpath + "mean/" + title + ".jpg"
-        x = self.grf_grid[:, 0]
-        y = self.grf_grid[:, 1]
-        plt.figure()
-        plotf_vector(x, y, self.grf_model.mu_prior, title=title, cmap=get_cmap("BrBG", 10), vmin=0, vmax=1.5,
-                     stepsize=.1, cbar_title="Test", threshold=THRESHOLD, xlabel='x', ylabel='y')
-        wd = os.path.dirname(filename)
-        checkfolder(wd)
-        plt.savefig(filename)
-        plt.show()
+        # print("Ready to run!")
+        # figpath = FIGPATH + self.agent_name + "/"
+        # title = "GroundTruth"
+        # filename = figpath + "mean/" + title + ".jpg"
+        # x = self.grf_grid[:, 0]
+        # y = self.grf_grid[:, 1]
+        # plt.figure()
+        # # self.plotf(x, y, self.grf_model.mu_truth, vmin=0, vmax=1, cmap=get_cmap("BrBG", 10), filename=filename)
+        # plotf_vector(x, y, self.grf_model.mu_truth, title=title, cmap=get_cmap("BrBG", 10), vmin=0, vmax=1.5,
+        #              stepsize=.1, cbar_title="Test", threshold=THRESHOLD, xlabel='x', ylabel='y')
+        # wd = os.path.dirname(filename)
+        # checkfolder(wd)
+        # plt.savefig(filename)
+        # plt.show()
+        #
+        # title = "Prior"
+        # filename = figpath + "mean/" + title + ".jpg"
+        # x = self.grf_grid[:, 0]
+        # y = self.grf_grid[:, 1]
+        # plt.figure()
+        # plotf_vector(x, y, self.grf_model.mu_prior, title=title, cmap=get_cmap("BrBG", 10), vmin=0, vmax=1.5,
+        #              stepsize=.1, cbar_title="Test", threshold=THRESHOLD, xlabel='x', ylabel='y')
+        # wd = os.path.dirname(filename)
+        # checkfolder(wd)
+        # plt.savefig(filename)
+        # plt.show()
 
     def sample(self):
         self.ind_sample_grf = self.get_ind_sample(self.ind_previous_waypoint, self.ind_current_waypoint)
