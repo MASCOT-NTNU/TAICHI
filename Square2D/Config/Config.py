@@ -9,9 +9,9 @@ Date: 2022-06-17
 import os
 
 # == GP kernel
-SIGMA = .5
-LATERAL_RANGE = 1
-NUGGET = .01
+SIGMA = 1
+LATERAL_RANGE = .5
+NUGGET = .05
 THRESHOLD = .7
 # ==
 
@@ -28,7 +28,7 @@ DISTANCE_NEIGHBOUR_WAYPOINT = .05
 # ==
 
 # == Path planner
-NUM_STEPS = 80
+NUM_STEPS = 35
 # ==
 
 # == Directories
@@ -45,4 +45,5 @@ CMAP = get_cmap("BrBG", 10)
 # == TAICHI
 LOITER_RADIUS = 15 / 1000  # [m], radius used for loitering
 SAFETY_DISTANCE = 50 / 1000  # [m]
+DATA_SHARING_GAP = 5
 

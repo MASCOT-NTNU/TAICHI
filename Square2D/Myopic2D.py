@@ -14,22 +14,23 @@ loc_next = MyopicPlanning2D(Knowledge).next_waypoint
 from usr_func import get_ibv, vectorise, time, np, pd, plt
 import pickle
 from TAICHI.Square2D.Config.Config import THRESHOLD, FILEPATH
+from TAICHI.Square2D.GRF import GRF
 
 
 class MyopicPlanning2D:
 
-    def __init__(self, grf_model=None, waypoint_graph=None, hash_neighbours=None, hash_waypoint2grf=None,
-                 legal_indices=None, echo=False):
+    def __init__(self, grf_model=None, waypoint_graph=None, hash_neighbours=None, hash_waypoint2grf=None, echo=False):
         self.grf_model = grf_model
         self.waypoint_graph = waypoint_graph
         self.hash_neighbours = hash_neighbours
         self.hash_waypoint2grf = hash_waypoint2grf
-        self.legal_indices = legal_indices
         self.echo = echo
         print("Myopic2D path planner is ready!")
 
-    def update_planner(self, legal_indices=None):
-        self.legal_indices = legal_indices
+    def update_legal_indices(self, ind_legal=None):
+        if ind_legal is None:
+            ind_legal = []
+        self.ind_legal = ind_legal
 
     def find_next_waypoint_using_min_eibv(self, ind_current=None, ind_previous=None, ind_visited=None):
         self.ind_current = ind_current
@@ -54,14 +55,19 @@ class MyopicPlanning2D:
         if self.EIBV:
             self.ind_next = self.ind_candidates[np.argmin(self.EIBV)]
         else:
-            self.ind_next = self.ind_neighbours[np.random.randint(len(self.ind_neighbours))]
+            if len(self.ind_neighbours) > 1:
+                self.ind_next = self.ind_neighbours[np.random.randint(len(self.ind_neighbours))]
+            else:
+                print("WARN")
+
         t2 = time.time()
         print("Path planning takes: ", t2 - t1)
         return self.ind_next
 
     def find_all_neighbours(self):
         self.ind_neighbours = self.hash_neighbours[self.ind_current]
-        self.ind_neighbours = list(set(self.ind_neighbours).intersection(self.legal_indices))
+        self.ind_neighbours = list(set(self.ind_neighbours).intersection(self.ind_legal))
+        print("legal neighbours: ", self.ind_neighbours)
 
     def smooth_filter_neighbours(self):
         vec1 = self.get_vec_from_indices(self.ind_previous, self.ind_current)
@@ -97,37 +103,33 @@ class MyopicPlanning2D:
         return eibv
 
     def check_mp(self):
-        from TAICHI.Square2D.GRF import GRF
-        g = GRF()
-        waypoint_graph = pd.read_csv(FILEPATH + "Config/WaypointGraph.csv").to_numpy()
+        self.grf_model = GRF()
+        self.waypoint_graph = pd.read_csv(FILEPATH + "Config/WaypointGraph.csv").to_numpy()
         f_neighbour = open(FILEPATH + "Config/HashNeighbours.p", 'rb')
-        hash_neighbours = pickle.load(f_neighbour)
+        self.hash_neighbours = pickle.load(f_neighbour)
         f_neighbour.close()
 
         f2 = open(FILEPATH + "Config/HashWaypoint2GRF.p", 'rb')
-        hash_waypoint2grf = pickle.load(f2)
         f2.close()
+        self.hash_waypoint2grf = pickle.load(f2)
 
-        self.mp = MyopicPlanning2D(g, waypoint_graph, hash_neighbours, legal_indices=np.arange(waypoint_graph.shape[0]),
-                                   hash_waypoint2grf=hash_waypoint2grf)
-
-        legal_indices = np.arange(waypoint_graph.shape[0]/2).astype(int)
-        # print("legal: ", legal_indices)
-        self.mp.update_planner(legal_indices=legal_indices)
-        i_now = int(waypoint_graph.shape[0]/2) - 22
+        i_now = int(self.waypoint_graph.shape[0]/2) - 190
         i_prev = i_now - 1
-        ind = self.mp.find_next_waypoint_using_min_eibv(i_now, i_prev, [])
-        print("ind_neighbour: ", self.mp.ind_neighbours)
+        ind_legal = np.arange(i_now)
+        self.update_legal_indices(ind_legal=ind_legal)
 
-        x = waypoint_graph[:, 0]
-        y = waypoint_graph[:, 1]
+        ind = self.find_next_waypoint_using_min_eibv(i_now, i_prev, [])
+        print("ind_neighbour: ", self.ind_neighbours)
+
+        x = self.waypoint_graph[:, 0]
+        y = self.waypoint_graph[:, 1]
         plt.plot(x, y, 'k.', alpha=.3)
         plt.plot(x[i_now], y[i_now], 'b.', markersize=20)
         plt.plot(x[i_prev], y[i_prev], 'y.', markersize=20)
-        plt.plot(x[self.mp.ind_candidates], y[self.mp.ind_candidates], 'g.', markersize=20)
+        plt.plot(x[self.ind_candidates], y[self.ind_candidates], 'g.', markersize=20)
         plt.plot(x[ind], y[ind], 'r.', markersize=20)
-        plt.plot(x[legal_indices], y[legal_indices], 'c*', alpha=.2)
-        plt.plot(x[self.mp.ind_neighbours], y[self.mp.ind_neighbours], 'c^', alpha=.1, markersize=30)
+        plt.plot(x[ind_legal], y[ind_legal], 'c*', alpha=.2)
+        plt.plot(x[self.ind_neighbours], y[self.ind_neighbours], 'c^', alpha=.1, markersize=30)
         plt.show()
 
 

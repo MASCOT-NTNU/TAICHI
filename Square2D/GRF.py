@@ -17,7 +17,8 @@ from TAICHI.Square2D.Config.Config import FILEPATH, NUGGET, LATERAL_RANGE, SIGMA
 
 class GRF:
 
-    def __init__(self):
+    def __init__(self, seed=None):
+        np.random.seed(seed)
         self.load_grf_grid()
         self.load_prior_mean()
         self.get_covariance_matrix()
@@ -85,6 +86,14 @@ class GRF:
         plt.show()
 
     def check_update(self):
+        plt.imshow(self.Sigma_cond)
+        plt.colorbar()
+        plt.show()
+        self.plotf(self.grf_grid[:, 0], self.grf_grid[:, 1], value=self.mu_prior)
+        plt.show()
+        self.plotf(self.grf_grid[:, 0], self.grf_grid[:, 1], value=self.mu_truth)
+        plt.show()
+
         N = 10
         ind = np.random.randint(0, self.grf_grid.shape[0], N)
         val = np.random.uniform(0, 1, N)
@@ -96,7 +105,7 @@ class GRF:
         self.plotf(self.grf_grid[:, 0], self.grf_grid[:, 1], value=self.mu_cond)
         plt.plot(x[ind], y[ind], 'k.')
         plt.subplot(122)
-        plt.scatter(x, y, c=np.diag(self.Sigma_cond), cmap=CMAP, vmin=0, vmax=.01)
+        plt.scatter(x, y, c=np.diag(self.Sigma_cond), cmap=CMAP)
         plt.colorbar()
         # self.plotf(self.grf_grid[:, 0], self.grf_grid[:, 1], value=np.diag(self.Sigma_cond), vmin=0, vmax=.01)
         plt.plot(x[ind], y[ind], 'k.')
@@ -114,7 +123,7 @@ class GRF:
         plt.plot(x[ind], y[ind], 'k.')
         plt.subplot(122)
         # self.plotf(self.grf_grid[:, 0], self.grf_grid[:, 1], value=np.diag(self.Sigma_cond), vmin=0, vmax=.01)
-        plt.scatter(x, y, c=np.diag(self.Sigma_cond), cmap=CMAP, vmin=0, vmax=.01)
+        plt.scatter(x, y, c=np.diag(self.Sigma_cond), cmap=CMAP)
         plt.colorbar()
         plt.plot(x[ind], y[ind], 'k.')
         plt.show()
@@ -131,7 +140,7 @@ class GRF:
         plt.plot(x[ind], y[ind], 'k.')
         plt.subplot(122)
         # self.plotf(self.grf_grid[:, 0], self.grf_grid[:, 1], value=np.diag(self.Sigma_cond), vmin=0, vmax=.01)
-        plt.scatter(x, y, c=np.diag(self.Sigma_cond), cmap=CMAP, vmin=0, vmax=.01)
+        plt.scatter(x, y, c=np.diag(self.Sigma_cond), cmap=CMAP)
         plt.colorbar()
         plt.plot(x[ind], y[ind], 'k.')
         plt.show()

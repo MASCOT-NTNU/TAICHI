@@ -18,7 +18,7 @@ x = grid[:, 0]
 y = grid[:, 1]
 
 
-mu_prior = (1 * (1 - np.exp(- ((x - 1.) ** 2 + (y - .5) ** 2) / .2))) # +
+mu_prior = (1 * (1 - np.exp(- ((x - 1.) ** 2 + (y - .5) ** 2) / .07))) # +
             # .5 * (1 - np.exp(- ((x - .0) ** 2 + (y - .5) ** 2) / .07)))
     # 1 - np.exp(- ((x - 1.) ** 2 + (y - .5) ** 2) / .05))
     # 1 - np.exp(- ((x - .5) ** 2 + (y - .0) ** 2) / .004) +
@@ -54,4 +54,7 @@ df.to_csv(FILEPATH + "Config/mu_prior.csv", index=False)
 # plt.scatter(d['lon'], d['lat'], c=d['salinity'], vmin=0, vmax=30)
 # plt.colorbar()
 # plt.show()
-#
+df = df.to_numpy()
+plt.scatter(df[:, 1], df[:, 0], c=df[:, 3], vmin=0, vmax=30, cmap=get_cmap("BrBG", 10))
+plt.colorbar()
+plt.show()
