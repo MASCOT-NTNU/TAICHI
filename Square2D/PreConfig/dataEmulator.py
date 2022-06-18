@@ -40,3 +40,18 @@ df.to_csv(FILEPATH + "Config/mu_prior.csv", index=False)
 # os.system("say data is saved sucessfully!")
 print("Finished data emulation")
 
+#%%
+
+
+from usr_func import *
+from TAICHI.Square2D.Config.Config import FILEPATH
+
+d = pd.read_csv(FILEPATH + "PreConfig/data_mu_truth.csv").to_numpy()
+ind = np.where(d[:, 2] == .5)[0]
+s = d[ind, :]
+df = pd.DataFrame(s, columns=['lat', 'lon', 'depth', 'salinity'])
+df.to_csv(FILEPATH + "Config/mu_prior.csv", index=False)
+# plt.scatter(d['lon'], d['lat'], c=d['salinity'], vmin=0, vmax=30)
+# plt.colorbar()
+# plt.show()
+#
