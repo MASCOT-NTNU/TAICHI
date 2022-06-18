@@ -5,6 +5,7 @@ Contact: yaolin.ge@ntnu.no
 Date: 2022-06-14
 """
 import matplotlib.pyplot as plt
+import pandas as pd
 
 from usr_func import *
 from TAICHI.Square2D.Config.Config import *
@@ -121,6 +122,7 @@ class TAICHI:
         self.result_monk = SRC("Monk")
 
         for i in range(replicates):
+            t_start = time.time()
             print("replicate: ", i)
             seed = np.random.randint(10000)
             print("seed: ", seed)
@@ -136,7 +138,6 @@ class TAICHI:
             self.ag3 = Agent("MONK", seed=seed)
             self.ag3.set_starting_location([0, 1])
             self.ag3.prepare_run()
-            enablePrint()
 
             for j in range(NUM_STEPS):
                 # enablePrint()
@@ -182,8 +183,34 @@ class TAICHI:
             self.result_taichi.append(self.ag1)
             self.result_monk.append(self.ag3)
             enablePrint()
-            t2 = time.time()
-            print("Time consumed: ", t2 - t1)
+            t_end = time.time()
+            print("Time consumed: ", t_end - t_start)
+        self.save_simulation_result()
+
+    def save_simulation_result(self):
+        df = pd.DataFrame(self.result_taichi.rmse)
+        df.to_csv(FILEPATH + "SimulationResult/TAICHI_RMSE.csv", index=False)
+
+        df = pd.DataFrame(self.result_taichi.ibv)
+        df.to_csv(FILEPATH + "SimulationResult/TAICHI_IBV.csv", index=False)
+
+        df = pd.DataFrame(self.result_taichi.uncertainty)
+        df.to_csv(FILEPATH + "SimulationResult/TAICHI_UNCERTAINTY.csv", index=False)
+
+        df = pd.DataFrame(self.result_taichi.crps)
+        df.to_csv(FILEPATH + "SimulationResult/TAICHI_CRPS.csv", index=False)
+
+        df = pd.DataFrame(self.result_monk.rmse)
+        df.to_csv(FILEPATH + "SimulationResult/MONK_RMSE.csv", index=False)
+
+        df = pd.DataFrame(self.result_monk.ibv)
+        df.to_csv(FILEPATH + "SimulationResult/MONK_IBV.csv", index=False)
+
+        df = pd.DataFrame(self.result_monk.uncertainty)
+        df.to_csv(FILEPATH + "SimulationResult/MONK_UNCERTAINTY.csv", index=False)
+
+        df = pd.DataFrame(self.result_monk.crps)
+        df.to_csv(FILEPATH + "SimulationResult/MONK_CRPS.csv", index=False)
 
     def check_taichi(self):
         a1 = [0, 1]
@@ -289,26 +316,10 @@ if __name__ == "__main__":
     tc = TAICHI()
     # tc.check_taichi()
     # tc.run()
-    tc.run_simulator(1)
-#%%
-plt.plot(tc.ag1.rmse, label="TAICHI")
-plt.plot(tc.ag3.rmse, label="Monk")
-plt.legend()
-plt.show()
+    tc.run_simulator(50)
 
-plt.plot(tc.ag1.ibv, label="TAICHI")
-plt.plot(tc.ag3.ibv, label="Monk")
-plt.legend()
-plt.show()
 
-plt.plot(tc.ag1.uncertainty, label="TAICHI")
-plt.plot(tc.ag3.uncertainty, label="Monk")
-plt.legend()
-plt.show()
 
-plt.plot(tc.ag1.crps, label="TAICHI")
-plt.plot(tc.ag3.crps, label="Monk")
-plt.legend()
-plt.show()
+
 
 
