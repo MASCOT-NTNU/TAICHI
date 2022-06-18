@@ -85,7 +85,7 @@ class GRF:
         plt.show()
 
     def check_update(self):
-        N = 1
+        N = 10
         ind = np.random.randint(0, self.grf_grid.shape[0], N)
         val = np.random.uniform(0, 1, N)
         self.update_grf_model(ind, vectorise(val))
@@ -102,7 +102,7 @@ class GRF:
         plt.plot(x[ind], y[ind], 'k.')
         plt.show()
 
-        N = 2
+        N = 20
         ind = np.random.randint(0, self.grf_grid.shape[0], N)
         val = np.random.uniform(0, 1, N)
         self.update_grf_model(ind, vectorise(val))
@@ -119,7 +119,7 @@ class GRF:
         plt.plot(x[ind], y[ind], 'k.')
         plt.show()
 
-        N = 3
+        N = 30
         ind = np.random.randint(0, self.grf_grid.shape[0], N)
         val = np.random.uniform(0, 1, N)
         self.update_grf_model(ind, vectorise(val))

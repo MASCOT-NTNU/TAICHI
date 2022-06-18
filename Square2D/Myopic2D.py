@@ -18,10 +18,11 @@ from TAICHI.Square2D.Config.Config import THRESHOLD, FILEPATH
 
 class MyopicPlanning2D:
 
-    def __init__(self, grf_model=None, waypoint_graph=None, hash_neighbours=None, echo=False):
+    def __init__(self, grf_model=None, waypoint_graph=None, hash_neighbours=None, hash_waypoint2grf=None, echo=False):
         self.grf_model = grf_model
         self.waypoint_graph = waypoint_graph
         self.hash_neighbours = hash_neighbours
+        self.hash_waypoint2grf = hash_waypoint2grf
         self.echo = echo
         print("Myopic2D path planner is ready!")
 
@@ -44,7 +45,7 @@ class MyopicPlanning2D:
         self.EIBV = []
         t1 = time.time()
         for ind_candidate in self.ind_candidates:  # don't need parallel, since candidate number is small, too slow to run mp
-            self.EIBV.append(self.get_eibv_from_grf_model(ind_candidate))
+            self.EIBV.append(self.get_eibv_from_grf_model(self.hash_waypoint2grf[ind_candidate]))
         if self.EIBV:
             self.ind_next = self.ind_candidates[np.argmin(self.EIBV)]
         else:

@@ -84,7 +84,8 @@ class Agent:
         self.ind_visited_waypoint.append(self.ind_current_waypoint)
 
         self.m2_planner = MyopicPlanning2D(grf_model=self.grf_model, waypoint_graph=self.waypoints,
-                                           hash_neighbours=self.hash_neighbours, echo=False)
+                                           hash_neighbours=self.hash_neighbours, hash_waypoint2grf=self.hash_waypoint2grf,
+                                           echo=False)
 
         self.ind_next_waypoint = self.m2_planner.find_next_waypoint_using_min_eibv(ind_current=self.ind_current_waypoint,
                                                                                    ind_previous=self.ind_previous_waypoint,
@@ -240,11 +241,13 @@ class Agent:
         return ind_assimilated, vectorise(salinity_assimilated)
 
     def check_agent(self):
-        self.prepare_run(np.random.randint(self.waypoints.shape[0]))
-        for i in range(20):
+        self.prepare_run(ind_start=1)
+        for i in range(100):
             print("Step: ", i)
             self.sample()
             self.run(i)
+        os.system("say finished")
+
 
 
 if __name__ == "__main__":

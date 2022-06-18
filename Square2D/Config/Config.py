@@ -9,9 +9,9 @@ Date: 2022-06-17
 import os
 
 # == GP kernel
-SIGMA = .5
-LATERAL_RANGE = .7
-NUGGET = .3
+SIGMA = 1
+LATERAL_RANGE = .5
+NUGGET = .1
 THRESHOLD = .7
 # ==
 
@@ -20,7 +20,7 @@ XLIM = [0, 1]
 YLIM = [0, 1]
 LATITUDE_ORIGIN = 0
 LONGITUDE_ORIGIN = 0
-DISTANCE_NEIGHBOUR = .015
+DISTANCE_NEIGHBOUR = .025
 # ==
 
 # == Waypoint
