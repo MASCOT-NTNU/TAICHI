@@ -220,106 +220,12 @@ class TAICHI:
         self.repartition()
         self.run_twin_agents(self.ag1, self.ag2)
 
-    def run_1_agent(self):
-        self.ag1 = Agent(self.ag1_name, seed=seed)
-        self.ag1.set_starting_location(ag1_loc)
-        self.ag1.prepare_run()
-        for i in range(NUM_STEPS):
-            ag.sample()
-            ag.run(step=i)
-
-    def check_src(self):
-
-        # x = np.arange(tc.result_taichi.crps.shape[1]-1)
-        # y = np.mean(tc.result_taichi.crps[:, 1:], axis=0)
-        # yerr = np.std(tc.result_taichi.crps[:, 1:], axis=0)
-        # plt.errorbar(x, y, yerr=yerr, label="TAICHI")
-        #
-        # x = np.arange(tc.result_monk.crps.shape[1]-1)
-        # y = np.mean(tc.result_monk.crps[:, 1:], axis=0)
-        # yerr = np.std(tc.result_monk.crps[:, 1:], axis=0)
-        # plt.errorbar(x, y, yerr=yerr, label="MONK")
-        # plt.legend()
-        # plt.title("CRPS")
-        # plt.show()
-
-        # plt.plot(tc.result_taichi.crps[0, 1:], label="TAICHI")
-        # plt.plot(tc.result_monk.crps[0, 1:], label="MONK")
-        # plt.legend()
-        # plt.title("CRPS")
-        # plt.show()
-
-        # x = np.arange(tc.result_taichi.ibv.shape[1]-1)
-        # y = np.mean(tc.result_taichi.ibv[:, 1:], axis=0)
-        # yerr = np.std(tc.result_taichi.ibv[:, 1:], axis=0)
-        # plt.errorbar(x, y, yerr=yerr, label="TAICHI")
-        #
-        # x = np.arange(tc.result_monk.ibv.shape[1]-1)
-        # y = np.mean(tc.result_monk.ibv[:, 1:], axis=0)
-        # yerr = np.std(tc.result_monk.ibv[:, 1:], axis=0)
-        # plt.errorbar(x, y, yerr=yerr, label="MONK")
-        # plt.legend()
-        # plt.title("IBV")
-        # plt.show()
-
-        x = np.arange(tc.result_taichi.uncertainty.shape[1] - 1)
-        Y = np.log(tc.result_taichi.uncertainty[:, 1:])
-        y = np.mean(Y, axis=0)
-        yerr = np.std(Y, axis=0)
-        plt.errorbar(x, y, yerr=yerr, label="TAICHI")
-
-        x = np.arange(tc.result_monk.uncertainty.shape[1] - 1)
-        Y = np.log(tc.result_monk.uncertainty[:, 1:])
-        y = np.mean(Y, axis=0)
-        yerr = np.std(Y, axis=0)
-        plt.errorbar(x, y, yerr=yerr, label="MONK")
-        plt.legend()
-        plt.title("Uncertainty")
-        plt.show()
-
-        # x = np.arange(tc.result_taichi.rmse.shape[1])
-        # y = np.mean(tc.result_taichi.rmse, axis=0)
-        # yerr = np.std(tc.result_taichi.rmse, axis=0)
-        # plt.errorbar(x, y, yerr=yerr, label="TAICHI")
-        #
-        # x = np.arange(tc.result_monk.rmse.shape[1])
-        # y = np.mean(tc.result_monk.rmse, axis=0)
-        # yerr = np.std(tc.result_monk.rmse, axis=0)
-        # plt.errorbar(x, y, yerr=yerr, label="MONK")
-        #
-        # # plt.plot(tc.result_monk.rmse[:, 1:], label="MONK")
-        # plt.legend()
-        # plt.title("RMSE")
-        # plt.show()
-
-        import numpy as np
-        from scipy.spatial import Voronoi, voronoi_plot_2d
-        import shapely.geometry
-        import shapely.ops
-
-        points = np.random.random((10, 2))
-        vor = Voronoi(points)
-        voronoi_plot_2d(vor)
-        plt.show()
-
-        lines = [
-            shapely.geometry.LineString(vor.vertices[line])
-            for line in vor.ridge_vertices
-            if -1 not in line
-        ]
-
-        plt.plot(lines[0])
-        plt.show()
-
 
 if __name__ == "__main__":
     tc = TAICHI()
     # tc.check_taichi()
     # tc.run()
-    tc.run_simulator(50)
-
-
-
+    # tc.run_simulator(50)
 
 
 
