@@ -13,7 +13,7 @@ next_location = MyopicPlanning3D(Knowledge, Experience).next_waypoint
 from usr_func import *
 from TAICHI.Nidelva3D.Config.Config import *
 from TAICHI.Nidelva3D.Knowledge.Knowledge import Knowledge
-from TAICHI.spde import spde
+from TAICHI.Nidelva3D.spde import spde
 import time
 import pickle
 
@@ -41,9 +41,12 @@ class MyopicPlanning3D:
         self.hash_waypoint2gmrf = hash_waypoint2gmrf
         print("MyopicPlanner is ready")
 
-    def update_planner(self, knowledge=None, gmrf_model=None):
+    def update_planner(self, knowledge=None, gmrf_model=None, ind_legal=None):
         self.knowledge = knowledge
         self.gmrf_model = gmrf_model
+        if ind_legal is None:
+            ind_legal = []
+        self.ind_legal=ind_legal
         print("Planner is updated successfully!")
 
     def find_next_waypoint_using_min_eibv(self, ind_current=None, ind_previous=None, ind_visited=None, filename=None):
@@ -60,7 +63,10 @@ class MyopicPlanning3D:
         if self.EIBV:
             self.ind_next = self.ind_candidates[np.argmin(self.EIBV)]
         else:
-            self.ind_next = self.ind_neighbours[np.random.randint(len(self.ind_neighbours))]
+            if len(self.ind_neighbours) > 1:
+                self.ind_next = self.ind_neighbours[np.random.randint(len(self.ind_neighbours))]
+            else:
+                print("WARN")
         t2 = time.time()
         print("Path planning takes: ", t2 - t1)
         np.savetxt(filename, np.array([self.ind_next]))
@@ -69,6 +75,8 @@ class MyopicPlanning3D:
 
     def find_all_neighbours(self):
         self.ind_neighbours = self.hash_neighbours[self.ind_current]
+        self.ind_neighbours = list(set(self.ind_neighbours).intersection(self.ind_legal))
+        print("legal neighbours: ", self.ind_neighbours)
 
     def smooth_filter_neighbours(self):
         vec1 = self.get_vec_from_indices(self.ind_previous, self.ind_current)

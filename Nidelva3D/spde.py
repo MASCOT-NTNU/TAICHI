@@ -1,7 +1,7 @@
 import numpy as np
 from scipy import sparse
 from sksparse.cholmod import cholesky
-from TAICHI.Simulation.Config.Config import FILEPATH
+from TAICHI.Nidelva3D.Config.Config import FILEPATH
 DEFAULT_NUM_SAMPLES = 40 # 150 is too much
 
 

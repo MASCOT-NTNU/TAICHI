@@ -4,13 +4,12 @@ Author: Yaolin Ge
 Contact: yaolin.ge@ntnu.no
 Date: 2022-06-14
 """
-import numpy as np
 
 from usr_func import *
 from TAICHI.Nidelva3D.Config.Config import *
 from TAICHI.Nidelva3D.PlanningStrategies.Myopic3D import MyopicPlanning3D
 from TAICHI.Nidelva3D.Knowledge.Knowledge import Knowledge
-from TAICHI.spde import spde
+from TAICHI.Nidelva3D.spde import spde
 import pickle
 import concurrent.futures
 from sklearn.metrics import mean_squared_error
@@ -35,11 +34,11 @@ class Agent:
         print("S1-S10 complete!" + self.agent_name + " is initialised successfully!")
 
     def load_waypoint(self):
-        self.waypoints = pd.read_csv(FILEPATH + "Simulation/Config/WaypointGraph.csv").to_numpy()
+        self.waypoints = pd.read_csv(FILEPATH + "Config/WaypointGraph.csv").to_numpy()
         print("S1: Waypoint is loaded successfully!")
 
     def load_gmrf_grid(self):
-        self.gmrf_grid = pd.read_csv(FILEPATH + "Simulation/Config/GMRFGrid.csv").to_numpy()
+        self.gmrf_grid = pd.read_csv(FILEPATH + "Config/GMRFGrid.csv").to_numpy()
         self.N_gmrf_grid = len(self.gmrf_grid)
         print("S2: GMRF grid is loaded successfully!")
 
@@ -52,7 +51,7 @@ class Agent:
         pass
 
     def load_simulated_truth(self):
-        path_mu_truth = FILEPATH + "Simulation/Config/Data/data_mu_truth.csv"
+        path_mu_truth = FILEPATH + "Config/Data/data_mu_truth.csv"
         self.simulated_truth = pd.read_csv(path_mu_truth).to_numpy()[:, -1].reshape(-1, 1)
         print("S5: Simulated truth is loaded successfully!")
 
@@ -61,13 +60,13 @@ class Agent:
         print("S6: Knowledge of the field is set up successfully!")
 
     def load_hash_neighbours(self):
-        neighbour_file = open(FILEPATH + "Simulation/Config/HashNeighbours.p", 'rb')
+        neighbour_file = open(FILEPATH + "Config/HashNeighbours.p", 'rb')
         self.hash_neighbours = pickle.load(neighbour_file)
         neighbour_file.close()
         print("S7: Neighbour hash table is loaded successfully!")
 
     def load_hash_waypoint2gmrf(self):
-        waypoint2gmrf_file = open(FILEPATH + "Simulation/Config/HashWaypoint2GMRF.p", 'rb')
+        waypoint2gmrf_file = open(FILEPATH + "Config/HashWaypoint2GMRF.p", 'rb')
         self.hash_waypoint2gmrf = pickle.load(waypoint2gmrf_file)
         waypoint2gmrf_file.close()
         print("S8: Waypoint2GMRF hash table is loaded successfully!")
@@ -92,12 +91,12 @@ class Agent:
         self.z_start = depth
         print("Starting location is set up successfully!")
 
-    def prepare_run(self, ind_start=None):
+    def prepare_run(self, ind_start=None, ind_legal=None):
         if not ind_start:
             self.ind_current_waypoint = get_ind_at_location3d_xyz(self.waypoints, self.x_start, self.y_start, self.z_start)
         else:
             self.ind_current_waypoint = ind_start
-        print("startingh index: ", self.ind_current_waypoint)
+        print("starting index: ", self.ind_current_waypoint)
         self.ind_previous_waypoint = self.ind_current_waypoint
         self.ind_pioneer_waypoint = self.ind_current_waypoint
         self.ind_next_waypoint = self.ind_current_waypoint
@@ -106,11 +105,14 @@ class Agent:
 
         self.myopic3d_planner = MyopicPlanning3D(waypoints=self.waypoints, hash_neighbours=self.hash_neighbours,
                                                  hash_waypoint2gmrf=self.hash_waypoint2gmrf)
-        folder = FILEPATH + "Simulation/Waypoint/" + self.agent_name
+        folder = FILEPATH + "Waypoint/" + self.agent_name
         checkfolder(folder)
         self.filename_ind_next = folder + "/ind_next.txt"
 
-        self.myopic3d_planner.update_planner(knowledge=self.knowledge, gmrf_model=self.gmrf_model)
+        if ind_legal is None:
+            ind_legal = np.arange(self.waypoints.shape[0])
+
+        self.myopic3d_planner.update_planner(knowledge=self.knowledge, gmrf_model=self.gmrf_model, ind_legal=ind_legal)
         with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
             executor.submit(self.myopic3d_planner.find_next_waypoint_using_min_eibv,
                             self.ind_current_waypoint,
@@ -184,7 +186,7 @@ class Agent:
         self.crps.append(np.sum(properscoring.crps_gaussian(self.simulated_truth[self.ind_current_waypoint],
                                                             self.knowledge.mu, self.knowledge.SigmaDiag)))
 
-    def run(self, step=0, pre_share=False, share=False, other_agents=None):
+    def run(self, step=0, pre_share=False, share=False, other_agents=None, ind_legal=None):
         self.monitor_data()
         if share:
             self.ind_measured_by_other_agent = self.data_from_other_agent[:, 0]
@@ -202,7 +204,10 @@ class Agent:
         self.knowledge.SigmaDiag = self.gmrf_model.mvar()
 
         if not pre_share:
-            self.myopic3d_planner.update_planner(knowledge=self.knowledge, gmrf_model=self.gmrf_model)
+            if ind_legal is None:
+                ind_legal = np.arange(self.waypoints.shape[0])
+            self.myopic3d_planner.update_planner(knowledge=self.knowledge, gmrf_model=self.gmrf_model,
+                                                 ind_legal=ind_legal)
             with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
                 executor.submit(self.myopic3d_planner.find_next_waypoint_using_min_eibv,
                                 self.ind_next_waypoint,
@@ -265,7 +270,7 @@ class Agent:
         print("pioneer ind: ", self.ind_pioneer_waypoint)
 
     def save_agent_data(self):
-        datapath = FILEPATH + "Simulation/AgentsData/" + self.agent_name + ".npy"
+        datapath = FILEPATH + "AgentsData/" + self.agent_name + ".npy"
         np.save(datapath, self.data_agent)
         print("Data from " + self.agent_name + " is saved successfully!")
 
@@ -273,7 +278,7 @@ class Agent:
         self.data_from_other_agent = np.empty([0, 2])
         for ag in ags:
             agent_name = ag.agent_name
-            datapath = FILEPATH + "Simulation/AgentsData/" + agent_name + ".npy"
+            datapath = FILEPATH + "AgentsData/" + agent_name + ".npy"
             self.data_from_other_agent = np.append(self.data_from_other_agent, np.load(datapath), axis=0)
             print("Data from " + agent_name + " is loaded successfully!")
 
@@ -524,16 +529,23 @@ class Agent:
         return fig
 
     def check_agent(self):
-        self.set_starting_location(AGENT1_START_LOCATION)
-        self.prepare_run()
+        ag1_loc = [63.451022, 10.396262, .5]
+        ag2_loc = [63.452381, 10.424680, .5]
+
+        self.set_starting_location(ag1_loc)
+        self.prepare_run(ind_legal=np.arange(self.waypoints.shape[0]))
+        for i in range(10):
+            self.run(i)
+        # self.set_starting_location(AGENT1_START_LOCATION)
+        # self.prepare_run()
         # self.run()
-        self.monitor_data()
+        # self.monitor_data()
         pass
 
 
 if __name__ == "__main__":
     a = Agent()
-    NUM_STEPS = 1
+    # NUM_STEPS = 1
     a.check_agent()
 
 

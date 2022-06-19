@@ -10,7 +10,7 @@ from usr_func import latlon2xy
 
 # == Sys
 working_directory = os.getcwd()
-FILEPATH = working_directory + "/TAICHI/"
+FILEPATH = working_directory + "/TAICHI/Nidelva3D/"
 FIGPATH = FILEPATH + "fig/"
 # ==
 
