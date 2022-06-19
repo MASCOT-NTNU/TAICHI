@@ -186,7 +186,7 @@ class Agent:
         self.crps.append(np.sum(properscoring.crps_gaussian(self.simulated_truth[self.ind_current_waypoint],
                                                             self.knowledge.mu, self.knowledge.SigmaDiag)))
 
-    def run(self, step=0, pre_share=False, share=False, other_agents=None, ind_legal=None):
+    def run(self, step=0, pre_share=False, share=False, other_agent=None, ind_legal=None):
         self.monitor_data()
         if share:
             self.ind_measured_by_other_agent = self.data_from_other_agent[:, 0]
@@ -234,16 +234,18 @@ class Agent:
             figpath = FIGPATH + self.agent_name + "/"
             filename = figpath + "mean/jpg/P_{:03d}.jpg".format(step)
             fig_mu = self.plot_figure(mu_plot, filename, vmin=10, vmax=27, opacity=.4, surface_count=6, cmap="BrBG",
-                                      cbar_title="Salinity", share=share, other_agents=other_agents, step=step)
+                                      cbar_title="Salinity", share=share, other_agent=other_agent, step=step,
+                                      ind_legal=ind_legal)
 
             filename = figpath + "var/jpg/P_{:03d}.jpg".format(step)
             fig_var = self.plot_figure(var_plot, filename, vmin=0, vmax=.5, opacity=.4, surface_count=4, cmap="Blues",
-                                       cbar_title="STD", share=share, other_agents=other_agents, reverse_scale=True,
-                                       step=step)
+                                       cbar_title="STD", share=share, other_agent=other_agent, reverse_scale=True,
+                                       step=step, ind_legal=ind_legal)
 
             filename = figpath + "ep/jpg/P_{:03d}.jpg".format(step)
             fig_ep = self.plot_figure(ep_plot, filename, vmin=0, vmax=1, opacity=.4, surface_count=10, cmap="Brwnyl",
-                                      cbar_title="EP", other_agents=other_agents, share=share, step=step)
+                                      cbar_title="EP", other_agent=other_agent, share=share, step=step,
+                                      ind_legal=ind_legal)
 
             if step == NUM_STEPS - 1 or share:
                 print("HTML is saved!")
@@ -274,13 +276,12 @@ class Agent:
         np.save(datapath, self.data_agent)
         print("Data from " + self.agent_name + " is saved successfully!")
 
-    def load_data_from_agents(self, ags):
+    def load_data_from_other_agent(self, ag):
         self.data_from_other_agent = np.empty([0, 2])
-        for ag in ags:
-            agent_name = ag.agent_name
-            datapath = FILEPATH + "AgentsData/" + agent_name + ".npy"
-            self.data_from_other_agent = np.append(self.data_from_other_agent, np.load(datapath), axis=0)
-            print("Data from " + agent_name + " is loaded successfully!")
+        agent_name = ag.agent_name
+        datapath = FILEPATH + "AgentsData/" + agent_name + ".npy"
+        self.data_from_other_agent = np.load(datapath)
+        print("Data from " + agent_name + " is loaded successfully!")
 
     def clear_agent_data(self):
         self.data_agent = np.empty([0, 2])
@@ -323,7 +324,7 @@ class Agent:
         return ind_assimilated, vectorise(salinity_assimilated)
 
     def plot_figure(self, value, filename, vmin=None, vmax=None, opacity=None, surface_count=None, cmap=None,
-                    cbar_title=None, share=False, other_agents=None, reverse_scale=False, step=0):
+                    cbar_title=None, share=False, other_agent=None, reverse_scale=False, step=0, ind_legal=None):
         points_int, values_int = interpolate_3d(self.xplot, self.yplot, self.zplot, value)
 
         # fig = make_subplots(rows=1, cols=1, specs=[[{'type': 'scene'},]])
@@ -432,26 +433,34 @@ class Agent:
             marker=dict(color='black', size=4),
             line=dict(color='black', width=3)
         ))
+        if ind_legal is not None:
+            fig.add_trace(go.Scatter3d(name="Legal waypoints",
+                x=yrot[ind_legal],
+                y=xrot[ind_legal],
+                z=zrot[ind_legal],
+                mode='markers',
+                marker=dict(color='cyan', size=5, opacity=.4),
+                # line=dict(color='black', width=3)
+            ))
 
         # plot other agent
-        if other_agents:
-            for other_agent in other_agents:
-                fig.add_trace(go.Scatter3d(name=other_agent.agent_name + "\'s current waypoint",
-                    x=[yrot[other_agent.ind_current_waypoint]],
-                    y=[xrot[other_agent.ind_current_waypoint]],
-                    z=[zrot[other_agent.ind_current_waypoint]],
-                    mode='markers',
-                    marker=dict(color='brown', size=5, opacity=1)
-                ))
-                fig.add_trace(go.Scatter3d(name=other_agent.agent_name + "\'s trajectory",
-                    x=yrot[other_agent.ind_visited_waypoint],
-                    y=xrot[other_agent.ind_visited_waypoint],
-                    z=zrot[other_agent.ind_visited_waypoint],
-                    mode='markers+lines',
-                    marker=dict(color='grey', size=5),
-                    line=dict(color='grey', width=3),
-                    opacity=1,
-                ))
+        if other_agent:
+            fig.add_trace(go.Scatter3d(name=other_agent.agent_name + "\'s current waypoint",
+                x=[yrot[other_agent.ind_current_waypoint]],
+                y=[xrot[other_agent.ind_current_waypoint]],
+                z=[zrot[other_agent.ind_current_waypoint]],
+                mode='markers',
+                marker=dict(color='brown', size=5, opacity=1)
+            ))
+            fig.add_trace(go.Scatter3d(name=other_agent.agent_name + "\'s trajectory",
+                x=yrot[other_agent.ind_visited_waypoint],
+                y=xrot[other_agent.ind_visited_waypoint],
+                z=zrot[other_agent.ind_visited_waypoint],
+                mode='markers+lines',
+                marker=dict(color='grey', size=5),
+                line=dict(color='grey', width=3),
+                opacity=1,
+            ))
 
         if share:
             ind_measured_by_other_agent = self.ind_measured_by_other_agent.astype(int)
@@ -531,10 +540,11 @@ class Agent:
     def check_agent(self):
         ag1_loc = [63.451022, 10.396262, .5]
         ag2_loc = [63.452381, 10.424680, .5]
-
+        self.plot = True
         self.set_starting_location(ag1_loc)
         self.prepare_run(ind_legal=np.arange(self.waypoints.shape[0]))
         for i in range(10):
+            self.sample()
             self.run(i)
         # self.set_starting_location(AGENT1_START_LOCATION)
         # self.prepare_run()

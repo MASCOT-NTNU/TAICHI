@@ -6,7 +6,7 @@ Date: 2022-04-23
 """
 
 
-from MAFIA.Simulation.Config.Config import *
+from TAICHI.Nidelva3D.Config.Config import *
 from usr_func import *
 import pickle
 
@@ -20,10 +20,10 @@ class HashGMRF2Waypoint:
         self.get_waypoint2gmrf_hash_tables()
 
     def load_waypoint(self):
-        self.waypoints = pd.read_csv(FILEPATH + "Simulation/Config/WaypointGraph.csv")
+        self.waypoints = pd.read_csv(FILEPATH + "Config/WaypointGraph.csv")
 
     def load_gmrf_grid(self):
-        self.gmrf_grid = pd.read_csv(FILEPATH + "Simulation/Config/GMRFGrid.csv")
+        self.gmrf_grid = pd.read_csv(FILEPATH + "Config/GMRFGrid.csv")
 
     def get_gmrf2waypoint_hash_tables(self):
         self.gmrf2waypoint_hash_table = dict()
@@ -37,7 +37,7 @@ class HashGMRF2Waypoint:
             self.gmrf2waypoint_hash_table[i] = ind
         t2 = time.time()
 
-        filehandler = open(FILEPATH+'/Simulation/Config/HashGMRF2Waypoint.p', 'wb')
+        filehandler = open(FILEPATH+'Config/HashGMRF2Waypoint.p', 'wb')
         with filehandler as f:
             pickle.dump(self.gmrf2waypoint_hash_table, f)
         f.close()
@@ -55,7 +55,7 @@ class HashGMRF2Waypoint:
             self.waypoint2gmrf_hash_table[i] = ind
         t2 = time.time()
 
-        filehandler = open(FILEPATH+'/Simulation/Config/HashWaypoint2GMRF.p', 'wb')
+        filehandler = open(FILEPATH+'Config/HashWaypoint2GMRF.p', 'wb')
         with filehandler as f:
             pickle.dump(self.waypoint2gmrf_hash_table, f)
         f.close()

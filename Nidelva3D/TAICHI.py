@@ -18,13 +18,13 @@ class TAICHI:
         self.radius_skp = LOITER_RADIUS + SAFETY_DISTANCE  # station-keeping radius
         print("Hello, this is TAICHI")
 
-    def setup_agents(self, ag1_loc, ag2_loc, seed=None):
-        self.ag1_name = "A1"
-        self.ag2_name = "A2"
-        self.ag1 = Agent(self.ag1_name, seed=seed)
+    def setup_agents(self, ag1_loc, ag2_loc, plot=True):
+        self.ag1_name = "A1B"
+        self.ag2_name = "A2B"
+        self.ag1 = Agent(self.ag1_name, plot=plot)
         self.ag1.set_starting_location(ag1_loc)
         self.ag1.prepare_run()
-        self.ag2 = Agent(self.ag2_name, seed=seed)
+        self.ag2 = Agent(self.ag2_name, plot=plot)
         self.ag2.set_starting_location(ag2_loc)
         self.ag2.prepare_run()
 
@@ -96,8 +96,8 @@ class TAICHI:
                 ag1.save_agent_data()                        # step 2
                 ag2.save_agent_data()
                 # load data from agent1, agent2
-                ag1.load_data_from_agents(ag2)
-                ag2.load_data_from_agents(ag1)
+                ag1.load_data_from_other_agent(ag2)
+                ag2.load_data_from_other_agent(ag1)
 
             ag1.run(step=i, pre_share=pre_share, share=share, other_agent=ag2, ind_legal=self.ind_ag1)  # step 4
             ag2.run(step=i, pre_share=pre_share, share=share, other_agent=ag1, ind_legal=self.ind_ag2)  # step 4
@@ -219,6 +219,11 @@ class TAICHI:
         ag2_loc = [63.452381, 10.424680, .5]
 
         self.setup_agents(ag1_loc, ag2_loc)
+        x1, y1 = latlon2xy(ag1_loc[0], ag1_loc[1], LATITUDE_ORIGIN, LONGITUDE_ORIGIN)
+        x2, y2 = latlon2xy(ag2_loc[0], ag2_loc[1], LATITUDE_ORIGIN, LONGITUDE_ORIGIN)
+
+        self.update_compass([x1, y1, ag1_loc[-1]], [x2, y2, ag2_loc[-1]])
+        self.repartition()
         self.run_twin_agents(self.ag1, self.ag2)
         pass
 

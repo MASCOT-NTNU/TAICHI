@@ -6,8 +6,8 @@ Date: 2022-03-21
 """
 
 
-from MAFIA.Simulation.Config.Config import *
-from MAFIA.Simulation.PreConfig.WaypointGraph.waypointGraphSetup import DISTANCE_SELF, DISTANCE_VERTICAL, DISTANCE_LATERAL
+from TAICHI.Nidelva3D.Config.Config import *
+from TAICHI.Nidelva3D.PreConfig.WaypointGraph.waypointGraphSetup import DISTANCE_SELF, DISTANCE_VERTICAL, DISTANCE_LATERAL
 from usr_func import *
 import pickle
 
@@ -19,7 +19,7 @@ class HashNeighbourLocations:
         self.get_neighbours_hash_table()
 
     def load_coordinates(self):
-        self.coordinates = pd.read_csv(FILEPATH + "Simulation/Config/WaypointGraph.csv")
+        self.coordinates = pd.read_csv(FILEPATH + "Config/WaypointGraph.csv")
 
     def get_neighbours_hash_table(self):
         self.neighbour_hash_table = dict()
@@ -40,7 +40,7 @@ class HashNeighbourLocations:
             self.neighbour_hash_table[i] = list(self.ind_neighbour)
         t2 = time.time()
 
-        filehandler = open(FILEPATH+'/Simulation/Config/HashNeighbours.p', 'wb')
+        filehandler = open(FILEPATH+'Config/HashNeighbours.p', 'wb')
         with filehandler as f:
             pickle.dump(self.neighbour_hash_table, f)
         f.close()

@@ -5,7 +5,7 @@ Contact: yaolin.ge@ntnu.no
 Date: 2022-06-16
 """
 
-from TAICHI.Simulation.Config.Config import NUM_STEPS, np
+from TAICHI.Nidelva3D.Config.Config import NUM_STEPS, np
 from usr_func import vectorise
 
 

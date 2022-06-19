@@ -239,7 +239,7 @@ class Agent:
         self.ind_visited_waypoint.append(self.ind_current_waypoint)
 
     def save_agent_data(self):
-        datapath = FILEPATH + "Square2D/AgentsData/" + self.agent_name + ".npy"
+        datapath = FILEPATH + "AgentsData/" + self.agent_name + ".npy"
         checkfolder(os.path.dirname(datapath))
         np.save(datapath, self.data_agent)
         print("Data from " + self.agent_name + " is saved successfully!")
@@ -247,7 +247,7 @@ class Agent:
     def load_data_from_agents(self, ag):
         self.data_from_other_agent = np.empty([0, 2])
         agent_name = ag.agent_name
-        datapath = FILEPATH + "Square2D/AgentsData/" + agent_name + ".npy"
+        datapath = FILEPATH + "AgentsData/" + agent_name + ".npy"
         self.data_from_other_agent = np.append(self.data_from_other_agent, np.load(datapath), axis=0)
         print("Data from " + agent_name + " is loaded successfully!")
 

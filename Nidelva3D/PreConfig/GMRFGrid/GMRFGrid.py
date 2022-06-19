@@ -5,7 +5,7 @@ Contact: yaolin.ge@ntnu.no
 Date: 2022-04-23
 """
 import pandas as pd
-from MAFIA.Simulation.Config.Config import *
+from TAICHI.Nidelva3D.Config.Config import *
 
 lats = np.load(FILEPATH + "models/lats_small.npy")
 lons = np.load(FILEPATH + "models/lons_small.npy")

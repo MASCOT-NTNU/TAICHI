@@ -104,8 +104,8 @@ class TAICHI:
                 ag1.save_agent_data()                        # step 2
                 ag2.save_agent_data()
                 # load data from agent1, agent2
-                ag1.load_data_from_agents(ag2)
-                ag2.load_data_from_agents(ag1)
+                ag1.load_data_from_other_agent(ag2)
+                ag2.load_data_from_other_agent(ag1)
 
             ag1.run(step=i, pre_share=pre_share, share=share, other_agent=ag2, ind_legal=self.ind_ag1)  # step 4
             ag2.run(step=i, pre_share=pre_share, share=share, other_agent=ag1, ind_legal=self.ind_ag2)  # step 4
