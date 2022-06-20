@@ -41,6 +41,7 @@ class MAFIA2Launcher:
         self.update_time = rospy.get_time()
         self.get_transect_trajectory()
         self.setup_myopic3d_planner()
+        self.data_agent = np.empty([0, 2])
         print("S1-S10 complete!")
 
     def load_waypoint(self):
@@ -191,6 +192,10 @@ class MAFIA2Launcher:
                             self.gmrf_model.update(rel=salinity_assimilated, ks=ind_assimilated)
                             t2 = time.time()
                             print("Update consumed: ", t2 - t1)
+
+                            self.data_agent = np.append(self.data_agent, np.hstack((vectorise(ind_assimilated),
+                                                                                    vectorise(salinity_assimilated))))
+
                             if self.counter_waypoint_prerun == len(self.trajectory_transect):
                                 self.prerun_mode = False
                                 self.gmrf_model.postProcessing()
@@ -211,6 +216,10 @@ class MAFIA2Launcher:
                                                        iridium_dest=self.auv.iridium_destination)  # self.ada_state = "surfacing"
                                 self.auv.auv_handler.setWaypoint(deg2rad(lat_waypoint), deg2rad(lon_waypoint), 0,
                                                                  speed=self.auv.speed)
+
+                                df = pd.DataFrame(self.data_agent, columns=['ind', 'salinity'])
+                                df.to_csv(FILEPATH + "Adaptive_data.csv", index=False)
+
                                 print("Mission complete! Congrates!")
                                 self.auv.send_SMS_mission_complete()
                                 rospy.signal_shutdown("Mission completed!!!")
@@ -226,6 +235,8 @@ class MAFIA2Launcher:
                             self.gmrf_model.update(rel=salinity_assimilated, ks=ind_assimilated)
                             t2 = time.time()
                             print("Update consumed: ", t2 - t1)
+                            self.data_agent = np.append(self.data_agent, np.hstack((vectorise(ind_assimilated),
+                                                                                    vectorise(salinity_assimilated))))
 
                             self.knowledge.mu = self.gmrf_model.mu
                             self.knowledge.SigmaDiag = self.gmrf_model.mvar()
