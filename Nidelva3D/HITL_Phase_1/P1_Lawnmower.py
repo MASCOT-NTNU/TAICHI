@@ -69,6 +69,12 @@ class Lawnmower:
                     t_start = time.time()
                     self.popup = True
 
+                    ind_assimilated, salinity_assimilated = self.assimilate_data(np.array(self.auv_data))
+                    t1 = time.time()
+                    self.gmrf_model.update(rel=salinity_assimilated, ks=ind_assimilated)
+                    t2 = time.time()
+                    print("Update consumed: ", t2 - t1)
+
                 # if self.auv.auv_handler.getState() == "waiting":
                 if (self.auv.auv_handler.getState() == "waiting" and
                         rospy.get_time() - self.update_time > WAYPOINT_UPDATE_TIME):
@@ -79,11 +85,6 @@ class Lawnmower:
                         lat_waypoint, lon_waypoint, depth_waypoint = self.lawnmower[self.counter_waypoint, :]
                         self.auv.auv_handler.setWaypoint(deg2rad(lat_waypoint), deg2rad(lon_waypoint),
                                                          depth_waypoint, speed=self.auv.speed)
-                    ind_assimilated, salinity_assimilated = self.assimilate_data(np.array(self.auv_data))
-                    t1 = time.time()
-                    self.gmrf_model.update(rel=salinity_assimilated, ks=ind_assimilated)
-                    t2 = time.time()
-                    print("Update consumed: ", t2 - t1)
                     if self.counter_waypoint == len(self.lawnmower):
                         self.auv.auv_handler.PopUp(sms=True, iridium=True, popup_duration=self.auv.min_popup_time,
                                                phone_number=self.auv.phone_number,
