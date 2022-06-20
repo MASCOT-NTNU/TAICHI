@@ -140,6 +140,7 @@ class HashGMRF2Waypoint:
         ))
         plotly.offline.plot(fig, filename=FIGPATH+"waypoint2gmrf.html", auto_open=True)
 
+
 if __name__ == "__main__":
     n = HashGMRF2Waypoint()
     n.check_hash()

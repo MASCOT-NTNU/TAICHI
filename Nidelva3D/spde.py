@@ -293,3 +293,16 @@ class spde:
         else:
             self.Q = sparse.csc_matrix((np.array(tmp['Qv']*1,dtype = "float32"), ((tmp['Qr']*1).astype('int32'), (tmp['Qc']*1).astype('int32'))), shape=(self.n,self.n))
 
+
+
+t = spde()
+#%%
+import time
+print("start")
+t1 = time.time()
+t.update(rel = np.random.uniform(25, 30, 10000), ks=np.random.randint(0, len(t.mu), 10000))
+
+t2 = time.time()
+print("time consunmed; ", t2 - t1)
+
+

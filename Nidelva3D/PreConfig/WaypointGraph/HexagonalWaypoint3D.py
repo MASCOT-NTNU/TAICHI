@@ -8,7 +8,7 @@ Date: 2022-02-25
 
 # from usr_func import *
 import time, numpy as np
-from MAFIA.Simulation.PreConfig.WaypointGraph.HexagonalWaypoint2D import HexgonalGrid2DGenerator
+from TAICHI.Nidelva3D.PreConfig.WaypointGraph.HexagonalWaypoint2D import HexgonalGrid2DGenerator
 
 
 class HexgonalGrid3DGenerator:

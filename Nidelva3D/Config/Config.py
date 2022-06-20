@@ -23,7 +23,7 @@ GMRF_DISTANCE_NEIGHBOUR = 32
 # ==
 
 # == Path planner
-NUM_STEPS = 25
+NUM_STEPS = 40
 # ==
 
 # == Boundary box

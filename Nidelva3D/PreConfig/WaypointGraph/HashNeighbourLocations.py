@@ -95,6 +95,7 @@ class HashNeighbourLocations:
         plotly.offline.plot(fig, filename=FIGPATH+"neighbour.html",
                             auto_open=True)
 
+
 if __name__ == "__main__":
     n = HashNeighbourLocations()
     n.plot_neighbours(np.random.randint(n.coordinates.shape[0]))

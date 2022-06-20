@@ -43,7 +43,7 @@ class Agent:
         print("S2: GMRF grid is loaded successfully!")
 
     def load_gmrf_model(self):
-        self.gmrf_model = spde(model=2, reduce=True, method=2)
+        self.gmrf_model = spde(model=2, method=2)
         print("S3: GMRF model is loaded successfully!")
 
     def load_prior(self):
@@ -175,7 +175,7 @@ class Agent:
         truth[truth < 0] = 0
         self.rmse.append(mean_squared_error(self.simulated_truth, self.knowledge.mu, squared=True))
         self.uncertainty.append(np.sum(self.knowledge.SigmaDiag))
-        self.ibv.append(self.myopic3d_planner.get_eibv_from_gmrf_model(self.ind_current_waypoint))
+        self.ibv.append(self.myopic3d_planner.get_eibv_from_gmrf_model(np.array([self.ind_current_waypoint])))
         self.crps.append(np.sum(properscoring.crps_gaussian(self.simulated_truth[self.ind_current_waypoint],
                                                             self.knowledge.mu, self.knowledge.SigmaDiag)))
 
@@ -537,9 +537,9 @@ class Agent:
         ag2_loc = [63.452381, 10.424680, .5]
         self.plot = True
         self.prepare_run(ag1_loc, ind_legal=np.arange(self.waypoints.shape[0]))
-        # for i in range(10):
-        #     self.sample()
-        #     self.run(i)
+        for i in range(20):
+            self.sample()
+            self.run(i)
         # self.set_starting_location(AGENT1_START_LOCATION)
         # self.prepare_run()
         # self.run()
@@ -552,7 +552,9 @@ if __name__ == "__main__":
     # NUM_STEPS = 1
     a.check_agent()
 
-
+#%%
+plt.plot(a.waypoints[:, 1], a.waypoints[:, 0], 'k.')
+plt.show()
 
 
 

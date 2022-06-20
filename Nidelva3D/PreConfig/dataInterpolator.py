@@ -8,12 +8,12 @@ Date: 2022-03-16
 from DataHandler.SINMOD import SINMOD
 from TAICHI.Nidelva3D.Config.Config import *
 
-lats = np.load(FILEPATH + "models/lats_small.npy").reshape(-1, 1)
-lons = np.load(FILEPATH + "models/lons_small.npy").reshape(-1, 1)
-depth = np.load(FILEPATH + "models/depth_small.npy").reshape(-1, 1)
-# lats = np.load(FILEPATH + "models/lats.npy").reshape(-1, 1)
-# lons = np.load(FILEPATH + "models/lons.npy").reshape(-1, 1)
-# depth = np.load(FILEPATH + "models/depth.npy").reshape(-1, 1)
+# lats = np.load(FILEPATH + "models/lats_small.npy").reshape(-1, 1)
+# lons = np.load(FILEPATH + "models/lons_small.npy").reshape(-1, 1)
+# depth = np.load(FILEPATH + "models/depth_small.npy").reshape(-1, 1)
+lats = np.load(FILEPATH + "models/lats.npy").reshape(-1, 1)
+lons = np.load(FILEPATH + "models/lons.npy").reshape(-1, 1)
+depth = np.load(FILEPATH + "models/depth.npy").reshape(-1, 1)
 coordinates = np.hstack((lats, lons, depth))
 
 # == get desired sinmod data
@@ -41,21 +41,23 @@ DATAPATH = FILEPATH+"Config/Data/"
 #% Step II: extract data by section
 p1 = coordinates[0:5000,:]
 sinmod.get_data_at_coordinates(p1, filename=DATAPATH+'p1.csv')
+os.system('say complete 1')
 
-#%%
 p2 = coordinates[5000:10000,:]
 sinmod.get_data_at_coordinates(p2, filename=DATAPATH+'p2.csv')
 os.system('say complete 2')
-#%%
-p3 = coordinates[10000:,:]
+
+p3 = coordinates[10000:15000,:]
 sinmod.get_data_at_coordinates(p3, filename=DATAPATH+'p3.csv')
 os.system('say complete 3')
-# p4 = coordinates[15000:20000,:]
-# sinmod.get_data_at_coordinates(p4, filename=DATAPATH+'p4.csv')
-# os.system('say complete 4')
-# p5 = coordinates[20000:,:]
-# sinmod.get_data_at_coordinates(p5, filename=DATAPATH+'p5.csv')
-# os.system('say complete 5')
+
+p4 = coordinates[15000:20000,:]
+sinmod.get_data_at_coordinates(p4, filename=DATAPATH+'p4.csv')
+os.system('say complete 4')
+
+p5 = coordinates[20000:,:]
+sinmod.get_data_at_coordinates(p5, filename=DATAPATH+'p5.csv')
+os.system('say complete 5')
 #%%
 #% Step III: save data to scv section by section
 #TODO !!! REMEMBER TO REMOVE data_mu_truth first
@@ -73,15 +75,15 @@ df2 = pd.read_csv(datapath+file)
 
 file = files[2]
 df3 = pd.read_csv(datapath+file)
-#%%
-# file = files[3]
-# df4 = pd.read_csv(datapath+file)
-#
-# file = files[4]
-# df5 = pd.read_csv(datapath+file)
+
+file = files[3]
+df4 = pd.read_csv(datapath+file)
+
+file = files[4]
+df5 = pd.read_csv(datapath+file)
 
 # df = np.vstack((df1, df2, df3, df4, df5))
-df = pd.concat([df1, df2, df3], ignore_index=True, sort=False)
+df = pd.concat([df1, df2, df3, df4, df5], ignore_index=True, sort=False)
 df.to_csv(datapath + "data_mu_truth.csv", index=False)
 os.system('say complete all')
 #%%

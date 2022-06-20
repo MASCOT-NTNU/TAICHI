@@ -7,18 +7,18 @@ Date: 2022-04-23
 import pandas as pd
 from TAICHI.Nidelva3D.Config.Config import *
 
-lats = np.load(FILEPATH + "models/lats_small.npy")
-lons = np.load(FILEPATH + "models/lons_small.npy")
-depth = np.load(FILEPATH + "models/depth_small.npy")
-# lats = np.load(FILEPATH + "models/lats.npy")
-# lons = np.load(FILEPATH + "models/lons.npy")
-# depth = np.load(FILEPATH + "models/depth.npy")
+# lats = np.load(FILEPATH + "models/lats_small.npy")
+# lons = np.load(FILEPATH + "models/lons_small.npy")
+# depth = np.load(FILEPATH + "models/depth_small.npy")
+lats = np.load(FILEPATH + "models/lats.npy")
+lons = np.load(FILEPATH + "models/lons.npy")
+depth = np.load(FILEPATH + "models/depth.npy")
 x, y = latlon2xy(lats, lons, LATITUDE_ORIGIN, LONGITUDE_ORIGIN)
 z = depth
 GMRFGrid = np.vstack((x, y, z)).T
 
 df = pd.DataFrame(GMRFGrid, columns=['x', 'y', 'z'])
-df.to_csv(FILEPATH+"Simulation/Config/GMRFGrid.csv", index=False)
+df.to_csv(FILEPATH+"Config/GMRFGrid.csv", index=False)
 print("GMRF grid is generated successfully!")
 
 
@@ -27,7 +27,7 @@ print("GMRF grid is generated successfully!")
 import plotly.graph_objects as go
 import numpy as np
 
-mu = pd.read_csv(FILEPATH+"Simulation/Config/Data/data_mu_truth.csv")['salinity'].to_numpy()
+mu = pd.read_csv(FILEPATH+"Config/Data/data_mu_truth.csv")['salinity'].to_numpy()
 
 #%%
 # Helix equation

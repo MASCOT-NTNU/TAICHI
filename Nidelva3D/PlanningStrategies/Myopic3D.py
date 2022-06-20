@@ -4,6 +4,7 @@ Author: Yaolin Ge
 Contact: yaolin.ge@ntnu.no
 Date: 2022-06-14
 """
+import matplotlib.pyplot as plt
 
 """
 Usage:
@@ -56,17 +57,15 @@ class MyopicPlanning3D:
 
         self.find_all_neighbours()
         self.smooth_filter_neighbours()
-        self.EIBV = []
         t1 = time.time()
-        for ind_candidate in self.ind_candidates:  # don't need parallel, since candidate number is small, too slow to run mp
-            self.EIBV.append(self.get_eibv_from_gmrf_model(self.hash_waypoint2gmrf[ind_candidate]))
-        if self.EIBV:
+
+        print("updateEIBV: ", self.get_eibv_from_gmrf_model(vectorise(self.ind_candidates)))
+        self.EIBV = self.get_eibv_from_gmrf_model(vectorise(self.ind_candidates))
+        if len(self.EIBV) > 0:
             self.ind_next = self.ind_candidates[np.argmin(self.EIBV)]
         else:
-            if len(self.ind_neighbours) > 1:
-                self.ind_next = self.ind_neighbours[np.random.randint(len(self.ind_neighbours))]
-            else:
-                print("WARN")
+            self.ind_next = self.ind_neighbours[np.random.randint(len(self.ind_neighbours))]
+
         t2 = time.time()
         print("Path planning takes: ", t2 - t1)
         np.savetxt(filename, np.array([self.ind_next]))
@@ -110,39 +109,50 @@ class MyopicPlanning3D:
         # print("Update variance take: ", t2 - t1)
 
         # eibv = get_eibv_from_gpu(self.knowledge.mu, variance_post)
+        N_eibv = variance_post.shape[1]
+        eibv = np.zeros(N_eibv)
         t1 = time.time()
-        eibv = get_eibv_from_fast(self.knowledge.mu, variance_post, self.gmrf_model.threshold)
+        for i in range(N_eibv):
+            eibv[i] = get_eibv_from_fast(self.knowledge.mu, variance_post[:, i], self.gmrf_model.threshold)
         t2 = time.time()
         # print("EIBV calculation takes: ", t2 - t1)
         return eibv
 
     def check_multiprocessing(self):
-        waypoints = pd.read_csv(FILEPATH + "Simulation/Config/WaypointGraph.csv").to_numpy()
+        waypoints = pd.read_csv(FILEPATH + "Config/WaypointGraph.csv").to_numpy()
 
-        neighbour_file = open(FILEPATH + "Simulation/Config/HashNeighbours.p", 'rb')
+        neighbour_file = open(FILEPATH + "Config/HashNeighbours.p", 'rb')
         hash_neighbours = pickle.load(neighbour_file)
         neighbour_file.close()
 
-        waypoint2gmrf_file = open(FILEPATH + "Simulation/Config/HashWaypoint2GMRF.p", 'rb')
+        waypoint2gmrf_file = open(FILEPATH + "Config/HashWaypoint2GMRF.p", 'rb')
         hash_waypoint2gmrf = pickle.load(waypoint2gmrf_file)
         waypoint2gmrf_file.close()
-        myopic3d_planner = MyopicPlanning3D(waypoints=waypoints, hash_neighbours=hash_neighbours,
+        self.myopic3d_planner = MyopicPlanning3D(waypoints=waypoints, hash_neighbours=hash_neighbours,
                                             hash_waypoint2gmrf=hash_waypoint2gmrf)
 
-        gmrf_grid = pd.read_csv(FILEPATH + "Simulation/Config/GMRFGrid.csv").to_numpy()
+        gmrf_grid = pd.read_csv(FILEPATH + "Config/GMRFGrid.csv").to_numpy()
         N_gmrf_grid = len(gmrf_grid)
 
-        gmrf_model = spde(model=2, reduce=True, method=2)
+        self.gmrf_model = spde(model=2, reduce=True, method=2)
 
-        knowledge = Knowledge(gmrf_grid=gmrf_grid, mu=gmrf_model.mu, SigmaDiag=gmrf_model.mvar())
-        myopic3d_planner.update_planner(knowledge=knowledge, gmrf_model=gmrf_model)
+        self.knowledge = Knowledge(gmrf_grid=gmrf_grid, mu=self.gmrf_model.mu, SigmaDiag=self.gmrf_model.mvar())
+        self.myopic3d_planner.update_planner(knowledge=self.knowledge, gmrf_model=self.gmrf_model)
 
-        myopic3d_planner.find_next_waypoint_using_min_eibv(ind_current=500, ind_previous=550, ind_visited=[])
+        self.myopic3d_planner.find_next_waypoint_using_min_eibv(ind_current=0, ind_previous=1, ind_visited=[])
+        print("Finished")
         pass
 
 
 if __name__ == "__main__":
     my = MyopicPlanning3D()
     my.check_multiprocessing()
+
+
+
+
+
+
+
 
 

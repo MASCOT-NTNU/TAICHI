@@ -8,12 +8,12 @@ Date: 2022-03-21
 #% Step I: create wgs coordinates
 
 import pandas as pd
-from MAFIA.Simulation.PreConfig.WaypointGraph.HexagonalWaypoint3D import HexgonalGrid3DGenerator
-from MAFIA.Simulation.Config.Config import *
-from MAFIA.Simulation.PreConfig.WaypointGraph.waypointGraphSetup import DISTANCE_NEIGHBOUR
+from TAICHI.Nidelva3D.PreConfig.WaypointGraph.HexagonalWaypoint3D import HexgonalGrid3DGenerator
+from TAICHI.Nidelva3D.Config.Config import *
+from TAICHI.Nidelva3D.PreConfig.WaypointGraph.waypointGraphSetup import DISTANCE_NEIGHBOUR
 from usr_func import latlon2xy
 
-polygon_border = FILEPATH + "Simulation/PreConfig/polygon_border.csv"
+polygon_border = FILEPATH + "PreConfig/polygon_border.csv"
 polygon_border = pd.read_csv(polygon_border).to_numpy()
 polygon_obstacle = np.empty([10, 2])
 
@@ -35,7 +35,7 @@ origin = np.vstack((lat_origin, lon_origin)).T
 # df = pd.DataFrame(dataset, columns=['x', 'y', 'z', 'lat', 'lon', 'depth', 'lat_origin', 'lon_origin'])
 dataset = xyz
 df = pd.DataFrame(dataset, columns=['x', 'y', 'z'])
-df.to_csv(FILEPATH + "Simulation/Config/WaypointGraph.csv", index=False)
+df.to_csv(FILEPATH + "Config/WaypointGraph.csv", index=False)
 
 
 #%% Step III: check with plot

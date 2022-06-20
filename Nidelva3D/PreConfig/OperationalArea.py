@@ -2,23 +2,23 @@
 This class will get the operational area
 Author: Yaolin Ge
 Contact: yaolin.ge@ntnu.no
-Date: 2022-02-23
+Date: 2022-06-20
 """
 
 import geopandas
 from usr_func import *
-from MAFIA.Simulation.Config.Config import *
+from TAICHI.Nidelva3D.Config.Config import *
 BUFFER_SIZE_BORDER = -100 # [m]
 BUFFER_SIZE_MUNKHOLMEN = 50 # [m]
 
 '''
 Path
 '''
-PATH_SHAPE_FILE = FILEPATH + "GIS/Munkholmen.shp" # remember to copy all the
+PATH_SHAPE_FILE = FILEPATH + "../GIS/Munkholmen.shp" # remember to copy all the
 # other files in as well
-BOUNDARY_SHAPE_FILE = FILEPATH + "GIS/boundary.csv"
+BOUNDARY_SHAPE_FILE = FILEPATH + "../GIS/boundary.csv"
 
-PATH_OPERATION_AREA = FILEPATH + "Simulation/Config/OperationalArea.csv"
+PATH_OPERATION_AREA = FILEPATH + "Config/OperationalArea.csv"
 # PATH_MUNKHOLMEN = FILEPATH + "Munkholmen.csv"
 
 ''' Note!!!
@@ -30,7 +30,7 @@ boundary = np.load(FILEPATH+"models/grid.npy")
 boundary[[2, -1]] = boundary[[-1, 2]]
 
 df = pd.DataFrame(boundary[:, 2:], columns=['lat', 'lon'])
-df.to_csv(FILEPATH+"GIS/boundary.csv", index=False)
+df.to_csv(FILEPATH+"../GIS/boundary.csv", index=False)
 
 
 class OpArea:
@@ -82,8 +82,11 @@ class OpArea:
         plt.plot(self.boundary_shape_file[:, 0], self.boundary_shape_file[:, 1], 'r-')
         plt.show()
 
-        df = pd.DataFrame(self.polygon_operational_area, columns=['lat', 'lon'])
-        df.to_csv(FILEPATH+"Simulation/PreConfig/polygon_border.csv", index=False)
+        x, y = latlon2xy(self.polygon_operational_area[:, 0], self.polygon_operational_area[:, 1],
+                         LATITUDE_ORIGIN, LONGITUDE_ORIGIN)
+        v = np.vstack((x, y)).T
+        df = pd.DataFrame(v, columns=['x', 'y'])
+        df.to_csv(FILEPATH+"PreConfig/polygon_border.csv", index=False)
 
     def get_intersected_polygons(self, polygon1, polygon2):
         return polygon1.intersection(polygon2)
