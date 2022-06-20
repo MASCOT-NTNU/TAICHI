@@ -46,7 +46,8 @@ class LawnMowerPlanning:
         self.ymax = np.amax(yp)
 
     def design_yoyo_lawnmower(self):
-        self.yoyo_lateral_distance = (self.max_depth - self.min_depth) / np.tan(deg2rad(self.max_pitch))
+        self.yoyo_lateral_distance = YOYO_LATERAL_DISTANCE
+        # self.yoyo_lateral_distance = (self.max_depth - self.min_depth) / np.tan(deg2rad(self.max_pitch))
         self.x_yoyo = np.arange(self.xmin, self.xmax, self.yoyo_lateral_distance)
         self.y_yoyo = np.arange(self.ymin + 1, self.ymax, self.yoyo_lateral_distance)
 
