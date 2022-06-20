@@ -6,10 +6,10 @@ Date: 2022-06-14
 """
 
 from usr_func import *
-from TAICHI.Nidelva3D.Config.Config import *
-from TAICHI.Nidelva3D.PlanningStrategies.Myopic3D import MyopicPlanning3D
-from TAICHI.Nidelva3D.Knowledge.Knowledge import Knowledge
-from TAICHI.Nidelva3D.spde import spde
+from Config.Config import *
+from PlanningStrategies.Myopic3D import MyopicPlanning3D
+from Knowledge.Knowledge import Knowledge
+from spde import spde
 import pickle
 import concurrent.futures
 from sklearn.metrics import mean_squared_error

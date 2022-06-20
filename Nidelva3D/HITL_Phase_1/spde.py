@@ -1,7 +1,7 @@
 import numpy as np
 from scipy import sparse
 from sksparse.cholmod import cholesky
-from TAICHI.Nidelva3D.Config.Config import FILEPATH
+from Config.Config import FILEPATH
 DEFAULT_NUM_SAMPLES = 250 # 150 is too much
 
 class spde:

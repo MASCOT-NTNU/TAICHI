@@ -7,10 +7,10 @@ Date: 2022-06-14
 import matplotlib.pyplot as plt
 
 from usr_func import *
-from TAICHI.Nidelva3D.Config.Config import *
-from TAICHI.Nidelva3D.Agent import Agent
-from TAICHI.Nidelva3D.SimulationResultContainer import SimulationResultContainer as SRC
-from TAICHI.Nidelva3D.spde import spde
+from Config.Config import *
+from Agent import Agent
+# from SimulationResultContainer import SimulationResultContainer as SRC
+from spde import spde
 
 
 class TAICHI:

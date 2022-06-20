@@ -12,9 +12,9 @@ next_location = MyopicPlanning3D(Knowledge, Experience).next_waypoint
 """
 
 from usr_func import *
-from TAICHI.Nidelva3D.Config.Config import *
-from TAICHI.Nidelva3D.Knowledge.Knowledge import Knowledge
-from TAICHI.Nidelva3D.spde import spde
+from Config.Config import *
+from Knowledge.Knowledge import Knowledge
+from spde import spde
 import time
 import pickle
 
