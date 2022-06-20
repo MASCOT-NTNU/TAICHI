@@ -6,7 +6,7 @@ Date: 2022-03-16
 """
 #% Step I: load coordinates to extract data from SINMOD
 from DataHandler.SINMOD import SINMOD
-from MAFIA.Simulation.Config.Config import *
+from TAICHI.Nidelva3D.Config.Config import *
 
 lats = np.load(FILEPATH + "models/lats_small.npy").reshape(-1, 1)
 lons = np.load(FILEPATH + "models/lons_small.npy").reshape(-1, 1)
@@ -37,7 +37,7 @@ sinmod.load_sinmod_data(raw_data=True, filenames=filenames_fullpath)
 # sinmod.get_data_at_coordinates(coordinates)
 
 #%%
-DATAPATH = FILEPATH+"Simulation/Config/Data/"
+DATAPATH = FILEPATH+"Config/Data/"
 #% Step II: extract data by section
 p1 = coordinates[0:5000,:]
 sinmod.get_data_at_coordinates(p1, filename=DATAPATH+'p1.csv')
@@ -47,7 +47,7 @@ p2 = coordinates[5000:10000,:]
 sinmod.get_data_at_coordinates(p2, filename=DATAPATH+'p2.csv')
 os.system('say complete 2')
 #%%
-p3 = coordinates[10000:-1,:]
+p3 = coordinates[10000:,:]
 sinmod.get_data_at_coordinates(p3, filename=DATAPATH+'p3.csv')
 os.system('say complete 3')
 # p4 = coordinates[15000:20000,:]
@@ -58,7 +58,8 @@ os.system('say complete 3')
 # os.system('say complete 5')
 #%%
 #% Step III: save data to scv section by section
-datapath = FILEPATH+"Simulation/Config/Data/"
+#TODO !!! REMEMBER TO REMOVE data_mu_truth first
+datapath = FILEPATH + "Config/Data/"
 import os
 import pandas as pd
 
@@ -93,11 +94,12 @@ import plotly.graph_objects as go
 import numpy as np
 
 # Helix equation
+df = df.to_numpy()
 t = np.linspace(0, 20, 100)
-x = df[:, 1]
-y = df[:, 0]
-z = df[:, 2]
-value = df[:, 3]
+x = df[:, 2]
+y = df[:, 1]
+z = df[:, 3]
+value = df[:, 4]
 
 fig = go.Figure(data=[go.Scatter3d(
     x=x,
@@ -117,5 +119,5 @@ fig = go.Figure(data=[go.Scatter3d(
 # tight layout
 fig.update_layout(margin=dict(l=0, r=0, b=0, t=0))
 import plotly
-plotly.offline.plot(fig, filename=FILEPATH+"/fig/data.html", auto_open=True)
+plotly.offline.plot(fig, filename=FIGPATH+"data.html", auto_open=True)
 

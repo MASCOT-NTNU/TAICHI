@@ -83,20 +83,13 @@ class Agent:
         self.rmse = []
         print("S10: Data container is initialised successfully!")
 
-    def set_starting_location(self, starting_location):
+    def prepare_run(self, starting_location=None, ind_legal=None):
         lat, lon, depth = starting_location
         x, y = latlon2xy(lat, lon, LATITUDE_ORIGIN, LONGITUDE_ORIGIN)
-        self.x_start = x
-        self.y_start = y
-        self.z_start = depth
         print("Starting location is set up successfully!")
-
-    def prepare_run(self, ind_start=None, ind_legal=None):
-        if not ind_start:
-            self.ind_current_waypoint = get_ind_at_location3d_xyz(self.waypoints, self.x_start, self.y_start, self.z_start)
-        else:
-            self.ind_current_waypoint = ind_start
+        self.ind_current_waypoint = get_ind_at_location3d_xyz(self.waypoints, x, y, depth)
         print("starting index: ", self.ind_current_waypoint)
+
         self.ind_previous_waypoint = self.ind_current_waypoint
         self.ind_pioneer_waypoint = self.ind_current_waypoint
         self.ind_next_waypoint = self.ind_current_waypoint
@@ -180,7 +173,7 @@ class Agent:
     def monitor_data(self):
         truth = self.simulated_truth
         truth[truth < 0] = 0
-        self.rmse.append(mean_squared_error(self.simulated_truth, self.knowledge.mu[1:], squared=True))
+        self.rmse.append(mean_squared_error(self.simulated_truth, self.knowledge.mu, squared=True))
         self.uncertainty.append(np.sum(self.knowledge.SigmaDiag))
         self.ibv.append(self.myopic3d_planner.get_eibv_from_gmrf_model(self.ind_current_waypoint))
         self.crps.append(np.sum(properscoring.crps_gaussian(self.simulated_truth[self.ind_current_waypoint],
@@ -238,14 +231,14 @@ class Agent:
                                       ind_legal=ind_legal)
 
             filename = figpath + "var/jpg/P_{:03d}.jpg".format(step)
-            fig_var = self.plot_figure(var_plot, filename, vmin=0, vmax=.5, opacity=.4, surface_count=4, cmap="Blues",
+            fig_var = self.plot_figure(var_plot, filename, vmin=0, vmax=.1, opacity=.4, surface_count=4, cmap="Blues",
                                        cbar_title="STD", share=share, other_agent=other_agent, reverse_scale=True,
                                        step=step, ind_legal=ind_legal)
 
-            filename = figpath + "ep/jpg/P_{:03d}.jpg".format(step)
-            fig_ep = self.plot_figure(ep_plot, filename, vmin=0, vmax=1, opacity=.4, surface_count=10, cmap="Brwnyl",
-                                      cbar_title="EP", other_agent=other_agent, share=share, step=step,
-                                      ind_legal=ind_legal)
+            # filename = figpath + "ep/jpg/P_{:03d}.jpg".format(step)
+            # fig_ep = self.plot_figure(ep_plot, filename, vmin=0, vmax=1, opacity=.4, surface_count=10, cmap="Brwnyl",
+            #                           cbar_title="EP", other_agent=other_agent, share=share, step=step,
+            #                           ind_legal=ind_legal)
 
             if step == NUM_STEPS - 1 or share:
                 print("HTML is saved!")
@@ -253,14 +246,16 @@ class Agent:
                 wd = os.path.dirname(filename)
                 checkfolder(wd)
                 plotly.offline.plot(fig_mu, filename=filename, auto_open=False)
+
                 filename = figpath + "var/html/P_{:03d}.html".format(step)
                 wd = os.path.dirname(filename)
                 checkfolder(wd)
                 plotly.offline.plot(fig_var, filename=filename, auto_open=False)
-                filename = figpath + "ep/html/P_{:03d}.html".format(step)
-                wd = os.path.dirname(filename)
-                checkfolder(wd)
-                plotly.offline.plot(fig_ep, filename=filename, auto_open=False)
+
+                # filename = figpath + "ep/html/P_{:03d}.html".format(step)
+                # wd = os.path.dirname(filename)
+                # checkfolder(wd)
+                # plotly.offline.plot(fig_ep, filename=filename, auto_open=False)
 
         self.ind_previous_waypoint = self.ind_current_waypoint
         self.ind_current_waypoint = self.ind_next_waypoint
@@ -439,7 +434,7 @@ class Agent:
                 y=xrot[ind_legal],
                 z=zrot[ind_legal],
                 mode='markers',
-                marker=dict(color='cyan', size=5, opacity=.4),
+                marker=dict(color='black', size=5, opacity=.3),
                 # line=dict(color='black', width=3)
             ))
 
@@ -541,11 +536,10 @@ class Agent:
         ag1_loc = [63.451022, 10.396262, .5]
         ag2_loc = [63.452381, 10.424680, .5]
         self.plot = True
-        self.set_starting_location(ag1_loc)
-        self.prepare_run(ind_legal=np.arange(self.waypoints.shape[0]))
-        for i in range(10):
-            self.sample()
-            self.run(i)
+        self.prepare_run(ag1_loc, ind_legal=np.arange(self.waypoints.shape[0]))
+        # for i in range(10):
+        #     self.sample()
+        #     self.run(i)
         # self.set_starting_location(AGENT1_START_LOCATION)
         # self.prepare_run()
         # self.run()
@@ -557,6 +551,9 @@ if __name__ == "__main__":
     a = Agent()
     # NUM_STEPS = 1
     a.check_agent()
+
+
+
 
 
 

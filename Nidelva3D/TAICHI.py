@@ -4,76 +4,53 @@ Author: Yaolin Ge
 Contact: yaolin.ge@ntnu.no
 Date: 2022-06-14
 """
+import matplotlib.pyplot as plt
 
 from usr_func import *
 from TAICHI.Nidelva3D.Config.Config import *
 from TAICHI.Nidelva3D.Agent import Agent
 from TAICHI.Nidelva3D.SimulationResultContainer import SimulationResultContainer as SRC
+from TAICHI.Nidelva3D.spde import spde
 
 
 class TAICHI:
 
     def __init__(self):
-        self.middle_point = [0, 0]
-        self.radius_skp = LOITER_RADIUS + SAFETY_DISTANCE  # station-keeping radius
         print("Hello, this is TAICHI")
 
-    def setup_agents(self, ag1_loc, ag2_loc, plot=True):
-        self.ag1_name = "A1B"
-        self.ag2_name = "A2B"
-        self.ag1 = Agent(self.ag1_name, plot=plot)
-        self.ag1.set_starting_location(ag1_loc)
-        self.ag1.prepare_run()
-        self.ag2 = Agent(self.ag2_name, plot=plot)
-        self.ag2.set_starting_location(ag2_loc)
-        self.ag2.prepare_run()
+    def get_middle_location(self, loc1=None, loc2=None):
+        middle_point = [(loc1[0] + loc2[0]) / 2, (loc1[1] + loc2[1]) / 2]
+        return middle_point
 
-    def update_compass(self, ag1_loc=None, ag2_loc=None):  # remember that it is different in xy-coord and wgs-coord
-        if ag1_loc is None:
-            ag1_loc = [0, 0]
-        if ag2_loc is None:
-            ag2_loc = [0, 0]
-        self.middle_point = [(ag1_loc[0] + ag2_loc[0]) / 2, (ag1_loc[1] + ag2_loc[1]) / 2]
-        self.ag1_angle_to_middle_point = np.math.atan2(ag1_loc[1] - self.middle_point[1],
-                                                       ag1_loc[0] - self.middle_point[0])
-        self.ag2_angle_to_middle_point = np.math.atan2(ag2_loc[1] - self.middle_point[1],
-                                                       ag2_loc[0] - self.middle_point[0])
+    def get_station_keeping_loc(self, loc=None, middle_loc=None):
+        alpha = np.math.atan2(loc[0] - middle_loc[0],
+                              loc[1] - middle_loc[1])
+        x = middle_loc[0] + RADIUS_STATION_KEEPING * np.sin(alpha)
+        y = middle_loc[1] + RADIUS_STATION_KEEPING * np.cos(alpha)
+        return [x, y]
 
-        self.ag1_skp_loc = [self.middle_point[0] + self.radius_skp * np.cos(self.ag1_angle_to_middle_point),
-                            self.middle_point[1] + self.radius_skp * np.sin(self.ag1_angle_to_middle_point)]
-        self.ag2_skp_loc = [self.middle_point[0] + self.radius_skp * np.cos(self.ag2_angle_to_middle_point),
-                            self.middle_point[1] + self.radius_skp * np.sin(self.ag2_angle_to_middle_point)]
+    def get_legal_indices(self, waypoints=None, loc=None, middle_loc=None):
+        dx = waypoints[:, 0] - middle_loc[0]
+        dy = waypoints[:, 1] - middle_loc[1]
 
-    def update_universe(self, agent1=None, agent2=None):
-        if agent1 is None:
-            agent1 = [0, 0]
-        if agent2 is None:
-            agent2 = [0, 0]
-        self.center_of_universe = [(agent1[0] + agent2[0])/2, (agent1[1] + agent2[1])/2]
-        self.angle1 = np.math.atan2(agent1[0] - self.center_of_universe[0],
-                                    agent1[1] - self.center_of_universe[1])
-        self.angle2 = np.math.atan2(agent2[0] - self.center_of_universe[0],
-                                    agent2[1] - self.center_of_universe[1])
+        vec_waypoint_to_middle = np.vstack((dx, dy)) .T
+        vec_middle_to_loc = vectorise([loc[0] - middle_loc[0], loc[1] - middle_loc[1]])
+        vec_prod = vec_waypoint_to_middle @ vec_middle_to_loc
 
-    def repartition(self):
-        self.waypoints = self.ag1.waypoints
-        self.update_compass(self.waypoints[self.ag1.ind_current_waypoint],
-                            self.waypoints[self.ag2.ind_current_waypoint])
-
-        self.dx = self.waypoints[:, 0] - self.middle_point[0]
-        self.dy = self.waypoints[:, 1] - self.middle_point[1]
-
-        vec_middle_to_ag1 = vectorise([self.waypoints[self.ag1.ind_current_waypoint, 0] - self.middle_point[0],
-                                       self.waypoints[self.ag1.ind_current_waypoint, 1] - self.middle_point[1]])
-        self.vec_prod = np.vstack((self.dx, self.dy)).T @ vec_middle_to_ag1
-
-        self.ind_legal = np.arange(self.waypoints.shape[0])
-        self.same_side = (self.vec_prod > 0).flatten()
-        self.ind_ag1 = self.ind_legal[self.same_side]  # get indices for the same side as agent 1
-        self.ind_ag2 = self.ind_legal[~self.same_side]  # get indices for the opposite side as agent 1
-        return self.ind_ag1, self.ind_ag2
+        same_side = (vec_prod > 0).flatten()
+        ind_legal = np.arange(waypoints.shape[0])[same_side]  # get indices for the same side as agent 1
+        return ind_legal
 
     def run_twin_agents(self, ag1, ag2):
+        waypoints = ag1.waypoints
+
+        ag1_loc = waypoints[ag1.ind_current_waypoint]  # use next waypoint since system requires
+        ag2_loc = waypoints[ag2.ind_current_waypoint]  # pre-advanced calculation
+
+        middle_loc = self.get_middle_location(ag1_loc, ag2_loc)
+        ag1_ind_legal = self.get_legal_indices(waypoints, ag1_loc, middle_loc)
+        ag2_ind_legal = self.get_legal_indices(waypoints, ag2_loc, middle_loc)
+
         for i in range(NUM_STEPS):
             print("Step: ", i)
             share = False
@@ -83,15 +60,24 @@ class TAICHI:
             ag1.sample()                                     # step 1
             ag2.sample()
 
-            if (i + 1) % DATA_SHARING_GAP == 0:
+            if (i + 2) % DATA_SHARING_GAP == 0:
                 pre_share = True
+                ag1_loc = waypoints[ag1.ind_next_waypoint]  # use next waypoint since system requires
+                ag2_loc = waypoints[ag2.ind_next_waypoint]  # pre-advanced calculation
+
+                middle_loc = self.get_middle_location(ag1_loc, ag2_loc)
+                ag1_sk_loc = self.get_station_keeping_loc(ag1_loc, middle_loc)
+                ag2_sk_loc = self.get_station_keeping_loc(ag2_loc, middle_loc)
+
+                # update agent ind_pioneer waypoint to taichi position
+                ag1.update_pioneer_waypoint(waypoint_location=ag1_sk_loc)
+                ag2.update_pioneer_waypoint(waypoint_location=ag2_sk_loc)
+
+                ag1_ind_legal = self.get_legal_indices(waypoints, ag1_sk_loc, middle_loc)
+                ag2_ind_legal = self.get_legal_indices(waypoints, ag2_sk_loc, middle_loc)
+
             elif i > 0 and i % DATA_SHARING_GAP == 0:
                 share = True
-
-                self.update_compass(self.waypoints[self.ag1.ind_current_waypoint, :],
-                                    self.waypoints[self.ag2.ind_current_waypoint, :])
-                self.repartition()  # step 0, repartition
-
                 # save data from agent1, agent2
                 ag1.save_agent_data()                        # step 2
                 ag2.save_agent_data()
@@ -99,8 +85,8 @@ class TAICHI:
                 ag1.load_data_from_other_agent(ag2)
                 ag2.load_data_from_other_agent(ag1)
 
-            ag1.run(step=i, pre_share=pre_share, share=share, other_agent=ag2, ind_legal=self.ind_ag1)  # step 4
-            ag2.run(step=i, pre_share=pre_share, share=share, other_agent=ag1, ind_legal=self.ind_ag2)  # step 4
+            ag1.run(step=i, pre_share=pre_share, share=share, other_agent=ag2, ind_legal=ag1_ind_legal)  # step 4
+            ag2.run(step=i, pre_share=pre_share, share=share, other_agent=ag1, ind_legal=ag2_ind_legal)  # step 4
 
             if share:
                 ag1.clear_agent_data()
@@ -109,96 +95,96 @@ class TAICHI:
             t2 = time.time()
             print("One step running takes: ", t2 - t1)
 
-    # def run_multiple_agents(self, ags):
-    #
-    #     for i in range(NUM_STEPS):
-    #         print("Step: ", i)
-    #         share = False
-    #         pre_share = False
-    #
-    #         t1 = time.time()
-    #
-    #         for ag in ags:
-    #             ag.sample()
-    #         # self.ag1.sample()
-    #         # self.ag2.sample()
-    #
-    #         if (i + 2) % DATA_SHARING_GAP == 0:
-    #             # print("only pre share")
-    #             pre_share = True
-    #
-    #             # ag1_loc = self.ag1.waypoints[self.ag1.ind_next_waypoint]  # use next waypoint since system requires
-    #             # ag2_loc = self.ag2.waypoints[self.ag2.ind_next_waypoint]  # pre-advanced calculation
-    #             # self.update_universe(ag1_loc, ag2_loc)
-    #             # self.get_taichi()
-    #
-    #             # update agent ind_pioneer waypoint to taichi position
-    #             # self.ag1.update_pioneer_waypoint(waypoint_location=self.agent1_new_location)
-    #             # self.ag2.update_pioneer_waypoint(waypoint_location=self.agent2_new_location)
-    #
-    #         elif i > 0 and i % DATA_SHARING_GAP == 0:
-    #             # print("now share")
-    #             share = True
-    #
-    #             # save data from agent1, agent2
-    #             for ag in ags:
-    #                 ag.save_agent_data()
-    #             # self.ag1.save_agent_data()
-    #             # self.ag2.save_agent_data()
-    #
-    #             # load data from agent1, agent2
-    #             for j in range(len(ags)):
-    #                 ags_rest = ags[:j] + ags[j+1:]
-    #                 ags[j].load_data_from_agents(ags_rest)
-    #
-    #             # self.ag1.load_data_from_agents(self.ag2_name)
-    #             # self.ag2.load_data_from_agents(self.ag1_name)
-    #
-    #
-    #         for j in range(len(ags)):
-    #             other_agents = ags[:j] + ags[j+1:]
-    #             ags[j].run(step=i, pre_share=pre_share, share=share, other_agents=other_agents)
-    #         # self.ag1.run(step=i, pre_share=pre_share, share=share, another_agent=self.ag2)
-    #         # self.ag2.run(step=i, pre_share=pre_share, share=share, another_agent=self.ag1)
-    #
-    #         if share:
-    #             # clear data
-    #             for ag in ags:
-    #                 ag.clear_agent_data()
-    #             # self.ag1.clear_agent_data()
-    #             # self.ag2.clear_agent_data()
-    #
-    #         t2 = time.time()
-    #         print("Time consumed: ", t2 - t1)
-
-    def run_1_agent(self, ag):
-        for i in range(NUM_STEPS):
-            ag.sample()
-            ag.run(step=i)
-
     def run_simulator(self, replicates=1):
         self.result_taichi = SRC("TAICHI")
         self.result_monk = SRC("Monk")
-        self.result_three_body = SRC("TRHEE_BODY")
+        # self.result_three_body = SRC("TRHEE_BODY")
+        ag1_loc = [63.451022, 10.396262, .5]
+        ag2_loc = [63.452381, 10.424680, .5]
+        ag3_loc = [63.451022, 10.396262, .5]
+
+        waypoints = self.load_waypoints()
 
         for i in range(replicates):
             print("replicate: ", i)
+            t_start = time.time()
+
             blockPrint()
-            t1 = time.time()
 
-            self.ag1_name = "S1"
-            self.ag2_name = "S2"
-            self.ag1 = Agent(self.ag1_name, plot=False)
-            self.ag1.prepare_run(np.random.randint(len(self.ag1.waypoints)))
-            self.ag2 = Agent(self.ag2_name, plot=False)
-            self.ag2.prepare_run(np.random.randint(len(self.ag2.waypoints)))
-            self.run_multiple_agents([self.ag1, self.ag2])
-            self.result_taichi.append(self.ag1)
+            self.generate_simulated_truth()
 
-            self.ag3 = Agent("S3", plot=False)
-            self.ag3.prepare_run(np.random.randint(len(self.ag3.waypoints)))
-            self.run_1_agent(self.ag3)
-            self.result_monk.append(self.ag3)
+            ag1 = Agent("TAICHI_YIN", plot=False)
+            ag2 = Agent("TAICHI_YANG", plot=False)
+            ag3 = Agent("MONK", plot=False)
+            ag1.prepare_run(ag1_loc)
+            ag2.prepare_run(ag2_loc)
+            ag3.prepare_run(ag3_loc)
+
+            ag1_loc = waypoints[ag1.ind_current_waypoint]  # use next waypoint since system requires
+            ag2_loc = waypoints[ag2.ind_current_waypoint]  # pre-advanced calculation
+            ag3_loc = waypoints[ag3.ind_current_waypoint]  # pre-advanced calculation
+
+            middle_loc = self.get_middle_location(ag1_loc, ag2_loc)
+            ag1_ind_legal = self.get_legal_indices(waypoints, ag1_loc, middle_loc)
+            ag2_ind_legal = self.get_legal_indices(waypoints, ag2_loc, middle_loc)
+
+            enablePrint()
+
+            for i in range(NUM_STEPS):
+
+                print("Step: ", i)
+
+                blockPrint()
+
+                share = False
+                pre_share = False
+
+                t1 = time.time()
+                ag1.sample()  # step 1
+                ag2.sample()
+                ag3.sample()
+
+                if (i + 2) % DATA_SHARING_GAP == 0:
+                    pre_share = True
+                    ag1_loc = waypoints[ag1.ind_next_waypoint]  # use next waypoint since system requires
+                    ag2_loc = waypoints[ag2.ind_next_waypoint]  # pre-advanced calculation
+
+                    middle_loc = self.get_middle_location(ag1_loc, ag2_loc)
+                    ag1_sk_loc = self.get_station_keeping_loc(ag1_loc, middle_loc)
+                    ag2_sk_loc = self.get_station_keeping_loc(ag2_loc, middle_loc)
+
+                    # update agent ind_pioneer waypoint to taichi position
+                    ag1.update_pioneer_waypoint(waypoint_location=ag1_sk_loc)
+                    ag2.update_pioneer_waypoint(waypoint_location=ag2_sk_loc)
+
+                    ag1_ind_legal = self.get_legal_indices(waypoints, ag1_sk_loc, middle_loc)
+                    ag2_ind_legal = self.get_legal_indices(waypoints, ag2_sk_loc, middle_loc)
+
+                elif i > 0 and i % DATA_SHARING_GAP == 0:
+                    share = True
+                    # save data from agent1, agent2
+                    ag1.save_agent_data()  # step 2
+                    ag2.save_agent_data()
+                    # load data from agent1, agent2
+                    ag1.load_data_from_other_agent(ag2)
+                    ag2.load_data_from_other_agent(ag1)
+
+                ag1.run(step=i, pre_share=pre_share, share=share, other_agent=ag2, ind_legal=ag1_ind_legal)  # step 4
+                ag2.run(step=i, pre_share=pre_share, share=share, other_agent=ag1, ind_legal=ag2_ind_legal)  # step 4
+                ag3.run(step=i)
+
+                if share:
+                    ag1.clear_agent_data()
+                    ag2.clear_agent_data()
+
+                t2 = time.time()
+
+                enablePrint()
+
+                print("One step running takes: ", t2 - t1)
+
+            self.result_taichi.append(ag1)
+            self.result_monk.append(ag3)
 
             # self.ag4 = Agent("TB1", plot=False)
             # self.ag4.prepare_run(np.random.randint(len(self.ag4.waypoints)))
@@ -208,31 +194,113 @@ class TAICHI:
             # self.ag6.prepare_run(np.random.randint(len(self.ag6.waypoints)))
             # self.run_multiple_agents([self.ag4, self.ag5, self.ag6])
             # self.result_three_body.append(self.ag4)
+            t_end = time.time()
+            print("One replicate takes: ", t_end - t_start)
+        self.save_simulation_result()
 
-            enablePrint()
-            t2 = time.time()
-            print("Time consumed: ", t2 - t1)
+    def save_simulation_result(self):
+        df = pd.DataFrame(self.result_taichi.rmse)
+        df.to_csv(FILEPATH + "SimulationResult/TAICHI_RMSE.csv", index=False)
 
+        df = pd.DataFrame(self.result_taichi.ibv)
+        df.to_csv(FILEPATH + "SimulationResult/TAICHI_IBV.csv", index=False)
+
+        df = pd.DataFrame(self.result_taichi.uncertainty)
+        df.to_csv(FILEPATH + "SimulationResult/TAICHI_UNCERTAINTY.csv", index=False)
+
+        df = pd.DataFrame(self.result_taichi.crps)
+        df.to_csv(FILEPATH + "SimulationResult/TAICHI_CRPS.csv", index=False)
+
+        df = pd.DataFrame(self.result_monk.rmse)
+        df.to_csv(FILEPATH + "SimulationResult/MONK_RMSE.csv", index=False)
+
+        df = pd.DataFrame(self.result_monk.ibv)
+        df.to_csv(FILEPATH + "SimulationResult/MONK_IBV.csv", index=False)
+
+        df = pd.DataFrame(self.result_monk.uncertainty)
+        df.to_csv(FILEPATH + "SimulationResult/MONK_UNCERTAINTY.csv", index=False)
+
+        df = pd.DataFrame(self.result_monk.crps)
+        df.to_csv(FILEPATH + "SimulationResult/MONK_CRPS.csv", index=False)
+        print("Simulation result is saved successfully!")
+
+    def load_waypoints(self):
+        waypoints = pd.read_csv(FILEPATH + "Config/WaypointGraph.csv").to_numpy()
+        print("Waypoint is loaded successfully!")
+        return waypoints
+
+    def generate_simulated_truth(self):
+        self.gmrf_model = spde(model=2, reduce=True, method=2)
+        path_mu_truth = FILEPATH + "Config/Data/data_mu.csv"
+        weight = np.random.uniform(.5, 1)
+        self.simulated_truth = (weight * pd.read_csv(path_mu_truth).to_numpy()[:, -1].reshape(-1, 1) +
+                                (1 - weight) * vectorise(self.gmrf_model.mu))  #TODO: JUST for simulation, to remove!!!
+        df = pd.DataFrame(self.simulated_truth)
+        df.to_csv(FILEPATH + "Config/Data/data_mu_truth.csv", index=False)
+        print("truth is generated successfully!")
 
     def check_taichi(self):
         ag1_loc = [63.451022, 10.396262, .5]
         ag2_loc = [63.452381, 10.424680, .5]
-
-        self.setup_agents(ag1_loc, ag2_loc)
-        x1, y1 = latlon2xy(ag1_loc[0], ag1_loc[1], LATITUDE_ORIGIN, LONGITUDE_ORIGIN)
-        x2, y2 = latlon2xy(ag2_loc[0], ag2_loc[1], LATITUDE_ORIGIN, LONGITUDE_ORIGIN)
-
-        self.update_compass([x1, y1, ag1_loc[-1]], [x2, y2, ag2_loc[-1]])
-        self.repartition()
+        self.ag1 = Agent("T1", plot=True)
+        self.ag2 = Agent("T2", plot=True)
+        self.ag1.prepare_run(ag1_loc)
+        self.ag2.prepare_run(ag2_loc)
         self.run_twin_agents(self.ag1, self.ag2)
-        pass
+
+    def check_legal_indices(self):
+        ag1_loc = [63.461022, 10.406262, .5]
+        ag2_loc = [63.442381, 10.414680, .5]
+
+        self.ag1 = Agent("T1")
+        self.ag2 = Agent("T2")
+        self.ag1.prepare_run(ag1_loc)
+        self.ag2.prepare_run(ag2_loc)
+
+        waypoints = self.ag1.waypoints
+        self.l1 = self.l2latlon(ag1_loc)
+        self.l2 = self.l2latlon(ag2_loc)
+
+        middle_loc = self.get_middle_location(self.l1, self.l2)
+        self.il_l1 = self.get_legal_indices(waypoints, self.l1, middle_loc)
+        self.il_l2 = self.get_legal_indices(waypoints, self.l2, middle_loc)
+
+        self.l1_sk = self.get_station_keeping_loc(self.l1, middle_loc)
+        self.l2_sk = self.get_station_keeping_loc(self.l2, middle_loc)
+
+        plt.plot(waypoints[:, 1], waypoints[:, 0], 'k.', alpha=.01)
+        plt.plot(self.l1[1], self.l1[0], 'r.', markersize=20, alpha=.5, label="OldA1")
+        plt.plot(self.l2[1], self.l2[0], 'b.', markersize=20, alpha=.5, label="OldA2")
+
+        plt.plot(self.l1_sk[1], self.l1_sk[0], 'r.', markersize=20, label="A1")
+        plt.plot(self.l2_sk[1], self.l2_sk[0], 'b.', markersize=20, label="A2")
+
+        plt.plot(waypoints[self.il_l1, 1], waypoints[self.il_l1, 0], "r*", alpha=.3)
+        plt.plot(waypoints[self.il_l2, 1], waypoints[self.il_l2, 0], "b*", alpha=.3)
+
+        plt.plot(middle_loc[1], middle_loc[0], 'c*', markersize=20)
+        plt.show()
+
+    def l2latlon(self, loc):
+        lat, lon, depth = loc
+        x, y = latlon2xy(lat, lon, LATITUDE_ORIGIN, LONGITUDE_ORIGIN)
+        return [x, y, depth]
+
+    def l2xy(self, loc):
+        x, y, z = loc
+        lat, lon = xy2latlon(x, y, LATITUDE_ORIGIN, LONGITUDE_ORIGIN)
+        return [lat, lon, z]
 
 
 if __name__ == "__main__":
     tc = TAICHI()
-    tc.check_taichi()
+    tc.run_simulator(50)
+    # tc.check_taichi()
+    # tc.check_legal_indices()
+    # tc.check_taichi()
     # tc.run()
     # tc.run_simulator(50)
+
 
 
 
