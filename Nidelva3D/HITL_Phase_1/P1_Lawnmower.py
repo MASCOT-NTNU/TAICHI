@@ -69,14 +69,14 @@ class Lawnmower:
                     t_start = time.time()
                     self.popup = True
 
-                    ind_assimilated, salinity_assimilated = self.assimilate_data(np.array(self.auv_data))
-                    print("ind_assimilated: ", ind_assimilated)
-                    print("salinity assimilated: ", salinity_assimilated)
-                    
-                    t1 = time.time()
-                    self.gmrf_model.update(rel=salinity_assimilated, ks=ind_assimilated)
-                    t2 = time.time()
-                    print("Update consumed: ", t2 - t1)
+                    # ind_assimilated, salinity_assimilated = self.assimilate_data(np.array(self.auv_data))
+                    # print("ind_assimilated: ", ind_assimilated)
+                    # print("salinity assimilated: ", salinity_assimilated)
+                    #
+                    # t1 = time.time()
+                    # self.gmrf_model.update(rel=salinity_assimilated, ks=ind_assimilated)
+                    # t2 = time.time()
+                    # print("Update consumed: ", t2 - t1)
                     self.data_agent = np.append(self.data_agent, np.hstack((vectorise(ind_assimilated),
                                                                             vectorise(salinity_assimilated))))
 
