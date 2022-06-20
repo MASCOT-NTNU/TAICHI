@@ -37,7 +37,7 @@ class Lawnmower:
         print("S2: AUV is setup successfully!")
 
     def get_lawnmower(self):
-        self.lawnmower = pd.read_csv(FILEPATH + "Config/lawnmower.csv")
+        self.lawnmower = pd.read_csv(FILEPATH + "Config/lawnmower.csv").to_numpy()
         print("S3: Transect line is setup successfully!")
 
     def run(self):
@@ -46,7 +46,7 @@ class Lawnmower:
         self.popup = False
 
         self.counter_waypoint = 0
-        lat_waypoint, lon_waypoint, depth_waypoint = self.lawnmower[self.counter_waypoint]
+        lat_waypoint, lon_waypoint, depth_waypoint = self.lawnmower[self.counter_waypoint, :]
         self.auv.auv_handler.setWaypoint(deg2rad(lat_waypoint), deg2rad(lon_waypoint),
                                          depth_waypoint, speed=self.auv.speed)
 
@@ -76,7 +76,7 @@ class Lawnmower:
 
                     self.counter_waypoint += 1
                     if self.counter_waypoint < len(self.lawnmower):
-                        lat_waypoint, lon_waypoint, depth_waypoint = self.lawnmower[self.counter_waypoint]
+                        lat_waypoint, lon_waypoint, depth_waypoint = self.lawnmower[self.counter_waypoint, :]
                         self.auv.auv_handler.setWaypoint(deg2rad(lat_waypoint), deg2rad(lon_waypoint),
                                                          depth_waypoint, speed=self.auv.speed)
                     ind_assimilated, salinity_assimilated = self.assimilate_data(np.array(self.auv_data))
@@ -164,5 +164,9 @@ class Lawnmower:
 if __name__ == "__main__":
     s = Lawnmower()
     s.run()
+
+#%%
+from usr_func import *
+lawnmower = pd.read_csv(FILEPATH + "Config/lawnmower.csv")
 
 
