@@ -295,14 +295,13 @@ class spde:
 
 
 
-t = spde()
-#%%
-import time
-print("start")
-t1 = time.time()
-t.update(rel = np.random.uniform(25, 30, 10000), ks=np.random.randint(0, len(t.mu), 10000))
-
-t2 = time.time()
-print("time consunmed; ", t2 - t1)
+if __name__ == "__main__":
+    t = spde()
+    import time
+    print("start")
+    t1 = time.time()
+    t.update(rel=np.random.uniform(25, 30, 10000), ks=np.random.randint(0, len(t.mu), 10000))
+    t2 = time.time()
+    print("time consunmed; ", t2 - t1)
 
 
