@@ -43,5 +43,7 @@ RADIUS_STATION_KEEPING = LOITER_RADIUS + SAFETY_DISTANCE  # station-keeping radi
 DATA_SHARING_GAP = 7
 # ==
 
-
+# == Lawnmower
+YOYO_LATERAL_DISTANCE = 120
+# ==
 

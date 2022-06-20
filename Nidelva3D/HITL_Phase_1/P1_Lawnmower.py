@@ -74,6 +74,8 @@ class Lawnmower:
                     self.gmrf_model.update(rel=salinity_assimilated, ks=ind_assimilated)
                     t2 = time.time()
                     print("Update consumed: ", t2 - t1)
+                    self.data_agent = np.append(self.data_agent, np.hstack((vectorise(ind_assimilated),
+                                                                            vectorise(salinity_assimilated))))
 
                 # if self.auv.auv_handler.getState() == "waiting":
                 if (self.auv.auv_handler.getState() == "waiting" and
@@ -91,50 +93,14 @@ class Lawnmower:
                                                iridium_dest=self.auv.iridium_destination)  # self.ada_state = "surfacing"
                         self.auv.auv_handler.setWaypoint(deg2rad(lat_waypoint), deg2rad(lon_waypoint), 0,
                                                          speed=self.auv.speed)
+                        df = pd.DataFrame(self.data_agent, columns=['ind', 'salinity'])
+                        df.to_csv(FILEPATH + "Lawnmower_data.csv", index=False)
                         print("Mission complete! Congrates!")
                         self.auv.send_SMS_mission_complete()
                         rospy.signal_shutdown("Mission completed!!!")
                 self.auv.last_state = self.auv.auv_handler.getState()
                 self.auv.auv_handler.spin()
             self.auv.rate.sleep()
-    #
-    # def run(self):
-    #     self.auv_data = []
-    #     self.popup = False
-    #
-    #     self.counter_waypoint = 0
-    #     lat_waypoint, lon_waypoint, depth_waypoint = self.lawnmower[self.counter_waypoint, :]
-    #     self.auv.auv_handler.setWaypoint(deg2rad(lat_waypoint), deg2rad(lon_waypoint),
-    #                                      depth_waypoint, speed=self.auv.speed)
-    #     t_start = time.time()
-    #     while not rospy.is_shutdown():
-    #         if self.auv.init:
-    #             print("Waypoint step: ", self.counter_waypoint+1, " of ", len(self.lawnmower))
-    #             t_end = time.time()
-    #             self.auv_data.append([self.auv.vehicle_pos[0],
-    #                                   self.auv.vehicle_pos[1],
-    #                                   self.auv.vehicle_pos[2],
-    #                                   self.auv.currentSalinity])
-    #             self.auv.current_state = self.auv.auv_handler.getState()
-    #             if ((t_end - t_start) / self.auv.max_submerged_time >= 1 and
-    #                     (t_end - t_start) % self.auv.max_submerged_time >= 0):
-    #                 print("Longer than 10 mins, need a long break")
-    #                 self.auv.auv_handler.PopUp(sms=True, iridium=True, popup_duration=self.auv.min_popup_time,
-    #                                        phone_number=self.auv.phone_number,
-    #                                        iridium_dest=self.auv.iridium_destination)  # self.ada_state = "surfacing"
-    #                 t_start = time.time()
-    #
-    #                 ind_assimilated, salinity_assimilated = self.assimilate_data(np.array(self.auv_data))
-    #                 self.data_agent = np.append(self.data_agent, np.hstack((vectorise(ind_assimilated),
-    #                                                                         vectorise(salinity_assimilated))), axis=0)
-    #                 t1 = time.time()
-    #                 self.gmrf_model.update(rel=salinity_assimilated, ks=ind_assimilated)
-    #                 t2 = time.time()
-    #                 print("Update consumed: ", t2 - t1)
-    #
-    #             self.auv.last_state = self.auv.auv_handler.getState()
-    #             self.auv.auv_handler.spin()
-    #         self.auv.rate.sleep()
 
     def assimilate_data(self, dataset):
         print("dataset before filtering: ", dataset[-10:, :])
@@ -161,13 +127,15 @@ class Lawnmower:
         print("Reset auv_data: ", self.auv_data)
         return ind_assimilated, vectorise(salinity_assimilated)
 
+    def check(self):
+        from usr_func import *
+        lawnmower = pd.read_csv(FILEPATH + "Config/lawnmower.csv").to_numpy()
+        plt.plot(lawnmower[:, 1], lawnmower[:, 0], 'k.-')
+        plt.show()
+
 
 if __name__ == "__main__":
     s = Lawnmower()
     s.run()
-
-#%%
-from usr_func import *
-lawnmower = pd.read_csv(FILEPATH + "Config/lawnmower.csv")
 
 
