@@ -70,6 +70,9 @@ class Lawnmower:
                     self.popup = True
 
                     ind_assimilated, salinity_assimilated = self.assimilate_data(np.array(self.auv_data))
+                    print("ind_assimilated: ", ind_assimilated)
+                    print("salinity assimilated: ", salinity_assimilated)
+                    
                     t1 = time.time()
                     self.gmrf_model.update(rel=salinity_assimilated, ks=ind_assimilated)
                     t2 = time.time()
