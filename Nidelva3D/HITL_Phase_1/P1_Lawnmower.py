@@ -128,7 +128,7 @@ class Lawnmower:
         return ind_assimilated, vectorise(salinity_assimilated)
 
     def check(self):
-        from usr_func import *
+        # from usr_func import *
         lawnmower = pd.read_csv(FILEPATH + "Config/lawnmower.csv").to_numpy()
         plt.plot(lawnmower[:, 1], lawnmower[:, 0], 'k.-')
         plt.show()
