@@ -16,3 +16,15 @@ SPEED = 1.5 # speed of AUV
 # == Adaframe
 WAYPOINT_UPDATE_TIME = 5.
 # ==
+
+# == YoYo
+YOYO_LATERAL_DISTANCE = 60.
+YOYO_VERTICAL_DISTANCE = 5.
+# ==
+
+# == Depth
+DEPTH_TOP = .5
+DEPTH_BOTTOM = 5.5
+# ==
+
+

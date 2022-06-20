@@ -111,6 +111,8 @@ class LawnMowerPlanning:
                                      LATITUDE_ORIGIN, LONGITUDE_ORIGIN)
                 self.lawnmower_trajectory_3d.append([lat, lon, self.min_depth])
             else:
+                lat, lon = xy2latlon(self.lawnmower_trajectory[i][0], self.lawnmower_trajectory[i][1],
+                                     LATITUDE_ORIGIN, LONGITUDE_ORIGIN)
                 self.lawnmower_trajectory_3d.append([lat, lon, self.max_depth])
 
         df = pd.DataFrame(self.lawnmower_trajectory_3d, columns=['lat', 'lon', 'depth'])
