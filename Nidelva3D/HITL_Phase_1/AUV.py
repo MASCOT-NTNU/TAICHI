@@ -42,8 +42,8 @@ class AUV:
         self.currentSalinity = msg.value.data
 
     def EstimatedStateCB(self, msg):
-        offset_north = msg.lat_auv.data - deg2rad(LATITUDE_ORIGIN)
-        offset_east = msg.lon_auv.data - deg2rad(LONGITUDE_ORIGIN)
+        offset_north = msg.lat.data - deg2rad(LATITUDE_ORIGIN)
+        offset_east = msg.lon.data - deg2rad(LONGITUDE_ORIGIN)
         N = offset_north * CIRCUMFERENCE / (2.0 * np.pi)
         E = offset_east * CIRCUMFERENCE * np.cos(deg2rad(LATITUDE_ORIGIN)) / (2.0 * np.pi)
         D = msg.depth_auv.data
