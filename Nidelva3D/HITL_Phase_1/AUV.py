@@ -46,7 +46,7 @@ class AUV:
         offset_east = msg.lon.data - deg2rad(LONGITUDE_ORIGIN)
         N = offset_north * CIRCUMFERENCE / (2.0 * np.pi)
         E = offset_east * CIRCUMFERENCE * np.cos(deg2rad(LATITUDE_ORIGIN)) / (2.0 * np.pi)
-        D = msg.depth_auv.data
+        D = msg.depth.data
         self.vehicle_pos = [N, E, D]
 
     def send_SMS_mission_complete(self):
