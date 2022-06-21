@@ -29,7 +29,7 @@ class Lawnmower:
         print("S0: GMRF grid is loaded successfully!")
 
     def load_gmrf_model(self):
-        self.gmrf_model = spde(model=2, reduce=True, method=2)
+        self.gmrf_model = spde(model=2, method=2)
         print("S1: GMRF model is loaded successfully!")
 
     def setup_AUV(self):
@@ -78,7 +78,7 @@ class Lawnmower:
                     # t2 = time.time()
                     # print("Update consumed: ", t2 - t1)
                     self.data_agent = np.append(self.data_agent, np.hstack((vectorise(ind_assimilated),
-                                                                            vectorise(salinity_assimilated))))
+                                                                            vectorise(salinity_assimilated))), axis=0)
 
                 # if self.auv.auv_handler.getState() == "waiting":
                 if (self.auv.auv_handler.getState() == "waiting" and

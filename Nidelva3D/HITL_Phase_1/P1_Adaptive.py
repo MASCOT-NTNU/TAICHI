@@ -194,7 +194,8 @@ class MAFIA2Launcher:
                             print("Update consumed: ", t2 - t1)
 
                             self.data_agent = np.append(self.data_agent, np.hstack((vectorise(ind_assimilated),
-                                                                                    vectorise(salinity_assimilated))))
+                                                                                    vectorise(salinity_assimilated))),
+                                                        axis=0)
 
                             if self.counter_waypoint_prerun == len(self.trajectory_transect):
                                 self.prerun_mode = False
@@ -236,7 +237,8 @@ class MAFIA2Launcher:
                             t2 = time.time()
                             print("Update consumed: ", t2 - t1)
                             self.data_agent = np.append(self.data_agent, np.hstack((vectorise(ind_assimilated),
-                                                                                    vectorise(salinity_assimilated))))
+                                                                                    vectorise(salinity_assimilated))),
+                                                        axis=0)
 
                             self.knowledge.mu = self.gmrf_model.mu
                             self.knowledge.SigmaDiag = self.gmrf_model.mvar()
