@@ -309,11 +309,11 @@ class AgentAdaptive:
         :return:
         """
         # For indices
-        ind_filepath = FILEPATH + "AgentsData/AgentAdaptive/ind.p"
+        ind_filepath = FILEPATH + "AgentsData/Adaptive/ind.p"
         self.pickle_dump_dict(ind_filepath, iter_no, ind)
         print("New indices are saved successfully!")
 
-        sal_filepath = FILEPATH + "AgentsData/AgentAdaptive/salinity.p"
+        sal_filepath = FILEPATH + "AgentsData/Adaptive/salinity.p"
         self.pickle_dump_dict(sal_filepath, iter_no, salinity)
         print("New salinity values are saved successfully!")
         self.counter_waypoint_data_assimilation += 1

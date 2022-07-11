@@ -86,7 +86,7 @@ class AgentNonAdaptive:
                         self.auv.auv_handler.setWaypoint(deg2rad(lat_waypoint), deg2rad(lon_waypoint), 0,
                                                          speed=self.auv.speed)
                         df = pd.DataFrame(self.auv_data, columns=['x', 'y', 'z', 'salinity'])
-                        df.to_csv(FILEPATH + "AgentsData/AgentNonAdaptive/auv_data.csv", index=False)
+                        df.to_csv(FILEPATH + "AgentsData/NonAdaptive/auv_data.csv", index=False)
                         print("Mission complete! Congrates!")
                         self.auv.send_SMS_mission_complete()
                         rospy.signal_shutdown("Mission completed!!!")
