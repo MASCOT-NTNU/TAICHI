@@ -1,7 +1,7 @@
 import numpy as np
 from scipy import sparse
 from sksparse.cholmod import cholesky
-from Config.Config import FILEPATH
+from TAICHI.Nidelva3D.Config.Config import FILEPATH
 DEFAULT_NUM_SAMPLES = 250 # 150 is too much
 
 class spde:
@@ -174,8 +174,8 @@ class spde:
                 self.Q_fac.cholesky_inplace(self.Q)
                 self.mu2 = self.mu2 - self.Q_fac.solve_A(S.transpose().tocsc())@(S@self.mu2 - rel)*1/self.sigma[0]**2
                 self.mu = self.mu2[:self.n,0] + self.mu2[self.n,0] + self.mu3*self.mu2[self.n+1,0]
-                self.beta0 = self.mu2[self.n]
-                self.beta1 = self.mu2[self.n+1]
+                self.beta0 = self.mu2[self.n,0]
+                self.beta1 = self.mu2[self.n+1,0]
             else:
                 mu = self.mu.reshape(-1,1)
                 S = self.Stot[ks,:]
@@ -294,13 +294,12 @@ class spde:
             self.Q = sparse.csc_matrix((np.array(tmp['Qv']*1,dtype = "float32"), ((tmp['Qr']*1).astype('int32'), (tmp['Qc']*1).astype('int32'))), shape=(self.n,self.n))
 
 
-
 if __name__ == "__main__":
     t = spde()
     import time
     print("start")
     t1 = time.time()
-    t.update(rel=np.random.uniform(25, 30, 10000), ks=np.random.randint(0, len(t.mu), 10000))
+    t.update(rel = np.random.uniform(25, 30, 10000), ks=np.random.randint(0, len(t.mu), 10000))
     t2 = time.time()
     print("time consunmed; ", t2 - t1)
 
