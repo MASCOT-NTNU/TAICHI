@@ -1,7 +1,7 @@
 import numpy as np
 from scipy import sparse
 from sksparse.cholmod import cholesky
-from TAICHI.Nidelva3D.Config.Config import FILEPATH
+from Config.Config import FILEPATH
 DEFAULT_NUM_SAMPLES = 250 # 150 is too much
 
 class spde:
@@ -26,50 +26,50 @@ class spde:
             if self.reduced:
                 self.P = 7
             self.n = self.M*self.N*self.P
-                
-        
+
+
         if self.method == 1:
             if self.reduced:
                 self.mu3 = np.load(FILEPATH + 'models/prior_small.npy')
                 tmp = np.load(FILEPATH + 'models/S1r.npy')
-                self.Stot = sparse.csc_matrix((np.array(tmp[:,2],dtype = "float32"), (tmp[:,0].astype('int32'), tmp[:,1].astype('int32'))), shape=(self.n,self.n)) 
-            else: 
+                self.Stot = sparse.csc_matrix((np.array(tmp[:,2],dtype = "float32"), (tmp[:,0].astype('int32'), tmp[:,1].astype('int32'))), shape=(self.n,self.n))
+            else:
                 self.mu3 = np.load(FILEPATH + 'models/prior.npy')
                 tmp = np.load(FILEPATH + 'models/S1.npy')
-                self.Stot = sparse.csc_matrix((np.array(tmp[:,2],dtype = "float32"), (tmp[:,0].astype('int32'), tmp[:,1].astype('int32'))), shape=(self.n,self.n)) 
+                self.Stot = sparse.csc_matrix((np.array(tmp[:,2],dtype = "float32"), (tmp[:,0].astype('int32'), tmp[:,1].astype('int32'))), shape=(self.n,self.n))
             if not prev:
                 self.mu = self.mu3
         else:
             if self.reduced:
                 self.mu3 = np.load(FILEPATH + 'models/prior_small.npy')
                 tmp = np.load(FILEPATH + 'models/S2r.npy')
-                self.Stot = sparse.csc_matrix((np.array(tmp[:,2],dtype = "float32"), (tmp[:,0].astype('int32'), tmp[:,1].astype('int32'))), shape=(self.n,self.n+2)) 
-            else: 
+                self.Stot = sparse.csc_matrix((np.array(tmp[:,2],dtype = "float32"), (tmp[:,0].astype('int32'), tmp[:,1].astype('int32'))), shape=(self.n,self.n+2))
+            else:
                 self.mu3 = np.load(FILEPATH + 'models/prior.npy')
                 tmp = np.load(FILEPATH + 'models/S2.npy')
-                self.Stot = sparse.csc_matrix((np.array(tmp[:,2],dtype = "float32"), (tmp[:,0].astype('int32'), tmp[:,1].astype('int32'))), shape=(self.n,self.n+2)) 
+                self.Stot = sparse.csc_matrix((np.array(tmp[:,2],dtype = "float32"), (tmp[:,0].astype('int32'), tmp[:,1].astype('int32'))), shape=(self.n,self.n+2))
             if not prev:
                 self.mu = self.mu3
                 self.mu2 = np.hstack([np.zeros(self.n),0,1]).reshape(-1,1) # Mean of random effect and betas
                 self.beta0 = 0
                 self.beta1 = 1
-                
+
         if not prev:
             if self.method == 1:
                 if self.model == 1:
                     if self.reduced:
-                        tmp = np.load(FILEPATH + 'models/SA1r.npy') 
+                        tmp = np.load(FILEPATH + 'models/SA1r.npy')
                         self.Q = sparse.csc_matrix((np.array(tmp[:,2],dtype = "float32"), (tmp[:,0].astype('int32'), tmp[:,1].astype('int32'))), shape=(self.n,self.n))
                     else:
-                        tmp = np.load(FILEPATH + 'models/SA1.npy') 
-                        self.Q = sparse.csc_matrix((np.array(tmp[:,2],dtype = "float32"), (tmp[:,0].astype('int32'), tmp[:,1].astype('int32'))), shape=(self.n,self.n)) 
+                        tmp = np.load(FILEPATH + 'models/SA1.npy')
+                        self.Q = sparse.csc_matrix((np.array(tmp[:,2],dtype = "float32"), (tmp[:,0].astype('int32'), tmp[:,1].astype('int32'))), shape=(self.n,self.n))
                 else:
                     if self.reduced:
                         tmp = np.load(FILEPATH + 'models/NA1r.npy')
                         self.Q = sparse.csc_matrix((np.array(tmp[:,2],dtype = "float32"), (tmp[:,0].astype('int32'), tmp[:,1].astype('int32'))), shape=(self.n,self.n))
                     else:
                         tmp = np.load(FILEPATH + 'models/NA1.npy')
-                        self.Q = sparse.csc_matrix((np.array(tmp[:,2],dtype = "float32"), (tmp[:,0].astype('int32'), tmp[:,1].astype('int32'))), shape=(self.n,self.n)) 
+                        self.Q = sparse.csc_matrix((np.array(tmp[:,2],dtype = "float32"), (tmp[:,0].astype('int32'), tmp[:,1].astype('int32'))), shape=(self.n,self.n))
             else:
                 if self.model == 1:
                     if self.reduced:
@@ -77,15 +77,15 @@ class spde:
                         self.Q = sparse.csc_matrix((np.array(tmp[:,2],dtype = "float32"), (tmp[:,0].astype('int32'), tmp[:,1].astype('int32'))), shape=(self.n+2,self.n+2))
                     else:
                         tmp = np.load(FILEPATH + 'models/SA2.npy')
-                        self.Q = sparse.csc_matrix((np.array(tmp[:,2],dtype = "float32"), (tmp[:,0].astype('int32'), tmp[:,1].astype('int32'))), shape=(self.n+2,self.n+2)) 
+                        self.Q = sparse.csc_matrix((np.array(tmp[:,2],dtype = "float32"), (tmp[:,0].astype('int32'), tmp[:,1].astype('int32'))), shape=(self.n+2,self.n+2))
                 else:
                     if self.reduced:
                         tmp = np.load(FILEPATH + 'models/NA2r.npy')
                         self.Q = sparse.csc_matrix((np.array(tmp[:,2],dtype = "float32"), (tmp[:,0].astype('int32'), tmp[:,1].astype('int32'))), shape=(self.n+2,self.n+2))
                     else:
                         tmp = np.load(FILEPATH + 'models/NA2.npy')
-                        self.Q = sparse.csc_matrix((np.array(tmp[:,2],dtype = "float32"), (tmp[:,0].astype('int32'), tmp[:,1].astype('int32'))), shape=(self.n+2,self.n+2)) 
-        
+                        self.Q = sparse.csc_matrix((np.array(tmp[:,2],dtype = "float32"), (tmp[:,0].astype('int32'), tmp[:,1].astype('int32'))), shape=(self.n+2,self.n+2))
+
         self.Q_fac = cholesky(self.Q)
         self.sigma = np.load(FILEPATH + 'models/sigma.npy') # measurement noise robot [0] and SINMOD fitted noise [1]
         tmp = np.load(FILEPATH + 'models/grid.npy') # loading grid data
@@ -94,7 +94,7 @@ class spde:
         self.x = tmp[:,0] # min & max x grid location
         self.y = tmp[:,1] # min & max y grid locations
         self.threshold = 27
-        
+
 
     def sample(self,n = 1):
         """Samples the GMRF. Only used to test.
@@ -104,7 +104,7 @@ class spde:
         """
         if self.method == 2:
             z = np.random.normal(size = (self.n+2)*n).reshape((self.n+2),n)
-            data = self.Q_fac.apply_Pt(self.Q_fac.solve_Lt(z,use_LDLt_decomposition=False)) 
+            data = self.Q_fac.apply_Pt(self.Q_fac.solve_Lt(z,use_LDLt_decomposition=False))
             data = data[:self.n,:] + self.mu3.reshape(-1,1) + np.random.normal(size = self.n*n).reshape(self.n,n)*self.sigma[1]
         else:
             z = np.random.normal(size = self.n*n).reshape(self.n,n)
@@ -117,7 +117,7 @@ class spde:
         Args:
             Q ([N,N] sparse csc matrix): Sparse matrix from scipy.sparse
         """
-        try: 
+        try:
             Q_fac = cholesky(Q)
         except:
             print("Supernodal or negative definite precision matrix... continue")
@@ -142,10 +142,10 @@ class spde:
             n (int, optional): Number of samples used in the Monte Carlo estimate. Defaults to 40.
         """
         if self.method == 2:
-            z1 = np.random.normal(size = (self.n+2)*n).reshape((self.n+2),n) 
+            z1 = np.random.normal(size = (self.n+2)*n).reshape((self.n+2),n)
         else:
-            z1 = np.random.normal(size = (self.n)*n).reshape((self.n),n) 
-        x = self.Q_fac.apply_Pt(self.Q_fac.solve_Lt(z1,use_LDLt_decomposition=False)) 
+            z1 = np.random.normal(size = (self.n)*n).reshape((self.n),n)
+        x = self.Q_fac.apply_Pt(self.Q_fac.solve_Lt(z1,use_LDLt_decomposition=False))
         res = np.zeros((self.n,ks.size))
         z2 = np.random.normal(size = n).reshape(1,n)*self.sigma[0]
         for i in range(ks.size):
@@ -165,7 +165,7 @@ class spde:
 
         Args:
             rel ([k,1]-array): k number of measurements of the GMRF. (k>0).
-            ks ([k,]-array): k number of indicies describing the index of the measurment in the field. 
+            ks ([k,]-array): k number of indicies describing the index of the measurment in the field.
         """
         if ks.size>0:
             if self.method == 2:
@@ -195,11 +195,11 @@ class spde:
             Q_fac = self.Q_fac
         if self.method == 2:
             z = np.random.normal(size = (self.n+2)*n).reshape((self.n+2),n)
-            data = Q_fac.apply_Pt(Q_fac.solve_Lt(z,use_LDLt_decomposition=False)) 
+            data = Q_fac.apply_Pt(Q_fac.solve_Lt(z,use_LDLt_decomposition=False))
             data = data[:self.n,:] + data[self.n,:] + self.mu3[:,np.newaxis]*data[self.n+1,:][np.newaxis,:]
         else:
             z = np.random.normal(size = self.n*n).reshape(self.n,n)
-            data = Q_fac.apply_Pt(Q_fac.solve_Lt(z,use_LDLt_decomposition=False)) 
+            data = Q_fac.apply_Pt(Q_fac.solve_Lt(z,use_LDLt_decomposition=False))
         return(data.var(axis = 1))
 
     def resetQ(self):
@@ -222,7 +222,7 @@ class spde:
             self.Q[self.n + 1, self.n + 1] = 10
             self.Q = self.Q.tocsc()
             self.Q_fac = cholesky(self.Q)
-            
+
             self.Stot.resize((self.n,self.n+2))
             self.Stot = self.Stot.tolil()
             self.Stot[:,self.n] = np.ones(self.n)
@@ -262,7 +262,7 @@ class spde:
         self.resetQ()
         self.setCoefLM()
         print("Post processing is successfuilly!")
-        
+
     def saveModel(self):
         """Method to save the current model for future loading at current update
         """
@@ -274,7 +274,7 @@ class spde:
             np.savez(FILEPATH + "models/currentModel.npz", model = self.model, method = self.method, reduce = self.reduced, Qr = r, Qc = c, Qv = v, mu = self.mu)
         else:
             np.savez(FILEPATH + "models/currentModel.npz", model = self.model, method = self.method, reduce = self.reduced, Qr = r, Qc = c, Qv = v, mu = self.mu, mu2 = self.mu2)
-        
+
     def loadModel(self):
         tmp = np.load(FILEPATH + 'models/currentModel.npz')
         self.model = tmp['model']*1
@@ -302,5 +302,3 @@ if __name__ == "__main__":
     t.update(rel = np.random.uniform(25, 30, 10000), ks=np.random.randint(0, len(t.mu), 10000))
     t2 = time.time()
     print("time consunmed; ", t2 - t1)
-
-

@@ -334,9 +334,12 @@ class AgentAdaptive:
         self.counter_waypoint_data_assimilation += 1
 
     def pickle_dump_dict(self, file, key, values):
-        f = open(file, 'rb')
-        dict_target = pickle.load(f)
-        f.close()
+        if os.path.exists(file):
+            f = open(file, 'rb')
+            dict_target = pickle.load(f)
+            f.close()
+        else:
+            dict_target = dict()
 
         dict_target[key] = values
 
@@ -347,6 +350,4 @@ class AgentAdaptive:
 
 if __name__ == "__main__":
     s = AgentAdaptive()
-    # s.run()
-
-
+    s.run()
