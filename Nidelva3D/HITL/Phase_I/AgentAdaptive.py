@@ -39,6 +39,7 @@ class AgentAdaptive:
         self.load_waypoint()
         self.load_gmrf_grid()
         self.load_gmrf_model()
+        self.update_field()
         self.load_hash_neighbours()
         self.load_hash_waypoint2gmrf()
         self.initialise_function_calls()
@@ -66,6 +67,7 @@ class AgentAdaptive:
         neighbour_file = open(FILEPATH + "Config/HashNeighbours.p", 'rb')
         self.hash_neighbours = pickle.load(neighbour_file)
         neighbour_file.close()
+        print("Sample hash neighbours: ", self.hash_neighbours)
         print("S5: Neighbour hash table is loaded successfully!")
 
     def load_hash_waypoint2gmrf(self):
@@ -153,7 +155,8 @@ class AgentAdaptive:
                         self.ind_previous_waypoint = self.ind_current_waypoint
                         self.ind_visited_waypoint.append(self.ind_current_waypoint)
                         print("Start 2-step planning")
-                        self.myopic3d_planner.update_planner(mu_cond=None, Sigma_diag=None, gmrf_model=self.gmrf_model)
+                        self.myopic3d_planner.update_planner(mu_cond=self.mu_cond, Sigma_diag=self.Sigma_diag,
+                                                             gmrf_model=self.gmrf_model)
                         with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
                             print("Start concurrent")
                             executor.submit(self.myopic3d_planner.find_next_waypoint_using_min_eibv,
@@ -242,8 +245,10 @@ class AgentAdaptive:
                                                                                     vectorise(salinity_assimilated))),
                                                         axis=0)
 
-                            self.myopic3d_planner.update_planner(mu_cond=self.gmrf_model.mu,
-                                                                 Sigma_diag=self.gmrf_model.mvar(),
+                            self.update_field()
+
+                            self.myopic3d_planner.update_planner(mu_cond=self.mu_cond,
+                                                                 Sigma_diag=self.Sigma_diag,
                                                                  gmrf_model=self.gmrf_model)
                             with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
                                 print("Start concurrent")
@@ -270,6 +275,10 @@ class AgentAdaptive:
         lat_waypoint, lon_waypoint = xy2latlon(x_waypoint, y_waypoint, LATITUDE_ORIGIN, LONGITUDE_ORIGIN)
         self.auv.auv_handler.setWaypoint(deg2rad(lat_waypoint), deg2rad(lon_waypoint), z_waypoint, speed=self.auv.speed)
         print("Set waypoint successfully!")
+
+    def update_field(self):
+        self.mu_cond = self.gmrf_model.mu
+        self.Sigma_diag = self.gmrf_model.mvar()
 
     def assimilate_data(self, dataset):
         print("dataset before filtering: ", dataset[-10:, :])

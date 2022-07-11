@@ -15,8 +15,9 @@ import pickle
 class HashNeighbourLocations:
 
     def __init__(self):
-        self.load_coordinates()
-        self.get_neighbours_hash_table()
+        pass
+        # self.load_coordinates()
+        # self.get_neighbours_hash_table()
 
     def load_coordinates(self):
         self.coordinates = pd.read_csv(FILEPATH + "Config/WaypointGraph.csv")
@@ -94,10 +95,17 @@ class HashNeighbourLocations:
         plotly.offline.plot(fig, filename=FIGPATH+"neighbour.html",
                             auto_open=True)
 
+    def check_neighbours(self):
+        neighbour_file = open(FILEPATH + "Config/HashNeighbours.p", 'rb')
+        self.hash_neighbours = pickle.load(neighbour_file)
+        neighbour_file.close()
+
+
 
 if __name__ == "__main__":
     n = HashNeighbourLocations()
-    n.plot_neighbours(np.random.randint(n.coordinates.shape[0]))
+    n.check_neighbours()
+    # n.plot_neighbours(np.random.randint(n.coordinates.shape[0]))
 
 
 
