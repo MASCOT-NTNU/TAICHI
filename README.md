@@ -14,3 +14,9 @@ Updated field from Yang agent
 ---
 Updated field from Yin agent
 ![Yin](/Nidelva3D/fig/A2/mean/jpg/Yin.gif)
+
+# HITL
+
+Ada is the agent used for adaptive sampling.
+
+Stella is the agent used for static sampling and then convert to an adaptive sampling agent afterwards.

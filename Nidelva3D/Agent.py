@@ -52,7 +52,11 @@ class Agent:
 
     def load_simulated_truth(self):
         path_mu_truth = FILEPATH + "Config/Data/data_mu_truth.csv"
-        self.simulated_truth = pd.read_csv(path_mu_truth).to_numpy()[:, -1].reshape(-1, 1)
+        weight = 1
+        self.simulated_truth = (weight * pd.read_csv(path_mu_truth).to_numpy()[:, -1].reshape(-1, 1) +
+                                np.random.rand(len(self.gmrf_model.mu)).reshape(-1, 1))
+                                # (1 - weight) * vectorise(self.gmrf_model.mu))  #TODO:
+        # self.simulated_truth = pd.read_csv(path_mu_truth).to_numpy()[:, -1].reshape(-1, 1)
         print("S5: Simulated truth is loaded successfully!")
 
     def update_knowledge(self):
@@ -537,9 +541,9 @@ class Agent:
         ag2_loc = [63.452381, 10.424680, .5]
         self.plot = True
         self.prepare_run(ag1_loc, ind_legal=np.arange(self.waypoints.shape[0]))
-        for i in range(20):
-            self.sample()
-            self.run(i)
+        # for i in range(20):
+        #     self.sample()
+        #     self.run(i)
         # self.set_starting_location(AGENT1_START_LOCATION)
         # self.prepare_run()
         # self.run()
@@ -552,10 +556,9 @@ if __name__ == "__main__":
     # NUM_STEPS = 1
     a.check_agent()
 
-#%%
-plt.plot(a.waypoints[:, 1], a.waypoints[:, 0], 'k.')
-plt.show()
-
+# #%%
+# plt.plot(a.waypoints[:, 1], a.waypoints[:, 0], 'k.')
+# plt.show()
 
 
 
