@@ -13,11 +13,11 @@ from TAICHI.Nidelva3D.PreConfig.WaypointGraph.HexagonalWaypoint2D import Hexgona
 
 class HexgonalGrid3DGenerator:
 
-    def __init__(self, polygon_border=None, polygon_obstacle=None, depth=None, neighbour_distance=0):
+    def __init__(self, polygon_border=None, polygon_obstacle=None, depth=None, distance_neighbour=0):
         self.depth = depth
         self.grid = HexgonalGrid2DGenerator(polygon_border=polygon_border, polygon_obstacle=polygon_obstacle,
-                                            distance_neighbour=neighbour_distance)
-        self.coordinates2d = self.grid.coordinates2d
+                                            distance_neighbour=distance_neighbour)
+        self.coordinates2d = self.grid.grid_xy
         self.get_3d_coordinates()
 
     def get_3d_coordinates(self):
@@ -29,5 +29,7 @@ class HexgonalGrid3DGenerator:
         self.coordinates = np.array(self.coordinates)
         t2 = time.time()
         print("3D coordianates are created successfully! Time consumed: ", t2 - t1)
+
+
 
 

@@ -2,7 +2,7 @@
 This script creates a hash table to save neighbouring location
 Author: Yaolin Ge
 Contact: yaolin.ge@ntnu.no
-Date: 2022-03-21
+Date: 2022-07-11
 """
 
 
@@ -40,9 +40,8 @@ class HashNeighbourLocations:
             self.neighbour_hash_table[i] = list(self.ind_neighbour)
         t2 = time.time()
 
-        filehandler = open(FILEPATH+'Config/HashNeighbours.p', 'wb')
-        with filehandler as f:
-            pickle.dump(self.neighbour_hash_table, f)
+        f = open(FILEPATH+'Config/HashNeighbours.p', 'wb')
+        pickle.dump(self.neighbour_hash_table, f)
         f.close()
         print("Hashing finished, time consumed: ", t2 - t1)
 

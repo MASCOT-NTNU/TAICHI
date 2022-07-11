@@ -2,7 +2,7 @@
 This script generates grid and save them
 Author: Yaolin Ge
 Contact: yaolin.ge@ntnu.no
-Date: 2022-03-21
+Date: 2022-07-11
 """
 
 #% Step I: create wgs coordinates
@@ -19,24 +19,16 @@ polygon_obstacle = np.empty([10, 2])
 
 depth = [0.5, 1.5, 2.5, 3.5, 4.5, 5.5]
 gridGenerator = HexgonalGrid3DGenerator(polygon_border=polygon_border, polygon_obstacle=polygon_obstacle,
-                                        depth=depth, neighbour_distance=DISTANCE_NEIGHBOUR)
+                                        depth=depth, distance_neighbour=DISTANCE_NEIGHBOUR)
 coordinates = gridGenerator.coordinates
 
-#% Step II: convert wgs to xyz
-
-x, y = latlon2xy(coordinates[:, 0], coordinates[:, 1], LATITUDE_ORIGIN, LONGITUDE_ORIGIN)
-z = coordinates[:, 2]
-xyz = np.vstack((x, y, z)).T
-lat_origin = LATITUDE_ORIGIN * np.ones_like(x)
-lon_origin = LONGITUDE_ORIGIN * np.ones_like(x)
-origin = np.vstack((lat_origin, lon_origin)).T
-
-# dataset = np.hstack((xyz, coordinates, origin))
-# df = pd.DataFrame(dataset, columns=['x', 'y', 'z', 'lat', 'lon', 'depth', 'lat_origin', 'lon_origin'])
-dataset = xyz
-df = pd.DataFrame(dataset, columns=['x', 'y', 'z'])
+df = pd.DataFrame(coordinates, columns=['x', 'y', 'z'])
 df.to_csv(FILEPATH + "Config/WaypointGraph.csv", index=False)
 
+import matplotlib.pyplot as plt
+plt.plot(polygon_border[:, 1], polygon_border[:, 0], 'r-.')
+plt.plot(coordinates[:, 1], coordinates[:, 0], 'k.')
+plt.show()
 
 #%% Step III: check with plot
 import plotly.graph_objects as go
@@ -70,22 +62,3 @@ plotly.offline.plot(fig, filename=FILEPATH+"fig/grid.html", auto_open=True)
 #TODO: check with GIS after grid discrestisation
 
 #%%
-# import matplotlib.pyplot as plt
-# plt.plot(coordinates[:, 1], coordinates[:, 0], 'k.')
-# plt.plot(polygon_border[:, 1], polygon_border[:, 0], 'r-')
-# box = np.array([[grid.box_lon_min, grid.box_lat_min],
-#                 [grid.box_lon_max, grid.box_lat_min],
-#                 [grid.box_lon_max, grid.box_lat_max],
-#                 [grid.box_lon_min, grid.box_lat_max]])
-# x = grid.grid_x
-# y = grid.grid_y
-# lat = np.load('MAFIA/models/lats.npy')
-# lon = np.load('MAFIA/models/lons.npy')
-# depth = np.load('MAFIA/models/debth.npy')
-
-# plt.plot(grid.grid_wgs[:, 1], grid.grid_wgs[:, 0], 'y.')
-# plt.plot(box[:, 0], box[:, 1], 'b.')
-# plt.plot(lon, lat, 'g*')
-# plt.show()
-
-
