@@ -15,8 +15,7 @@ Date: 2022-06-20
 from usr_func import *
 from Config.AUVConfig import *  # !!!! ROSPY important
 from Config.Config import *
-from PlanningStrategies.Myopic3D import MyopicPlanning3D
-from Knowledge.Knowledge import Knowledge
+from Myopic3D import MyopicPlanning3D
 from AUV import AUV
 from spde import spde
 import pickle
@@ -40,7 +39,6 @@ class AgentAdaptive:
         self.load_waypoint()
         self.load_gmrf_grid()
         self.load_gmrf_model()
-        self.update_knowledge()
         self.load_hash_neighbours()
         self.load_hash_waypoint2gmrf()
         self.initialise_function_calls()
@@ -63,10 +61,6 @@ class AgentAdaptive:
     def load_gmrf_model(self):
         self.gmrf_model = spde(model=2, method=2)
         print("S3: GMRF model is loaded successfully!")
-
-    def update_knowledge(self):
-        self.knowledge = Knowledge(gmrf_grid=self.gmrf_grid, mu=self.gmrf_model.mu, SigmaDiag=self.gmrf_model.mvar())
-        print("S4: Knowledge of the field is set up successfully!")
 
     def load_hash_neighbours(self):
         neighbour_file = open(FILEPATH + "Config/HashNeighbours.p", 'rb')
@@ -157,13 +151,9 @@ class AgentAdaptive:
                         self.ind_current_waypoint = get_ind_at_location3d_xyz(self.waypoints, x_start,
                                                                               y_start, z_start)
                         self.ind_previous_waypoint = self.ind_current_waypoint
-                        # self.ind_next_waypoint = self.ind_current_waypoint
                         self.ind_visited_waypoint.append(self.ind_current_waypoint)
-                        # self.set_waypoint_using_ind_waypoint(self.ind_current_waypoint)
                         print("Start 2-step planning")
-                        # self.pool.apply_async()
-                        self.myopic3d_planner.update_planner(knowledge=self.knowledge, gmrf_model=self.gmrf_model)
-                        # with concurrent.futures.ProcessPoolExecutor(max_workers=1) as executor:
+                        self.myopic3d_planner.update_planner(mu_cond=None, Sigma_diag=None, gmrf_model=self.gmrf_model)
                         with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
                             print("Start concurrent")
                             executor.submit(self.myopic3d_planner.find_next_waypoint_using_min_eibv,
@@ -172,7 +162,6 @@ class AgentAdaptive:
                                             self.ind_visited_waypoint)
                             print("End concurrent")
                         self.ind_next_waypoint = int(np.loadtxt(FILEPATH + "Waypoint/ind_next.txt"))
-                        # with concurrent.futures.ProcessPoolExecutor(max_workers=1) as executor:
                         with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
                             print("Start concurrent")
                             executor.submit(self.myopic3d_planner.find_next_waypoint_using_min_eibv,
@@ -184,7 +173,6 @@ class AgentAdaptive:
                         print("Finished 2-step planning!!!")
 
                 if not self.popup:
-                    # if self.auv.auv_handler.getState() == "waiting":
                     if (self.auv.auv_handler.getState() == "waiting" and
                             rospy.get_time() - self.update_time > WAYPOINT_UPDATE_TIME):
                         print("Arrived the current location")
@@ -254,11 +242,9 @@ class AgentAdaptive:
                                                                                     vectorise(salinity_assimilated))),
                                                         axis=0)
 
-                            self.knowledge.mu = self.gmrf_model.mu
-                            self.knowledge.SigmaDiag = self.gmrf_model.mvar()
-
-                            self.myopic3d_planner.update_planner(knowledge=self.knowledge, gmrf_model=self.gmrf_model)
-                            # with concurrent.futures.ProcessPoolExecutor(max_workers=1) as executor:
+                            self.myopic3d_planner.update_planner(mu_cond=self.gmrf_model.mu,
+                                                                 Sigma_diag=self.gmrf_model.mvar(),
+                                                                 gmrf_model=self.gmrf_model)
                             with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
                                 print("Start concurrent")
                                 executor.submit(self.myopic3d_planner.find_next_waypoint_using_min_eibv,
@@ -269,7 +255,6 @@ class AgentAdaptive:
                             self.ind_pioneer_waypoint = int(np.loadtxt(FILEPATH + "Waypoint/ind_next.txt"))
                             self.counter_waypoint_adaptive += 1
                 else:
-                    # if self.auv.auv_handler.getState() == "waiting":
                     if (self.auv.auv_handler.getState() == "waiting" and
                             rospy.get_time() - self.update_time > WAYPOINT_UPDATE_TIME):
                         self.popup = False

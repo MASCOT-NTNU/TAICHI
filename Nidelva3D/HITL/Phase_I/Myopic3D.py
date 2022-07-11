@@ -8,12 +8,11 @@ import matplotlib.pyplot as plt
 
 """
 Usage:
-next_location = MyopicPlanning3D(Knowledge, Experience).next_waypoint
+next_location = MyopicPlanning3D(UpdatedField, Experience).next_waypoint
 """
 
 from usr_func import *
 from Config.Config import *
-from Knowledge.Knowledge import Knowledge
 from spde import spde
 import time
 import pickle
@@ -42,8 +41,9 @@ class MyopicPlanning3D:
         self.hash_waypoint2gmrf = hash_waypoint2gmrf
         print("MyopicPlanner is ready")
 
-    def update_planner(self, knowledge=None, gmrf_model=None, ind_legal=None):
-        self.knowledge = knowledge
+    def update_planner(self, mu_cond=None, Sigma_diag=None, gmrf_model=None, ind_legal=None):
+        self.mu_cond = mu_cond
+        self.Sigma_diag = Sigma_diag
         self.gmrf_model = gmrf_model
         if ind_legal is None:
             ind_legal = []
@@ -103,19 +103,11 @@ class MyopicPlanning3D:
         return vectorise([dx, dy, dz])
 
     def get_eibv_from_gmrf_model(self, ind_candidate):
-        t1 = time.time()
         variance_post = self.gmrf_model.candidate(ks=ind_candidate)  # update the field
-        t2 = time.time()
-        # print("Update variance take: ", t2 - t1)
-
-        # eibv = get_eibv_from_gpu(self.knowledge.mu, variance_post)
         N_eibv = variance_post.shape[1]
         eibv = np.zeros(N_eibv)
-        t1 = time.time()
         for i in range(N_eibv):
-            eibv[i] = get_eibv_from_fast(self.knowledge.mu, variance_post[:, i], self.gmrf_model.threshold)
-        t2 = time.time()
-        # print("EIBV calculation takes: ", t2 - t1)
+            eibv[i] = get_eibv_from_fast(self.mu_cond, variance_post[:, i], self.gmrf_model.threshold)
         return eibv
 
     def check_multiprocessing(self):
@@ -136,12 +128,11 @@ class MyopicPlanning3D:
 
         self.gmrf_model = spde(model=2, reduce=True, method=2)
 
-        self.knowledge = Knowledge(gmrf_grid=gmrf_grid, mu=self.gmrf_model.mu, SigmaDiag=self.gmrf_model.mvar())
-        self.myopic3d_planner.update_planner(knowledge=self.knowledge, gmrf_model=self.gmrf_model)
+        # self.knowledge = Knowledge(gmrf_grid=gmrf_grid, mu=self.gmrf_model.mu, SigmaDiag=self.gmrf_model.mvar())
+        # self.myopic3d_planner.update_planner(knowledge=self.knowledge, gmrf_model=self.gmrf_model)
 
-        self.myopic3d_planner.find_next_waypoint_using_min_eibv(ind_current=0, ind_previous=1, ind_visited=[])
-        print("Finished")
-        pass
+        # self.myopic3d_planner.find_next_waypoint_using_min_eibv(ind_current=0, ind_previous=1, ind_visited=[])
+        # print("Finished")
 
 
 if __name__ == "__main__":
