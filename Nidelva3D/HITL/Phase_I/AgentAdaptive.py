@@ -153,8 +153,6 @@ class AgentAdaptive:
                         self.ind_current_waypoint = get_ind_at_location3d_xyz(self.waypoints, x_start,
                                                                               y_start, z_start)
                         self.ind_previous_waypoint = self.ind_current_waypoint
-                        print("Current waypoint: ", self.ind_current_waypoint)
-                        print("Previous waypoint: ", self.ind_previous_waypoint)
                         self.ind_visited_waypoint.append(self.ind_current_waypoint)
                         print("Start 2-step planning")
                         self.myopic3d_planner.update_planner(mu_cond=self.mu_cond, Sigma_diag=self.Sigma_diag,
@@ -176,6 +174,7 @@ class AgentAdaptive:
                                             self.ind_visited_waypoint)
                             print("End concurrent")
                         self.ind_pioneer_waypoint = int(np.loadtxt(FILEPATH + "Waypoint/ind_next.txt"))
+
                         print("Finished 2-step planning!!!")
 
                 if not self.popup:
@@ -263,6 +262,10 @@ class AgentAdaptive:
                                 print("End concurrent")
                             self.ind_pioneer_waypoint = int(np.loadtxt(FILEPATH + "Waypoint/ind_next.txt"))
                             self.counter_waypoint_adaptive += 1
+                            print("Current waypoint: ", self.ind_current_waypoint)
+                            print("Previous waypoint: ", self.ind_previous_waypoint)
+                            print("Next waypoint: ", self.ind_next_waypoint)
+                            print("Pioneer waypoint: ", self.ind_pioneer_waypoint)
                 else:
                     if (self.auv.auv_handler.getState() == "waiting" and
                             rospy.get_time() - self.update_time > WAYPOINT_UPDATE_TIME):
