@@ -67,7 +67,7 @@ class AgentAdaptive:
         neighbour_file = open(FILEPATH + "Config/HashNeighbours.p", 'rb')
         self.hash_neighbours = pickle.load(neighbour_file)
         neighbour_file.close()
-        print("Sample hash neighbours: ", self.hash_neighbours)
+        # print("Sample hash neighbours: ", self.hash_neighbours)
         print("S5: Neighbour hash table is loaded successfully!")
 
     def load_hash_waypoint2gmrf(self):
@@ -153,6 +153,8 @@ class AgentAdaptive:
                         self.ind_current_waypoint = get_ind_at_location3d_xyz(self.waypoints, x_start,
                                                                               y_start, z_start)
                         self.ind_previous_waypoint = self.ind_current_waypoint
+                        print("Current waypoint: ", self.ind_current_waypoint)
+                        print("Previous waypoint: ", self.ind_previous_waypoint)
                         self.ind_visited_waypoint.append(self.ind_current_waypoint)
                         print("Start 2-step planning")
                         self.myopic3d_planner.update_planner(mu_cond=self.mu_cond, Sigma_diag=self.Sigma_diag,
