@@ -158,7 +158,8 @@ class AgentAdaptive:
                         self.ind_visited_waypoint.append(self.ind_current_waypoint)
                         print("Start 2-step planning")
                         self.myopic3d_planner.update_planner(mu_cond=self.mu_cond, Sigma_diag=self.Sigma_diag,
-                                                             gmrf_model=self.gmrf_model)
+                                                             gmrf_model=self.gmrf_model,
+                                                             ind_legal=np.arange(len(self.waypoints)))
                         with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
                             print("Start concurrent")
                             executor.submit(self.myopic3d_planner.find_next_waypoint_using_min_eibv,
@@ -251,7 +252,8 @@ class AgentAdaptive:
 
                             self.myopic3d_planner.update_planner(mu_cond=self.mu_cond,
                                                                  Sigma_diag=self.Sigma_diag,
-                                                                 gmrf_model=self.gmrf_model)
+                                                                 gmrf_model=self.gmrf_model,
+                                                                 ind_legal=np.arange(len(self.waypoints)))
                             with concurrent.futures.ThreadPoolExecutor(max_workers=1) as executor:
                                 print("Start concurrent")
                                 executor.submit(self.myopic3d_planner.find_next_waypoint_using_min_eibv,
