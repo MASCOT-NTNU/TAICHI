@@ -3,7 +3,6 @@ This object handles hexgonal grid generation
 """
 from math import cos, sin, radians
 import numpy as np
-from ..usr_func import is_even
 
 
 class Hexgonal2D:
@@ -53,13 +52,12 @@ class Hexgonal2D:
         hexgonal2d = []
         for i in range(len(gy)):
             for j in range(len(gx)):
-                if is_even(j):
+                if j % 2 == 0:
                     x = gx[j]
                     y = gy[i] + y_gap / 2
                 else:
                     x = gx[j]
                     y = gy[i]
                 hexgonal2d.append([x, y])
-        hexgonal2d = np.array(hexgonal2d)
         return hexgonal2d
 

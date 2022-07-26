@@ -1,5 +1,5 @@
-""" This object contains useful user-defined functions that are applied throughout the whole package.
-
+""" 
+This function tests if a given integer is even or not. 
 """
 
 
