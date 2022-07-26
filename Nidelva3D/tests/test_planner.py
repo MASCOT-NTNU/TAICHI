@@ -5,7 +5,7 @@ This module tests the planner object.
 """
 
 import unittest
-from src.Planner.Planner import Planner
+from Nidelva3D.src.Planner.Planner import Planner
 
 
 class TestPlanner(unittest.TestCase):

@@ -5,7 +5,7 @@ This module tests the planner object.
 """
 
 import unittest
-from src.WaypointGraph.Hexgonal2D import Hexgonal2D
+from Nidelva3D.src.WaypointGraph.Hexgonal2D import Hexgonal2D
 from math import radians, sin, cos
 import matplotlib.pyplot as plt
 import numpy as np

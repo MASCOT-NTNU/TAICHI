@@ -1,9 +1,9 @@
 """
 This object handles hexgonal grid generation
 """
-from math import cos, sin, radians, degrees
+from math import cos, sin, radians
 import numpy as np
-from ..usr_func import isEven
+from ..usr_func import is_even
 
 
 class Hexgonal2D:
@@ -12,11 +12,16 @@ class Hexgonal2D:
     _y_range = 0
     _distance_neighbour = 0
 
-    def __init__(self):
-        pass
+    def __init__(self) -> None:
+        """ Generates the object to handle hexgonal 2d discretization.
+
+        """
 
     def setup(self, xrange: float, yrange: float, distance_neighbour: float) -> None:
-        """ Sets the boundary and neighbour distance for the discretization. NED(North, East, Down) coordinate system is applied.
+        """ Sets the boundary and neighbour distance for the discretization under NED coordinate system.
+        - N: North
+        - E: East
+        - D: Down
 
         Args:
             xrange: distance span across latitude-direction.
@@ -29,8 +34,15 @@ class Hexgonal2D:
         self._distance_neighbour = distance_neighbour
 
     def get_hexgonal_discretization(self):
-        """ Discretizes the rectangular field formed by (xrange, yrange) with distance_neighbour
+        """ Discretizes the rectangular field formed by (xrange, yrange) with distance_neighbour.
 
+        The resulting grid will be like:
+        .   .   .   .   .
+          .   .   .   .   .
+        .   .   .   .   .
+          .   .   .   .   .
+        .   .   .   .   .
+          .   .   .   .   .
         """
         y_gap = self._distance_neighbour * cos(radians(60)) * 2
         x_gap = self._distance_neighbour * sin(radians(60))
@@ -41,7 +53,7 @@ class Hexgonal2D:
         hexgonal2d = []
         for i in range(len(gy)):
             for j in range(len(gx)):
-                if isEven(j):
+                if is_even(j):
                     x = gx[j]
                     y = gy[i] + y_gap / 2
                 else:
