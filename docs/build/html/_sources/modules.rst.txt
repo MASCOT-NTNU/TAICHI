@@ -7,5 +7,6 @@ src
    AUV
    Agent
    Planner
+   SPDE
    WaypointGraph
    usr_func

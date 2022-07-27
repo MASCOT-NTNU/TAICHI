@@ -25,7 +25,7 @@ class TestHexgonal2D(unittest.TestCase):
         yr = 1000
         d = 120
         h.setup(xr, yr, d)
-        actual = h.get_hexgonal_discretization()
+        actual = h.get_legal_hexgonal_points()
         plt.plot(actual[:, 1], actual[:, 0], 'k.')
         plt.show()
         # expected = (d * sin(radians(60)), d * cos(radians(60)) * 2)

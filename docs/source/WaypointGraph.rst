@@ -4,14 +4,6 @@ WaypointGraph package
 Submodules
 ----------
 
-WaypointGraph.Hexgonal2D module
--------------------------------
-
-.. automodule:: WaypointGraph.Hexgonal2D
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 WaypointGraph.WaypointGraph module
 ----------------------------------
 
