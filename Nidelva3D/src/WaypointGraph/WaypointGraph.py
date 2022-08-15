@@ -1,7 +1,7 @@
 """
 This modules handles the waypointgraph-related problems.
 """
-from typing import List, Any
+from typing import Any
 
 import numpy as np
 from scipy.spatial.distance import cdist
@@ -16,18 +16,34 @@ class WaypointGraph:
         self.__waypoints = np.empty([0, 3])  # put it inside the initialisationm to avoid mutation.
         self.__neighbour = dict()
 
-    def construct_waypoints(self, polygon_border: np.ndarray, polygon_obstacles: list,
-                            depths: list, distance_neighbour: float) -> None:
-        """
+    def construct_waypoints_and_neighbours(self, polygon_border: np.ndarray, polygon_obstacles: list,
+                                           depths: list, distance_neighbour: float) -> None:
+        """ Discretizes the rectangular field formed by (xrange, yrange) with distance_neighbour.
+        Sets the boundary and neighbour distance for the discretization under NED coordinate system.
+        - N: North
+        - E: East
+        - D: Down
 
         Args:
             polygon_border: border vertices defined by [[x1, y1], [x2, y2], ..., [xn, yn]].
             polygon_obstacles: multiple obstalce vertices defined by [[[x11, y11], [x21, y21], ... [xn1, yn1]], [[...]]].
-            depths:
+            depths: multiple depth layers [d0, d1, d2, ..., dn].
             distance_neighbour: distance between neighbouring waypoints.
 
-        Returns:
+        The resulting grid will be like:
+            _________
+           /  .   .  \
+          /  .  /\   .\
+          \   ./__\   .\
+           \.   .   .  /
+            \_________/
 
+        Get:
+            Waypoints: [[x0, y0, z0],
+                       [x1, y1, z1],
+                       ...
+                       [xn, yn, zn]]
+            Neighbour hash tables: {0: [1, 2, 3], 1: [0, 2, 3], ..., }
         """
 
         xmin, ymin = map(np.amin, [polygon_border[:, 0], polygon_border[:, 1]])
@@ -44,6 +60,7 @@ class WaypointGraph:
         def border_contains(p):
             return pbs.contains(p)
 
+        # create obstacle polygons
         obs_free = True
         if not is_list_empty(polygon_obstacles):
             pos = []
@@ -99,92 +116,39 @@ class WaypointGraph:
             nb_ind = np.where((dellip[i] <= 1) * (deucli[i] >= 5))[0]
             self.__neighbour[i] = list(nb_ind)
 
-    def get_legal_hexgonal_points(self, polygon_border: np.ndarray, polygon_obstacles: list,
-                                  distance_neighbour: float) -> list:
-        """ Discretizes the rectangular field formed by (xrange, yrange) with distance_neighbour.
-        Sets the boundary and neighbour distance for the discretization under NED coordinate system.
-        - N: North
-        - E: East
-        - D: Down
-
-        Args:
-            polygon_border: border vertices defined by [[x1, y1], [x2, y2], ..., [xn, yn]].
-            polygon_obstacles: multiple obstalce vertices defined by [[[x11, y11], [x21, y21], ... [xn1, yn1]], [[...]]].
-            distance_neighbour: distance between neighbouring waypoints.
-
-
-        The resulting grid will be like:
-            _________
-           /  .   .  \
-          /  .  /\   .\
-          \   ./__\   .\
-           \.   .   .  /
-            \_________/
-
-        Returns:
-            list of coordinates in xy coordinates:
-            [[0, 0],
-             [1, 0],
-             ...
-             [n, n]]
-
+    def get_waypoints(self):
         """
+        Returns: waypoints
+        """
+        return self.__waypoints
 
-        # return hexgonal2d
+    def get_hash_neighbour(self):
+        """
+        Returns: neighbour hash table
+        """
+        return self.__neighbour
 
     def get_waypoint_from_ind(self, ind: int) -> list[Any]:
         """
         Return waypoint locations using ind
-
-        Returns:
-
         """
         return self.__waypoints[ind, :]
 
     def get_ind_from_waypoint(self, waypoint: np.ndarray) -> np.ndarray:
         """
-
         Args:
-            waypoint:
-
-        Returns:
-
+            waypoint: np.array([xp, yp, zp])
+        Returns: index of the closest waypoint.
         """
-
         d = cdist(self.__waypoints, waypoint)
         return np.argmin(d, axis=0)
 
     def get_ind_neighbours(self, ind: int) -> list:
         """
-
         Args:
-            ind:
-
-        Returns:
-
+            ind: waypoint index
+        Returns: neighbour indices
         """
         return self.__neighbour[ind]
-
-    def get_waypoints(self) -> np.ndarray:
-        """
-        Returns:
-        """
-        return self.__waypoints
-
-    def get_neighbour_hash(self):
-        return self.__neighbour
-
-
-#%%
-s = Polygon([[[0, 0],
-             [0, 1],
-             [1, 1],
-             [1, 0]],
-             [[2, 2],
-              [3, 2],
-              [3, 3],
-              [2, 3]]])
-
-
 
 
