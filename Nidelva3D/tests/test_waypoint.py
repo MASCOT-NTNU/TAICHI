@@ -3,7 +3,7 @@ This module tests the planner object.
 
 """
 
-import unittest
+from unittest import TestCase
 from Nidelva3D.src.WaypointGraph.WaypointGraph import WaypointGraph
 from Nidelva3D.src.usr_func.is_list_empty import is_list_empty
 import numpy as np
@@ -15,7 +15,7 @@ from scipy.spatial.distance import cdist
 import matplotlib.pyplot as plt
 
 
-class TestWaypoint(unittest.TestCase):
+class TestWaypoint(TestCase):
     """ Test class waypoint graph.
 
     """
@@ -25,6 +25,7 @@ class TestWaypoint(unittest.TestCase):
                                         [1000, 0],
                                         [1000, 1000],
                                         [0, 1000]])
+
         self.polygon_obstacle = [[[]]]
         self.distance_neighbour = 120
         self.depths = [0., 1., 1.5]
@@ -32,6 +33,7 @@ class TestWaypoint(unittest.TestCase):
         self.w.construct_waypoints_and_neighbours(self.polygon_border, self.polygon_obstacle, self.depths,
                                                   self.distance_neighbour)
         self.waypoints = self.w.get_waypoints()
+        self.hash_neighbours = self.w.get_hash_neighbour()
 
     def test_empty_waypoints(self):
         actual_len = len(self.waypoints)
@@ -52,12 +54,25 @@ class TestWaypoint(unittest.TestCase):
                 break
         self.assertTrue(s)
 
-    def test_equal_distance(self):
-        dm = cdist(self.waypoints, self.waypoints)
-
+    def test_if_neighbours_are_legal(self):
+        for i in range(len(self.hash_neighbours)):
+            ind_n = self.hash_neighbours[i]
+            w = self.waypoints[i]
+            wn = self.waypoints[ind_n]
+            # print(w, wn)
+            # pass
+            d = cdist(w.reshape(1, -1), wn)
+            print(d)
+            # print(self.waypoints[i])
+        # print(len(self.hash_neighbours))
+        # print("end")
+        # dm = cdist(self.waypoints, self.waypoints)
+        #
         # plt.imshow(dm)
         # plt.colorbar()
         # plt.show()
+        #
+        # print(dm)
 
     def test_depths(self):
         ud = np.unique(self.waypoints[:, 2])
@@ -91,11 +106,15 @@ class TestWaypoint(unittest.TestCase):
 
 
 
-if __name__ == "__main__":
-    unittest.main(exit=False)
+# if __name__ == "__main__":
+#     unittest.main(exit=False)
     # t = TestWaypoint()
     # t.test_waypoint_construction()
 
-
-
+# #%%
+# from scipy.spatial.distance import cdist
+# x1 = np.array([[0, 0]])
+# x2 = np.array([[100, 100]])
+# print("Distance", cdist(x1, x2, 'euclidean'))
+# print("test", 100 * np.sqrt(2))
 
