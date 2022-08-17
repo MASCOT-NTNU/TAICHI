@@ -27,13 +27,17 @@ class TestWaypoint(TestCase):
                                         [0, 1000]])
 
         self.polygon_obstacle = [[[]]]
-        self.distance_neighbour = 120
+        self.neighbour_distance = 120
         self.depths = [0., 1., 1.5]
-        self.w = WaypointGraph()
-        self.w.construct_waypoints_and_neighbours(self.polygon_border, self.polygon_obstacle, self.depths,
-                                                  self.distance_neighbour)
-        self.waypoints = self.w.get_waypoints()
-        self.hash_neighbours = self.w.get_hash_neighbour()
+        self.wg = WaypointGraph()
+        self.wg.set_neighbour_distance(self.neighbour_distance)
+        self.wg.set_depth_layers(self.depths)
+        self.wg.set_polygon_border(self.polygon_border)
+        self.wg.set_polygon_obstacles(self.polygon_obstacle)
+        self.wg.construct_waypoints()
+        self.wg.construct_hash_neighbours()
+        self.waypoints = self.wg.get_waypoints()
+        self.hash_neighbours = self.wg.get_hash_neighbour()
 
     def test_empty_waypoints(self):
         actual_len = len(self.waypoints)
@@ -55,24 +59,61 @@ class TestWaypoint(TestCase):
         self.assertTrue(s)
 
     def test_if_neighbours_are_legal(self):
+        case = True
         for i in range(len(self.hash_neighbours)):
             ind_n = self.hash_neighbours[i]
             w = self.waypoints[i]
             wn = self.waypoints[ind_n]
-            # print(w, wn)
-            # pass
             d = cdist(w.reshape(1, -1), wn)
-            print(d)
-            # print(self.waypoints[i])
-        # print(len(self.hash_neighbours))
-        # print("end")
-        # dm = cdist(self.waypoints, self.waypoints)
-        #
-        # plt.imshow(dm)
-        # plt.colorbar()
-        # plt.show()
-        #
-        # print(dm)
+            if (np.amax(d) > self.neighbour_distance + 1) or (np.amin(d) < self.neighbour_distance - 1):
+                case = False
+        self.assertTrue(case)
+
+    def test_neighbours_plotting(self):
+        import plotly
+        import plotly.graph_objects as go
+        ind_r = np.random.randint(0, self.waypoints.shape[0])
+
+        fig = go.Figure(data=[go.Scatter3d(
+            x=self.waypoints[:, 0],
+            y=self.waypoints[:, 1],
+            z=self.waypoints[:, 2],
+            mode='markers',
+            marker=dict(
+                size=2,
+                color='black',
+                opacity=0.8
+            )
+        )])
+
+        fig.add_trace(go.Scatter3d(
+            x=[self.waypoints[ind_r, 0]],
+            y=[self.waypoints[ind_r, 1]],
+            z=[self.waypoints[ind_r, 2]],
+            mode='markers',
+            marker=dict(
+                size=20,
+                color='red',
+                opacity=0.8
+            )
+        ))
+
+        fig.add_trace(go.Scatter3d(
+            x=self.waypoints[self.hash_neighbours[ind_r], 0],
+            y=self.waypoints[self.hash_neighbours[ind_r], 1],
+            z=self.waypoints[self.hash_neighbours[ind_r], 2],
+            mode='markers',
+            marker=dict(
+                size=20,
+                color='blue',
+                opacity=0.8
+            )
+        ))
+
+        # tight layout
+        fig.update_layout(margin=dict(l=0, r=0, b=0, t=0))
+        plotly.offline.plot(fig, filename='/Users/yaolin/Downloads/test.html', auto_open=True)
+        pass
 
     def test_depths(self):
         ud = np.unique(self.waypoints[:, 2])
@@ -117,4 +158,5 @@ class TestWaypoint(TestCase):
 # x2 = np.array([[100, 100]])
 # print("Distance", cdist(x1, x2, 'euclidean'))
 # print("test", 100 * np.sqrt(2))
+
 

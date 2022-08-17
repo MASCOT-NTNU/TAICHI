@@ -50,7 +50,7 @@ class WaypointGraph:
         self.__neighbour_distance = value
 
     def set_depth_layers(self, value: list) -> None:
-        self.__depths = value
+        self.__depths = np.array(value)
 
     def set_polygon_border(self, value: np.ndarray) -> None:
         self.__polygon_border = value
@@ -86,12 +86,14 @@ class WaypointGraph:
                 break
         return obs
 
-    def construct_waypoints_and_neighbours(self) -> None:
+    def construct_waypoints(self) -> None:
+        self.get_xy_limits()
+        self.get_xy_gaps()
+
         gx = np.arange(self.xmin, self.xmax, self.xgap)  # get [0, x_gap, 2*x_gap, ..., (n-1)*x_gap]
         gy = np.arange(self.ymin, self.ymax, self.ygap)
-
         grid2d = []
-        counter_grid = 0
+        counter_grid2d = 0
         for i in range(len(gy)):
             for j in range(len(gx)):
                 if j % 2 == 0:
@@ -104,37 +106,67 @@ class WaypointGraph:
                 if self.obs_free:
                     if self.border_contains(p):
                         grid2d.append([x, y])
-                        counter_grid += 1
+                        counter_grid2d += 1
                 else:
                     if self.border_contains(p) and not self.obstacles_contain(p):
                         grid2d.append([x, y])
-                        counter_grid += 1
+                        counter_grid2d += 1
 
         self.multiple_depth_layer = False
-        no_depth_layers = len(self.__depths)
-        if len(self.__depths) > 1:
+        self.no_depth_layers = len(self.__depths)
+        if self.no_depth_layers > 1:
             self.multiple_depth_layer = True
 
-        for i in range(no_depth_layers):
-              for j in range(counter_grid):
+        for i in range(self.no_depth_layers):
+              for j in range(counter_grid2d):
                 self.__waypoints = np.append(self.__waypoints,
                                              np.array([grid2d[j][0], grid2d[j][1],
                                                        self.__depths[i]]).reshape(1, -1), axis=0)
         self.__waypoints = np.array(self.__waypoints)
 
-    def get_hash_neighbours(self):
-        gxy = self.__waypoints[:, :2]
-        deucli = cdist(self.__waypoints, self.__waypoints, "euclidean")
-        if self.multiple_depth_layer:
-            gz = self.__waypoints[:, 2].reshape(-1, 1)
-            dg = np.abs(self.__depths[1] - self.__depths[0])
-            dellip = (cdist(gxy, gxy, "sqeuclidean") / (1.5 * self.__neighbour_distance)**2 +
-                      cdist(gz, gz, "sqeuclidean") / (1.5 * dg)**2)  # TODO: check a more elegant way to replace 1.5
-        else:
-            dellip = cdist(gxy, gxy, "sqeuclidean") / (1.5 * self.__neighbour_distance) ** 2
-        for i in range(len(deucli)):
-            nb_ind = np.where((dellip[i] <= 1) * (deucli[i] >= 5))[0]
-            self.__neighbour[i] = list(nb_ind)
+    def construct_hash_neighbours(self):
+        # check adjacent depth layers to determine the neighbouring waypoints.
+        self.no_waypoint = self.__waypoints.shape[0]
+        ERROR_BUFFER = 1
+        for i in range(self.no_waypoint):
+
+            # determine ind depth layer
+            xy_c = self.__waypoints[i, 0:2].reshape(1, -1)
+            d_c = self.__waypoints[i, 2]
+            ind_d = np.where(self.__depths == d_c)[0][0]
+
+            # determine ind adjacent layers
+            ind_u = ind_d + 1 if ind_d < self.no_depth_layers - 1 else ind_d
+            ind_l = ind_d - 1 if ind_d > 0 else 0
+
+            # compute lateral distance
+            id = np.unique([ind_d, ind_l, ind_u])
+            ds = self.__depths[id]
+
+            ind_n = []
+            for ids in ds:
+                ind_id = np.where(self.__waypoints[:, 2] == ids)[0]
+                xy = self.__waypoints[ind_id, 0:2]
+                dist = cdist(xy, xy_c)
+                ind_n_temp = np.where((dist <= self.__neighbour_distance + ERROR_BUFFER) *
+                                      (dist >= self.__neighbour_distance - ERROR_BUFFER))[0]
+                for idt in ind_n_temp:
+                    ind_n.append(ind_id[idt])
+            self.__neighbour[i] = ind_n
+
+    # def get_hash_neighbours(self):
+    #     gxy = self.__waypoints[:, :2]
+    #     deucli = cdist(self.__waypoints, self.__waypoints, "euclidean")
+    #     if self.multiple_depth_layer:
+    #         gz = self.__waypoints[:, 2].reshape(-1, 1)
+    #         dg = np.abs(self.__depths[1] - self.__depths[0])
+    #         dellip = (cdist(gxy, gxy, "sqeuclidean") / (1.5 * self.__neighbour_distance)**2 +
+    #                   cdist(gz, gz, "sqeuclidean") / (1.5 * dg)**2)  # TODO: check a more elegant way to replace 1.5
+    #     else:
+    #         dellip = cdist(gxy, gxy, "sqeuclidean") / (1.5 * self.__neighbour_distance) ** 2
+    #     for i in range(len(deucli)):
+    #         nb_ind = np.where((dellip[i] <= 1) * (deucli[i] >= 5))[0]
+    #         self.__neighbour[i] = list(nb_ind)
 
     def get_waypoints(self):
         """
@@ -182,5 +214,7 @@ class WaypointGraph:
         Returns: neighbour indices
         """
         return self.__neighbour[ind]
+
+
 
 
