@@ -93,59 +93,83 @@ class TestWaypoint(TestCase):
                 case = False
         self.assertTrue(case)
 
-    def test_neighbours_plotting(self):
-        import matplotlib.pyplot as plt
-
-        plt.plot(self.waypoints[:, 0], self.waypoints[:, 1], 'k.')
-        plt.plot(self.polygon_border[:, 0], self.polygon_border[:, 1], 'r-.')
-        for p in self.polygon_obstacle:
-            plt.plot(p[:, 0], p[:, 1], 'b-.')
-        plt.show()
-
-        import plotly
-        import plotly.graph_objects as go
-        ind_r = np.random.randint(0, self.waypoints.shape[0])
-        fig = go.Figure(data=[go.Scatter3d(
-            x=self.waypoints[:, 0],
-            y=self.waypoints[:, 1],
-            z=self.waypoints[:, 2],
-            mode='markers',
-            marker=dict(
-                size=2,
-                color='black',
-                opacity=0.8
-            )
-        )])
-        fig.add_trace(go.Scatter3d(
-            x=[self.waypoints[ind_r, 0]],
-            y=[self.waypoints[ind_r, 1]],
-            z=[self.waypoints[ind_r, 2]],
-            mode='markers',
-            marker=dict(
-                size=10,
-                color='red',
-                opacity=0.8
-            )
-        ))
-        fig.add_trace(go.Scatter3d(
-            x=self.waypoints[self.hash_neighbours[ind_r], 0],
-            y=self.waypoints[self.hash_neighbours[ind_r], 1],
-            z=self.waypoints[self.hash_neighbours[ind_r], 2],
-            mode='markers',
-            marker=dict(
-                size=10,
-                color='blue',
-                opacity=0.8
-            )
-        ))
-        # tight layout
-        fig.update_layout(margin=dict(l=0, r=0, b=0, t=0))
-        plotly.offline.plot(fig, filename='/Users/yaolin/Downloads/test.html', auto_open=True)
-
     def test_depths(self):
         ud = np.unique(self.waypoints[:, 2])
         self.assertIsNone(testing.assert_array_almost_equal(ud, np.array(self.depths)))
 
+    def test_get_ind_from_waypoints(self):
+        # empty wp
+        s = self.wg.get_ind_from_waypoint([])
+        self.assertIsNone(s)
+
+        # 1 wp
+        wp = np.array([1, 2, 300])
+        s = self.wg.get_ind_from_waypoint(wp)
+        wt = self.waypoints
+        ww = self.waypoints[s]
+        d = cdist(ww[:, np.newaxis], wp[:, np.newaxis])
+        da = cdist(self.waypoints, wp[:, np.newaxis])
+        self.assertTrue(d, da)
+
+        # >1 wp
+
+
+        # illegal wp
+
+        pass
+
+    def test_get_waypoints_from_ind(self):
+        pass
+
+
+    # def test_neighbours_plotting(self):
+    #     import matplotlib.pyplot as plt
+    #
+    #     plt.plot(self.waypoints[:, 0], self.waypoints[:, 1], 'k.')
+    #     plt.plot(self.polygon_border[:, 0], self.polygon_border[:, 1], 'r-.')
+    #     for p in self.polygon_obstacle:
+    #         plt.plot(p[:, 0], p[:, 1], 'b-.')
+    #     plt.show()
+    #
+    #     import plotly
+    #     import plotly.graph_objects as go
+    #     ind_r = np.random.randint(0, self.waypoints.shape[0])
+    #     fig = go.Figure(data=[go.Scatter3d(
+    #         x=self.waypoints[:, 0],
+    #         y=self.waypoints[:, 1],
+    #         z=self.waypoints[:, 2],
+    #         mode='markers',
+    #         marker=dict(
+    #             size=2,
+    #             color='black',
+    #             opacity=0.8
+    #         )
+    #     )])
+    #     fig.add_trace(go.Scatter3d(
+    #         x=[self.waypoints[ind_r, 0]],
+    #         y=[self.waypoints[ind_r, 1]],
+    #         z=[self.waypoints[ind_r, 2]],
+    #         mode='markers',
+    #         marker=dict(
+    #             size=10,
+    #             color='red',
+    #             opacity=0.8
+    #         )
+    #     ))
+    #     fig.add_trace(go.Scatter3d(
+    #         x=self.waypoints[self.hash_neighbours[ind_r], 0],
+    #         y=self.waypoints[self.hash_neighbours[ind_r], 1],
+    #         z=self.waypoints[self.hash_neighbours[ind_r], 2],
+    #         mode='markers',
+    #         marker=dict(
+    #             size=10,
+    #             color='blue',
+    #             opacity=0.8
+    #         )
+    #     ))
+    #     # tight layout
+    #     fig.update_layout(margin=dict(l=0, r=0, b=0, t=0))
+    #     plotly.offline.plot(fig, filename='/Users/yaolin/Downloads/test.html', auto_open=True)
 
 
 

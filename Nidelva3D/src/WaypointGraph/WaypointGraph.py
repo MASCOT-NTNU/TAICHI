@@ -26,7 +26,7 @@ Get:
                [xn, yn, zn]]
     Neighbour hash tables: {0: [1, 2, 3], 1: [0, 2, 3], ..., }
 """
-from typing import Any
+from typing import Any, Union
 import numpy as np
 from scipy.spatial.distance import cdist
 from math import cos, sin, radians
@@ -224,14 +224,26 @@ class WaypointGraph:
         """
         return self.__waypoints[ind, :]
 
-    def get_ind_from_waypoint(self, waypoint: np.ndarray) -> np.ndarray:
+    def get_ind_from_waypoint(self, waypoint: np.ndarray) -> Union[np.ndarray, None]:
         """
         Args:
             waypoint: np.array([xp, yp, zp])
         Returns: index of the closest waypoint.
         """
-        d = cdist(self.__waypoints, waypoint)
-        return np.argmin(d, axis=0)
+
+        if len(waypoint) > 0:
+            dm = waypoint.ndim
+            if dm == 1:
+                pass
+                # d = cdist(self.__waypoints, waypoint[:, np.newaxis])
+            elif dm == 2:
+                pass
+                # d = cdist(self.__waypoints, waypoint)
+            else:
+                return None
+            # return np.argmin(d, axis=0)
+        else:
+            return None
 
     def get_ind_neighbours(self, ind: int) -> list:
         """
