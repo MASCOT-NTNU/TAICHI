@@ -31,7 +31,7 @@ import numpy as np
 from scipy.spatial.distance import cdist
 from math import cos, sin, radians
 from shapely.geometry import Polygon, Point
-from Nidelva3D.src.usr_func.is_list_empty import is_list_empty
+from usr_func.is_list_empty import is_list_empty
 
 
 class WaypointGraph:
@@ -47,16 +47,20 @@ class WaypointGraph:
         self.__polygon_obstacles = [[[]]]
 
     def set_neighbour_distance(self, value: float) -> None:
+        """ Set the neighbour distance """
         self.__neighbour_distance = value
 
     def set_depth_layers(self, value: list) -> None:
+        """ Set the depth layers """
         self.__depths = np.array(value)
 
     def set_polygon_border(self, value: np.ndarray) -> None:
+        """ Set the polygon border, only one Nx2 dimension allowed """
         self.__polygon_border = value
         self.__polygon_border_shapely = Polygon(self.__polygon_border)
 
     def set_polygon_obstacles(self, value: list) -> None:
+        """ Set the polygons for obstacles, can have multiple obstacles """
         self.__polygon_obstacles = value
         self.obs_free = True
         if not is_list_empty(self.__polygon_obstacles):
@@ -65,20 +69,12 @@ class WaypointGraph:
                 self.__polygon_obstacles_shapely.append(Polygon(po))
             self.obs_free = False
 
-    def get_xy_limits(self):
-        xb = self.__polygon_border[:, 0]
-        yb = self.__polygon_border[:, 1]
-        self.xmin, self.ymin = map(np.amin, [xb, yb])
-        self.xmax, self.ymax = map(np.amax, [xb, yb])
-
-    def get_xy_gaps(self):
-        self.ygap = self.__neighbour_distance * cos(radians(60)) * 2
-        self.xgap = self.__neighbour_distance * sin(radians(60))
-
-    def border_contains(self, point):
+    def __border_contains(self, point: Point):
+        """ Test if point is within the border polygon """
         return self.__polygon_border_shapely.contains(point)
 
-    def obstacles_contain(self, point):
+    def __obstacles_contain(self, point: Point):
+        """ Test if point is colliding with any obstacle polygons """
         obs = False
         for posi in self.__polygon_obstacles_shapely:
             if posi.contains(point):
@@ -86,29 +82,53 @@ class WaypointGraph:
                 break
         return obs
 
-    def construct_waypoints(self) -> None:
-        self.get_xy_limits()
-        self.get_xy_gaps()
+    def __get_xy_limits(self):
+        """ Get the xy limits for the bigger box """
+        xb = self.__polygon_border[:, 0]
+        yb = self.__polygon_border[:, 1]
+        self.__xmin, self.__ymin = map(np.amin, [xb, yb])
+        self.__xmax, self.__ymax = map(np.amax, [xb, yb])
 
-        gx = np.arange(self.xmin, self.xmax, self.xgap)  # get [0, x_gap, 2*x_gap, ..., (n-1)*x_gap]
-        gy = np.arange(self.ymin, self.ymax, self.ygap)
+    def __get_xy_gaps(self):
+        """ Get the gap distance along each xy-axis """
+        self.__ygap = self.__neighbour_distance * cos(radians(60)) * 2
+        self.__xgap = self.__neighbour_distance * sin(radians(60))
+
+    def construct_waypoints(self) -> None:
+        """ Construct the waypoint graph based on the instruction given above.
+        - Construct regular meshgrid.
+        .  .  .  .
+        .  .  .  .
+        .  .  .  .
+        - Then move the even row to the right side.
+        .  .  .  .
+          .  .  .  .
+        .  .  .  .
+        - Then remove illegal locations.
+        - Then add the depth layers.
+        """
+        self.__get_xy_limits()
+        self.__get_xy_gaps()
+
+        gx = np.arange(self.__xmin, self.__xmax, self.__xgap)  # get [0, x_gap, 2*x_gap, ..., (n-1)*x_gap]
+        gy = np.arange(self.__ymin, self.__ymax, self.__ygap)
         grid2d = []
         counter_grid2d = 0
         for i in range(len(gy)):
             for j in range(len(gx)):
                 if j % 2 == 0:
                     x = gx[j]
-                    y = gy[i] + self.ygap / 2
+                    y = gy[i] + self.__ygap / 2
                 else:
                     x = gx[j]
                     y = gy[i]
                 p = Point(x, y)
                 if self.obs_free:
-                    if self.border_contains(p):
+                    if self.__border_contains(p):
                         grid2d.append([x, y])
                         counter_grid2d += 1
                 else:
-                    if self.border_contains(p) and not self.obstacles_contain(p):
+                    if self.__border_contains(p) and not self.__obstacles_contain(p):
                         grid2d.append([x, y])
                         counter_grid2d += 1
 
@@ -125,11 +145,17 @@ class WaypointGraph:
         self.__waypoints = np.array(self.__waypoints)
 
     def construct_hash_neighbours(self):
+        """ Construct the hash table for containing neighbour indices around each waypoint.
+        - Get the adjacent depth layers
+            - find the current depth layer index, then find the upper and lower depth layer indices.
+            - find the corresponding waypoints.
+        - Get the lateral neighbour indices for each layer.
+        - Append all the neighbour indices for each waypoint.
+        """
         # check adjacent depth layers to determine the neighbouring waypoints.
         self.no_waypoint = self.__waypoints.shape[0]
         ERROR_BUFFER = 1
         for i in range(self.no_waypoint):
-
             # determine ind depth layer
             xy_c = self.__waypoints[i, 0:2].reshape(1, -1)
             d_c = self.__waypoints[i, 2]

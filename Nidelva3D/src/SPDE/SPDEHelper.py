@@ -12,17 +12,5 @@ class SPDEHelper:
 if __name__ == "__main__":
     s = SPDEHelper()
 
-#%%
-print("hello world")
-def ret():
-    return 1, 2
-
-z = ret()
-
-#%%
-
-
-#%%
-
 
 

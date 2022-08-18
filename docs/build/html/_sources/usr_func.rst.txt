@@ -12,6 +12,14 @@ usr\_func.is\_even module
    :undoc-members:
    :show-inheritance:
 
+usr\_func.is\_list\_empty module
+--------------------------------
+
+.. automodule:: usr_func.is_list_empty
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 
