@@ -224,7 +224,7 @@ class WaypointGraph:
         """
         return self.__waypoints[ind, :]
 
-    def get_ind_from_waypoint(self, waypoint: np.ndarray) -> Union[np.ndarray, None]:
+    def get_ind_from_waypoint(self, waypoint: np.ndarray) -> Union[int, np.ndarray, None]:
         """
         Args:
             waypoint: np.array([xp, yp, zp])
@@ -234,14 +234,13 @@ class WaypointGraph:
         if len(waypoint) > 0:
             dm = waypoint.ndim
             if dm == 1:
-                pass
-                # d = cdist(self.__waypoints, waypoint[:, np.newaxis])
+                d = cdist(self.__waypoints, waypoint.reshape(1, -1))
+                return np.argmin(d, axis=0)[0]
             elif dm == 2:
-                pass
-                # d = cdist(self.__waypoints, waypoint)
+                d = cdist(self.__waypoints, waypoint)
+                return np.argmin(d, axis=0)
             else:
                 return None
-            # return np.argmin(d, axis=0)
         else:
             return None
 
