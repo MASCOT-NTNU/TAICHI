@@ -10,11 +10,14 @@ from Planner import Planner
 
 
 class Lawnmower(Planner):
-
     def __init__(self):
+        pass
+
+    def get_candidates(self):
         pass
 
     def plan_one_step_ahead(self):
         pass
+
 
 

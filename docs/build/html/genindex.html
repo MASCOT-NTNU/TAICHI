@@ -40,6 +40,7 @@
  | <a href="#I"><strong>I</strong></a>
  | <a href="#M"><strong>M</strong></a>
  | <a href="#P"><strong>P</strong></a>
+ | <a href="#R"><strong>R</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
  | <a href="#U"><strong>U</strong></a>
@@ -85,11 +86,11 @@
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="WaypointGraph.html#WaypointGraph.WaypointGraph.WaypointGraph.construct_hash_neighbours">construct_hash_neighbours() (WaypointGraph.WaypointGraph.WaypointGraph method)</a>
+      <li><a href="WaypointGraph.html#WaypointGraph.WaypointGraph.construct_hash_neighbours">construct_hash_neighbours() (WaypointGraph.WaypointGraph method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="WaypointGraph.html#WaypointGraph.WaypointGraph.WaypointGraph.construct_waypoints">construct_waypoints() (WaypointGraph.WaypointGraph.WaypointGraph method)</a>
+      <li><a href="WaypointGraph.html#WaypointGraph.WaypointGraph.construct_waypoints">construct_waypoints() (WaypointGraph.WaypointGraph method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -97,21 +98,23 @@
 <h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="WaypointGraph.html#WaypointGraph.WaypointGraph.WaypointGraph.get_hash_neighbour">get_hash_neighbour() (WaypointGraph.WaypointGraph.WaypointGraph method)</a>
+      <li><a href="WaypointGraph.html#WaypointGraph.WaypointGraph.get_hash_neighbour">get_hash_neighbour() (WaypointGraph.WaypointGraph method)</a>
 </li>
-      <li><a href="WaypointGraph.html#WaypointGraph.WaypointGraph.WaypointGraph.get_ind_from_waypoint">get_ind_from_waypoint() (WaypointGraph.WaypointGraph.WaypointGraph method)</a>
+      <li><a href="WaypointGraph.html#WaypointGraph.WaypointGraph.get_ind_from_waypoint">get_ind_from_waypoint() (WaypointGraph.WaypointGraph method)</a>
 </li>
-      <li><a href="WaypointGraph.html#WaypointGraph.WaypointGraph.WaypointGraph.get_ind_neighbours">get_ind_neighbours() (WaypointGraph.WaypointGraph.WaypointGraph method)</a>
+      <li><a href="WaypointGraph.html#WaypointGraph.WaypointGraph.get_ind_neighbours">get_ind_neighbours() (WaypointGraph.WaypointGraph method)</a>
+</li>
+      <li><a href="WaypointGraph.html#WaypointGraph.WaypointGraph.get_polygon_border">get_polygon_border() (WaypointGraph.WaypointGraph method)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="WaypointGraph.html#WaypointGraph.WaypointGraph.WaypointGraph.get_polygon_border">get_polygon_border() (WaypointGraph.WaypointGraph.WaypointGraph method)</a>
+      <li><a href="WaypointGraph.html#WaypointGraph.WaypointGraph.get_polygon_obstacles">get_polygon_obstacles() (WaypointGraph.WaypointGraph method)</a>
 </li>
-      <li><a href="WaypointGraph.html#WaypointGraph.WaypointGraph.WaypointGraph.get_polygon_obstacles">get_polygon_obstacles() (WaypointGraph.WaypointGraph.WaypointGraph method)</a>
+      <li><a href="Planner.html#Planner.Planner.Planner.get_suitable_candidates">get_suitable_candidates() (Planner.Planner.Planner method)</a>
 </li>
-      <li><a href="WaypointGraph.html#WaypointGraph.WaypointGraph.WaypointGraph.get_waypoint_from_ind">get_waypoint_from_ind() (WaypointGraph.WaypointGraph.WaypointGraph method)</a>
+      <li><a href="WaypointGraph.html#WaypointGraph.WaypointGraph.get_waypoint_from_ind">get_waypoint_from_ind() (WaypointGraph.WaypointGraph method)</a>
 </li>
-      <li><a href="WaypointGraph.html#WaypointGraph.WaypointGraph.WaypointGraph.get_waypoints">get_waypoints() (WaypointGraph.WaypointGraph.WaypointGraph method)</a>
+      <li><a href="WaypointGraph.html#WaypointGraph.WaypointGraph.get_waypoints">get_waypoints() (WaypointGraph.WaypointGraph method)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -169,17 +172,17 @@
 </li>
         <li><a href="WaypointGraph.html#module-WaypointGraph">WaypointGraph</a>
 </li>
-        <li><a href="WaypointGraph.html#module-WaypointGraph.WaypointGraph">WaypointGraph.WaypointGraph</a>
-</li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="Planner.html#Planner.Myopic3D.Myopic3D">Myopic3D (class in Planner.Myopic3D)</a>
+</li>
   </ul></td>
 </tr></table>
 
 <h2 id="P">P</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="Planner.html#Planner.Planner.Planner.plan_one_step_ahead">plan_one_step_ahead() (Planner.Planner.Planner method)</a>
-</li>
       <li>
     Planner
 
@@ -208,19 +211,45 @@
   </ul></td>
 </tr></table>
 
+<h2 id="R">R</h2>
+<table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="tests.html#tests.test_waypoint.TestWaypoint.run_depths">run_depths() (tests.test_waypoint.TestWaypoint method)</a>
+</li>
+      <li><a href="tests.html#tests.test_waypoint.TestWaypoint.run_empty_waypoints">run_empty_waypoints() (tests.test_waypoint.TestWaypoint method)</a>
+</li>
+      <li><a href="tests.html#tests.test_waypoint.TestWaypoint.run_get_ind_from_waypoints">run_get_ind_from_waypoints() (tests.test_waypoint.TestWaypoint method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="tests.html#tests.test_waypoint.TestWaypoint.run_illegal_lateral_neighbours">run_illegal_lateral_neighbours() (tests.test_waypoint.TestWaypoint method)</a>
+</li>
+      <li><a href="tests.html#tests.test_waypoint.TestWaypoint.run_illegal_waypoints">run_illegal_waypoints() (tests.test_waypoint.TestWaypoint method)</a>
+</li>
+      <li><a href="tests.html#tests.test_waypoint.TestWaypoint.run_neighbours_plotting">run_neighbours_plotting() (tests.test_waypoint.TestWaypoint method)</a>
+</li>
+  </ul></td>
+</tr></table>
+
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="WaypointGraph.html#WaypointGraph.WaypointGraph.WaypointGraph.set_depth_layers">set_depth_layers() (WaypointGraph.WaypointGraph.WaypointGraph method)</a>
+      <li><a href="WaypointGraph.html#WaypointGraph.WaypointGraph.set_depth_layers">set_depth_layers() (WaypointGraph.WaypointGraph method)</a>
 </li>
-      <li><a href="WaypointGraph.html#WaypointGraph.WaypointGraph.WaypointGraph.set_neighbour_distance">set_neighbour_distance() (WaypointGraph.WaypointGraph.WaypointGraph method)</a>
+      <li><a href="WaypointGraph.html#WaypointGraph.WaypointGraph.set_neighbour_distance">set_neighbour_distance() (WaypointGraph.WaypointGraph method)</a>
 </li>
-      <li><a href="WaypointGraph.html#WaypointGraph.WaypointGraph.WaypointGraph.set_polygon_border">set_polygon_border() (WaypointGraph.WaypointGraph.WaypointGraph method)</a>
+      <li><a href="WaypointGraph.html#WaypointGraph.WaypointGraph.set_polygon_border">set_polygon_border() (WaypointGraph.WaypointGraph method)</a>
 </li>
-      <li><a href="WaypointGraph.html#WaypointGraph.WaypointGraph.WaypointGraph.set_polygon_obstacles">set_polygon_obstacles() (WaypointGraph.WaypointGraph.WaypointGraph method)</a>
+      <li><a href="WaypointGraph.html#WaypointGraph.WaypointGraph.set_polygon_obstacles">set_polygon_obstacles() (WaypointGraph.WaypointGraph method)</a>
 </li>
-      <li><a href="tests.html#tests.test_waypoint.TestWaypoint.setUp">setUp() (tests.test_waypoint.TestWaypoint method)</a>
+      <li><a href="tests.html#tests.test_waypoint.TC1.setUp">setUp() (tests.test_waypoint.TC1 method)</a>
+
+      <ul>
+        <li><a href="tests.html#tests.test_waypoint.TC2.setUp">(tests.test_waypoint.TC2 method)</a>
 </li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     SPDE
 
@@ -228,8 +257,6 @@
         <li><a href="SPDE.html#module-SPDE">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     SPDE.spde
 
@@ -252,26 +279,22 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="tests.html#tests.test_waypoint.TestWaypoint.test_depths">test_depths() (tests.test_waypoint.TestWaypoint method)</a>
+      <li><a href="tests.html#tests.test_waypoint.TC1">TC1 (class in tests.test_waypoint)</a>
 </li>
-      <li><a href="tests.html#tests.test_waypoint.TestWaypoint.test_empty_waypoints">test_empty_waypoints() (tests.test_waypoint.TestWaypoint method)</a>
+      <li><a href="tests.html#tests.test_waypoint.TC2">TC2 (class in tests.test_waypoint)</a>
 </li>
-      <li><a href="tests.html#tests.test_waypoint.TestWaypoint.test_get_ind_from_waypoints">test_get_ind_from_waypoints() (tests.test_waypoint.TestWaypoint method)</a>
+      <li><a href="tests.html#tests.test_waypoint.TC1.test_all">test_all() (tests.test_waypoint.TC1 method)</a>
+
+      <ul>
+        <li><a href="tests.html#tests.test_waypoint.TC2.test_all">(tests.test_waypoint.TC2 method)</a>
 </li>
-      <li><a href="tests.html#tests.test_waypoint.TestWaypoint.test_get_waypoints_from_ind">test_get_waypoints_from_ind() (tests.test_waypoint.TestWaypoint method)</a>
-</li>
-      <li><a href="tests.html#tests.test_waypoint.TestWaypoint.test_illegal_neighbours">test_illegal_neighbours() (tests.test_waypoint.TestWaypoint method)</a>
-</li>
-      <li><a href="tests.html#tests.test_waypoint.TestWaypoint.test_illegal_waypoints">test_illegal_waypoints() (tests.test_waypoint.TestWaypoint method)</a>
-</li>
-      <li><a href="tests.html#tests.test_waypoint.TestWaypoint.test_neighbours_plotting">test_neighbours_plotting() (tests.test_waypoint.TestWaypoint method)</a>
-</li>
+      </ul></li>
       <li><a href="tests.html#tests.test_planner.TestPlanner.test_planner_update_planner">test_planner_update_planner() (tests.test_planner.TestPlanner method)</a>
+</li>
+      <li><a href="tests.html#tests.test_planner.TestPlanner">TestPlanner (class in tests.test_planner)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="tests.html#tests.test_planner.TestPlanner">TestPlanner (class in tests.test_planner)</a>
-</li>
       <li>
     tests
 
@@ -301,8 +324,6 @@
 <h2 id="U">U</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="Planner.html#Planner.Planner.Planner.update_pioneer_ind">update_pioneer_ind() (Planner.Planner.Planner method)</a>
-</li>
       <li><a href="Planner.html#Planner.Planner.Planner.update_planner">update_planner() (Planner.Planner.Planner method)</a>
 </li>
       <li>
@@ -343,15 +364,8 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="WaypointGraph.html#WaypointGraph.WaypointGraph.WaypointGraph">WaypointGraph (class in WaypointGraph.WaypointGraph)</a>
+      <li><a href="WaypointGraph.html#WaypointGraph.WaypointGraph">WaypointGraph (class in WaypointGraph)</a>
 </li>
-      <li>
-    WaypointGraph.WaypointGraph
-
-      <ul>
-        <li><a href="WaypointGraph.html#module-WaypointGraph.WaypointGraph">module</a>
-</li>
-      </ul></li>
   </ul></td>
 </tr></table>
 

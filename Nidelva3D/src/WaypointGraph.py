@@ -44,7 +44,7 @@ class WaypointGraph:
         self.__polygon_border = np.array([[0, 0],
                                           [0, 0],
                                           [0, 0]])
-        self.__polygon_obstacles = [[[]]]
+        self.__polygon_obstacles = [np.array([[]])]
 
     def set_neighbour_distance(self, value: float) -> None:
         """ Set the neighbour distance """
@@ -180,20 +180,6 @@ class WaypointGraph:
                     ind_n.append(ind_id[idt])
             self.__neighbour[i] = ind_n
 
-    # def get_hash_neighbours(self):
-    #     gxy = self.__waypoints[:, :2]
-    #     deucli = cdist(self.__waypoints, self.__waypoints, "euclidean")
-    #     if self.multiple_depth_layer:
-    #         gz = self.__waypoints[:, 2].reshape(-1, 1)
-    #         dg = np.abs(self.__depths[1] - self.__depths[0])
-    #         dellip = (cdist(gxy, gxy, "sqeuclidean") / (1.5 * self.__neighbour_distance)**2 +
-    #                   cdist(gz, gz, "sqeuclidean") / (1.5 * dg)**2)  # TODO: check a more elegant way to replace 1.5
-    #     else:
-    #         dellip = cdist(gxy, gxy, "sqeuclidean") / (1.5 * self.__neighbour_distance) ** 2
-    #     for i in range(len(deucli)):
-    #         nb_ind = np.where((dellip[i] <= 1) * (deucli[i] >= 5))[0]
-    #         self.__neighbour[i] = list(nb_ind)
-
     def get_waypoints(self):
         """
         Returns: waypoints
@@ -251,6 +237,26 @@ class WaypointGraph:
         Returns: neighbour indices
         """
         return self.__neighbour[ind]
+
+    @staticmethod
+    def get_vector_between_two_waypoints(wp1: np.ndarray, wp2: np.ndarray) -> np.ndarray:
+        """ Get a vector from wp1 to wp2.
+
+        Args:
+            wp1: np.array([x1, y1, z1])
+            wp2: np.array([x2, y2, z2])
+
+        Returns:
+            vec: np.array([[x2 - x1],
+                           [y2 - y1],
+                           [z2 - z1]])
+
+        """
+        dx = wp2[0] - wp1[0]
+        dy = wp2[1] - wp1[1]
+        dz = wp2[2] - wp1[2]
+        vec = np.vstack((dx, dy, dz))
+        return vec
 
 
 

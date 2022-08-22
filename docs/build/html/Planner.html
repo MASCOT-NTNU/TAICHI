@@ -43,37 +43,43 @@
 </section>
 <section id="module-Planner.Myopic3D">
 <span id="planner-myopic3d-module"></span><h2>Planner.Myopic3D module<a class="headerlink" href="#module-Planner.Myopic3D" title="Permalink to this headline">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="Planner.Myopic3D.Myopic3D">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">Planner.Myopic3D.</span></span><span class="sig-name descname"><span class="pre">Myopic3D</span></span><a class="headerlink" href="#Planner.Myopic3D.Myopic3D" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#Planner.Planner.Planner" title="Planner.Planner.Planner"><code class="xref py py-class docutils literal notranslate"><span class="pre">Planner.Planner.Planner</span></code></a></p>
+</dd></dl>
+
 </section>
 <section id="module-Planner.Planner">
 <span id="planner-planner-module"></span><h2>Planner.Planner module<a class="headerlink" href="#module-Planner.Planner" title="Permalink to this headline">¶</a></h2>
-<p>Planner object is the superclass for the path planning. It encapsulates essential information for the path planning.</p>
+<p>Planner selects candidate locations and then decide which one to go next.</p>
+<dl class="field-list simple">
+<dt class="field-odd">param __id_prev</dt>
+<dd class="field-odd"><p>previous index</p>
+</dd>
+<dt class="field-even">param __id_now</dt>
+<dd class="field-even"><p>current index</p>
+</dd>
+<dt class="field-odd">param __id_next</dt>
+<dd class="field-odd"><p>next index</p>
+</dd>
+<dt class="field-even">param __id_pion</dt>
+<dd class="field-even"><p>pioneer index</p>
+</dd>
+</dl>
 <dl class="py class">
 <dt class="sig sig-object py" id="Planner.Planner.Planner">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">Planner.Planner.</span></span><span class="sig-name descname"><span class="pre">Planner</span></span><a class="headerlink" href="#Planner.Planner.Planner" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
-<dt class="sig sig-object py" id="Planner.Planner.Planner.plan_one_step_ahead">
-<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">plan_one_step_ahead</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Planner.Planner.Planner.plan_one_step_ahead" title="Permalink to this definition">¶</a></dt>
-<dd><p>Plans one step ahead.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="Planner.Planner.Planner.update_pioneer_ind">
-<span class="sig-name descname"><span class="pre">update_pioneer_ind</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">new_pioneer_ind</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#Planner.Planner.Planner.update_pioneer_ind" title="Permalink to this definition">¶</a></dt>
-<dd><p>Updates the pioneer index.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>new_pioneer_ind</strong> – int</p>
-</dd>
-</dl>
-</dd></dl>
+<dt class="sig sig-object py" id="Planner.Planner.Planner.get_suitable_candidates">
+<span class="sig-name descname"><span class="pre">get_suitable_candidates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Planner.Planner.Planner.get_suitable_candidates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="Planner.Planner.Planner.update_planner">
-<span class="sig-name descname"><span class="pre">update_planner</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Planner.Planner.Planner.update_planner" title="Permalink to this definition">¶</a></dt>
-<dd><p>(Planner) -&gt; NoneType</p>
-<p>Updates the planner by moving each pointer forward one step.</p>
-</dd></dl>
+<span class="sig-name descname"><span class="pre">update_planner</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#Planner.Planner.Planner.update_planner" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -107,7 +113,7 @@
 <li class="toctree-l2"><a class="reference internal" href="Agent.html">Agent module</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Planner package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="SPDE.html">SPDE package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="WaypointGraph.html">WaypointGraph package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WaypointGraph.html">WaypointGraph module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tests.html">tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usr_func.html">usr_func package</a></li>
 </ul>

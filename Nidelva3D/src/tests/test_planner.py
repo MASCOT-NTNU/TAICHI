@@ -4,27 +4,51 @@ This module tests the planner object.
 
 """
 
-import unittest
+from unittest import TestCase
 from Planner.Planner import Planner
 
 
-class TestPlanner(unittest.TestCase):
-    """ Test class for planner.
-
+class TestPlanner(TestCase):
+    """ Common test class for the waypoint graph module
     """
 
-    def test_planner_update_planner(self):
-        """ Tests update planner
+    def setUp(self) -> None:
+        self.planner = Planner()
 
-        """
-        planner = Planner()
-        planner.update_planner()
-        actual = Planner._ind_next
-        expected = 0
-        self.assertEqual(expected, actual)
+    def test_initial_indices(self):
+        """ Test initial indices to be 0. """
+        self.assertEqual(self.planner.get_next_index(), 0)
+        self.assertEqual(self.planner.get_current_index(), 0)
+        self.assertEqual(self.planner.get_pioneer_index(), 0)
+        self.assertEqual(self.planner.get_previous_index(), 0)
 
+    def test_set_indices(self):
+        """ Test individual index setting function. """
+        id_next = 10
+        id_prev = 11
+        id_now = 4
+        id_pion = 12
+        self.planner.set_next_index(id_next)
+        self.planner.set_current_index(id_now)
+        self.planner.set_pioneer_index(id_pion)
+        self.planner.set_previous_index(id_prev)
 
-if __name__ == "__main__":
-    unittest.main(exit=False)
+        self.assertEqual(self.planner.get_next_index(), id_next)
+        self.assertEqual(self.planner.get_current_index(), id_now)
+        self.assertEqual(self.planner.get_previous_index(), id_prev)
+        self.assertEqual(self.planner.get_pioneer_index(), id_pion)
+
+    def test_update_planner(self):
+        """ Test update planner method. """
+        id_pion = self.planner.get_pioneer_index()
+        id_now = self.planner.get_current_index()
+        id_next = self.planner.get_next_index()
+        id_pion_new = 22
+        self.planner.update_planner(id_pion_new)
+        self.assertEqual(id_pion_new, self.planner.get_pioneer_index())
+        self.assertEqual(id_pion, self.planner.get_next_index())
+        self.assertEqual(id_next, self.planner.get_current_index())
+        self.assertEqual(id_now, self.planner.get_previous_index())
+
 
 

@@ -1,3 +1,36 @@
+"""
+
+"""
+from Planner.Planner import Planner
+from WaypointGraph import WaypointGraph
+
+
+class Myopic3D(Planner):
+
+    def __init__(self, wp: WaypointGraph) -> None:
+        super().__init__()
+        self.wp = wp
+
+    def get_candidates(self):
+        id_n = self.wp.get_ind_neighbours(self._id_now)
+        wp_now = self.wp.get_waypoint_from_ind(self._id_now)
+        id_smooth = []
+        for ids in id_n:
+            wps = self.wp.get_waypoint_from_ind(ids)
+
+            pass
+
+    def get_vec_from_two_waypoints(self):
+        pass
+
+    def get_next_waypoint(self):
+        pass
+
+#%%
+
+
+
+#%%
 # """
 # This script determines the next index based on minimum EIBV
 # Author: Yaolin Ge
