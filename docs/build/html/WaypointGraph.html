@@ -15,7 +15,7 @@
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="tests package" href="tests.html" />
+    <link rel="next" title="func_test module" href="func_test.html" />
     <link rel="prev" title="SPDE package" href="SPDE.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -151,6 +151,31 @@ Sets the boundary and neighbour distance for the discretization under NED coordi
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="WaypointGraph.WaypointGraph.get_vector_between_two_waypoints">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">get_vector_between_two_waypoints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wp1</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wp2</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#WaypointGraph.WaypointGraph.get_vector_between_two_waypoints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a vector from wp1 to wp2.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>wp1</strong> – np.array([x1, y1, z1])</p></li>
+<li><p><strong>wp2</strong> – np.array([x2, y2, z2])</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p><dl class="simple">
+<dt>np.array([[x2 - x1],</dt><dd><p>[y2 - y1],
+[z2 - z1]])</p>
+</dd>
+</dl>
+</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>vec</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="WaypointGraph.WaypointGraph.get_waypoint_from_ind">
 <span class="sig-name descname"><span class="pre">get_waypoint_from_ind</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ind</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span><span class="p"><span class="pre">[</span></span><span class="pre">typing.Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#WaypointGraph.WaypointGraph.get_waypoint_from_ind" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return waypoint locations using ind</p>
@@ -215,6 +240,7 @@ Sets the boundary and neighbour distance for the discretization under NED coordi
 <li class="toctree-l2"><a class="reference internal" href="Planner.html">Planner package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="SPDE.html">SPDE package</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">WaypointGraph module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="func_test.html">func_test module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tests.html">tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usr_func.html">usr_func package</a></li>
 </ul>
@@ -227,7 +253,7 @@ Sets the boundary and neighbour distance for the discretization under NED coordi
   <li><a href="index.html">Documentation overview</a><ul>
   <li><a href="modules.html">src</a><ul>
       <li>Previous: <a href="SPDE.html" title="previous chapter">SPDE package</a></li>
-      <li>Next: <a href="tests.html" title="next chapter">tests package</a></li>
+      <li>Next: <a href="func_test.html" title="next chapter">func_test module</a></li>
   </ul></li>
   </ul></li>
 </ul>

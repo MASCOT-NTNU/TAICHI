@@ -16,7 +16,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="usr_func package" href="usr_func.html" />
-    <link rel="prev" title="WaypointGraph module" href="WaypointGraph.html" />
+    <link rel="prev" title="func_test module" href="func_test.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
   
@@ -38,6 +38,29 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </section>
+<section id="module-tests.test_myopic3d">
+<span id="tests-test-myopic3d-module"></span><h2>tests.test_myopic3d module<a class="headerlink" href="#module-tests.test_myopic3d" title="Permalink to this headline">¶</a></h2>
+<p>Unit test for Myopic3D</p>
+<p>This module tests the myopic3d object.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="tests.test_myopic3d.TestMyopic">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">tests.test_myopic3d.</span></span><span class="sig-name descname"><span class="pre">TestMyopic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_myopic3d.TestMyopic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<p>Common test class for the waypoint graph module</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_myopic3d.TestMyopic.setUp">
+<span class="sig-name descname"><span class="pre">setUp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#tests.test_myopic3d.TestMyopic.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_myopic3d.TestMyopic.test_get_candidates">
+<span class="sig-name descname"><span class="pre">test_get_candidates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_myopic3d.TestMyopic.test_get_candidates" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
 <section id="module-tests.test_planner">
 <span id="tests-test-planner-module"></span><h2>tests.test_planner module<a class="headerlink" href="#module-tests.test_planner" title="Permalink to this headline">¶</a></h2>
 <p>Unit test for planner</p>
@@ -46,11 +69,29 @@
 <dt class="sig sig-object py" id="tests.test_planner.TestPlanner">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">tests.test_planner.</span></span><span class="sig-name descname"><span class="pre">TestPlanner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_planner.TestPlanner" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
-<p>Test class for planner.</p>
+<p>Common test class for the waypoint graph module</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="tests.test_planner.TestPlanner.test_planner_update_planner">
-<span class="sig-name descname"><span class="pre">test_planner_update_planner</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_planner.TestPlanner.test_planner_update_planner" title="Permalink to this definition">¶</a></dt>
-<dd><p>Tests update planner</p>
+<dt class="sig sig-object py" id="tests.test_planner.TestPlanner.setUp">
+<span class="sig-name descname"><span class="pre">setUp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#tests.test_planner.TestPlanner.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_planner.TestPlanner.test_initial_indices">
+<span class="sig-name descname"><span class="pre">test_initial_indices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_planner.TestPlanner.test_initial_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test initial indices to be 0.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_planner.TestPlanner.test_set_indices">
+<span class="sig-name descname"><span class="pre">test_set_indices</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_planner.TestPlanner.test_set_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test individual index setting function.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_planner.TestPlanner.test_update_planner">
+<span class="sig-name descname"><span class="pre">test_update_planner</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_planner.TestPlanner.test_update_planner" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test update planner method.</p>
 </dd></dl>
 
 </dd></dl>
@@ -99,38 +140,43 @@ This module tests the planner object.</p>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
 <p>Common test class for the waypoint graph module</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="tests.test_waypoint.TestWaypoint.run_depths">
-<span class="sig-name descname"><span class="pre">run_depths</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_waypoint.TestWaypoint.run_depths" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="tests.test_waypoint.TestWaypoint.run_test_depths">
+<span class="sig-name descname"><span class="pre">run_test_depths</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_waypoint.TestWaypoint.run_test_depths" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test if depths are properly generated.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="tests.test_waypoint.TestWaypoint.run_empty_waypoints">
-<span class="sig-name descname"><span class="pre">run_empty_waypoints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_waypoint.TestWaypoint.run_empty_waypoints" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="tests.test_waypoint.TestWaypoint.run_test_empty_waypoints">
+<span class="sig-name descname"><span class="pre">run_test_empty_waypoints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_waypoint.TestWaypoint.run_test_empty_waypoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test if it generates empty waypoint.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="tests.test_waypoint.TestWaypoint.run_get_ind_from_waypoints">
-<span class="sig-name descname"><span class="pre">run_get_ind_from_waypoints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_waypoint.TestWaypoint.run_get_ind_from_waypoints" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="tests.test_waypoint.TestWaypoint.run_test_get_ind_from_waypoints">
+<span class="sig-name descname"><span class="pre">run_test_get_ind_from_waypoints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_waypoint.TestWaypoint.run_test_get_ind_from_waypoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test waypoint interpolation works. Given random location, it should return indices for the nearest locations.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="tests.test_waypoint.TestWaypoint.run_illegal_lateral_neighbours">
-<span class="sig-name descname"><span class="pre">run_illegal_lateral_neighbours</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_waypoint.TestWaypoint.run_illegal_lateral_neighbours" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="tests.test_waypoint.TestWaypoint.run_test_get_vector_between_two_waypoints">
+<span class="sig-name descname"><span class="pre">run_test_get_vector_between_two_waypoints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_waypoint.TestWaypoint.run_test_get_vector_between_two_waypoints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_waypoint.TestWaypoint.run_test_illegal_lateral_neighbours">
+<span class="sig-name descname"><span class="pre">run_test_illegal_lateral_neighbours</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_waypoint.TestWaypoint.run_test_illegal_lateral_neighbours" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test if lateral neighbours are legal.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="tests.test_waypoint.TestWaypoint.run_illegal_waypoints">
-<span class="sig-name descname"><span class="pre">run_illegal_waypoints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_waypoint.TestWaypoint.run_illegal_waypoints" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="tests.test_waypoint.TestWaypoint.run_test_illegal_waypoints">
+<span class="sig-name descname"><span class="pre">run_test_illegal_waypoints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_waypoint.TestWaypoint.run_test_illegal_waypoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test if any waypoints are not within the border polygon or colliding with obstacles.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="tests.test_waypoint.TestWaypoint.run_neighbours_plotting">
-<span class="sig-name descname"><span class="pre">run_neighbours_plotting</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_waypoint.TestWaypoint.run_neighbours_plotting" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="tests.test_waypoint.TestWaypoint.run_test_neighbours_plotting">
+<span class="sig-name descname"><span class="pre">run_test_neighbours_plotting</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_waypoint.TestWaypoint.run_test_neighbours_plotting" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
@@ -166,6 +212,7 @@ This module tests the planner object.</p>
 <li class="toctree-l2"><a class="reference internal" href="Planner.html">Planner package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="SPDE.html">SPDE package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="WaypointGraph.html">WaypointGraph module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="func_test.html">func_test module</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">tests package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usr_func.html">usr_func package</a></li>
 </ul>
@@ -177,7 +224,7 @@ This module tests the planner object.</p>
 <ul>
   <li><a href="index.html">Documentation overview</a><ul>
   <li><a href="modules.html">src</a><ul>
-      <li>Previous: <a href="WaypointGraph.html" title="previous chapter">WaypointGraph module</a></li>
+      <li>Previous: <a href="func_test.html" title="previous chapter">func_test module</a></li>
       <li>Next: <a href="usr_func.html" title="next chapter">usr_func package</a></li>
   </ul></li>
   </ul></li>

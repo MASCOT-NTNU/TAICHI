@@ -10,7 +10,7 @@ from WaypointGraph import WaypointGraph
 import numpy as np
 
 
-class TestPlanner(TestCase):
+class TestMyopic(TestCase):
     """ Common test class for the waypoint graph module
     """
 
@@ -39,7 +39,8 @@ class TestPlanner(TestCase):
         self.myopic = Myopic3D(self.wp)
 
     def test_get_candidates(self):
-        self.myopic.get_candidates()
+        wp = self.myopic.get_next_waypoint()
+
         pass
 
 

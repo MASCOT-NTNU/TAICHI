@@ -1,8 +1,10 @@
 """
-
+Myopic3D path planner determines the next waypoint according to minimum EIBV criterion.
 """
 from Planner.Planner import Planner
 from WaypointGraph import WaypointGraph
+from usr_func.is_list_empty import is_list_empty
+import numpy as np
 
 
 class Myopic3D(Planner):
@@ -12,19 +14,31 @@ class Myopic3D(Planner):
         self.wp = wp
 
     def get_candidates(self):
-        id_n = self.wp.get_ind_neighbours(self._id_now)
+        # self._id_prev = 4
+        # self._id_now = 5
+        wp_prev = self.wp.get_waypoint_from_ind(self._id_prev)
         wp_now = self.wp.get_waypoint_from_ind(self._id_now)
+        vec1 = self.wp.get_vector_between_two_waypoints(wp_prev, wp_now)
+        id_neighbours = self.wp.get_ind_neighbours(self._id_now)
         id_smooth = []
-        for ids in id_n:
-            wps = self.wp.get_waypoint_from_ind(ids)
-
-            pass
-
-    def get_vec_from_two_waypoints(self):
-        pass
+        for iid in id_neighbours:
+            wp_n = self.wp.get_waypoint_from_ind(iid)
+            vec2 = self.wp.get_vector_between_two_waypoints(wp_n, wp_now)
+            if vec1.T @ vec2 >= 0:
+                id_smooth.append(iid)
+        return id_smooth, id_neighbours
 
     def get_next_waypoint(self):
-        pass
+        id_smooth, id_neighbours = self.get_candidates()
+        id_smooth = []
+        if not is_list_empty(id_smooth):
+            pass
+        else:
+            rng_ind = np.random.randint(0, len(id_neighbours))
+            id_next = id_neighbours[rng_ind]
+            self.set_next_index(id_next)
+            return self.wp.get_waypoint_from_ind(id_next)
+
 
 #%%
 
