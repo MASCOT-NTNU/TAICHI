@@ -4,6 +4,14 @@ tests package
 Submodules
 ----------
 
+tests.test\_myopic3d module
+---------------------------
+
+.. automodule:: tests.test_myopic3d
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 tests.test\_planner module
 --------------------------
 

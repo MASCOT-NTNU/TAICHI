@@ -9,5 +9,6 @@ src
    Planner
    SPDE
    WaypointGraph
+   func_test
    tests
    usr_func
