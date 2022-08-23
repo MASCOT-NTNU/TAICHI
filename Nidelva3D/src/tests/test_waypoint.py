@@ -73,6 +73,19 @@ class TestWaypoint(TestCase):
                                    [wp2[1]-wp1[1]],
                                    [wp2[2]-wp1[2]]]), vec))
 
+    def run_test_get_waypoints_from_ind(self):
+        # c1: empty ind
+        wp = self.wg.get_waypoint_from_ind([])
+        self.assertEqual(wp.shape[0], 0)
+        # c2: one ind
+        ids = 10
+        wp = self.wg.get_waypoint_from_ind(ids).reshape(-1, 3)
+        self.assertEqual(wp.shape[0], 1)
+        # c3: multiple inds
+        ids = [11, 13, 15]
+        wp = self.wg.get_waypoint_from_ind(ids)
+        self.assertEqual(wp.shape[0], len(ids))
+
     def run_test_get_ind_from_waypoints(self):
         """ Test waypoint interpolation works. Given random location, it should return indices for the nearest locations. """
         # c1: empty wp
@@ -223,6 +236,7 @@ class TC1(TestWaypoint):
         self.run_test_empty_waypoints()
         self.run_test_depths()
         self.run_test_neighbours_plotting()
+        self.run_test_get_waypoints_from_ind()
 
 
 class TC2(TestWaypoint):
@@ -258,6 +272,7 @@ class TC2(TestWaypoint):
         self.run_test_empty_waypoints()
         self.run_test_depths()
         self.run_test_neighbours_plotting()
+        self.run_test_get_waypoints_from_ind()
 
 
 if __name__ == "__main__":

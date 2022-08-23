@@ -204,7 +204,7 @@ class WaypointGraph:
         """
         return self.__polygon_obstacles
 
-    def get_waypoint_from_ind(self, ind: int) -> list[Any]:
+    def get_waypoint_from_ind(self, ind: Union[int, list, np.ndarray]) -> np.ndarray:
         """
         Return waypoint locations using ind
         """
