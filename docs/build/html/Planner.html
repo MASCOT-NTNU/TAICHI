@@ -43,24 +43,54 @@
 </section>
 <section id="module-Planner.Myopic3D">
 <span id="planner-myopic3d-module"></span><h2>Planner.Myopic3D module<a class="headerlink" href="#module-Planner.Myopic3D" title="Permalink to this headline">¶</a></h2>
+<p>Myopic3D path planner determines the next waypoint according to minimum EIBV criterion.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="Planner.Myopic3D.Myopic3D">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">Planner.Myopic3D.</span></span><span class="sig-name descname"><span class="pre">Myopic3D</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wp</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="WaypointGraph.html#WaypointGraph.WaypointGraph" title="WaypointGraph.WaypointGraph"><span class="pre">WaypointGraph.WaypointGraph</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#Planner.Myopic3D.Myopic3D" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#Planner.Planner.Planner" title="Planner.Planner.Planner"><code class="xref py py-class docutils literal notranslate"><span class="pre">Planner.Planner.Planner</span></code></a></p>
+<p>Myopic3D planner.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="Planner.Myopic3D.Myopic3D.get_candidates">
 <span class="sig-name descname"><span class="pre">get_candidates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Planner.Myopic3D.Myopic3D.get_candidates" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Filter sharp turn, bottom up and dive down behaviours.</p>
+<p>It computes the dot product between two vectors. One is from the previous waypoint to the current waypoint.
+The other is from the current waypoint to the potential next waypoint.
+.. rubric:: Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">wp_prev</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x1</span><span class="p">,</span> <span class="n">y1</span><span class="p">,</span> <span class="n">z1</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">wp_curr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">x2</span><span class="p">,</span> <span class="n">y2</span><span class="p">,</span> <span class="n">z2</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">vec1</span> <span class="o">=</span> <span class="n">wp_curr</span> <span class="o">-</span> <span class="n">wp_prev</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="k">for</span> <span class="n">wp</span> <span class="ow">in</span> <span class="n">wp_neighbours</span><span class="p">:</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">wp</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">([</span><span class="n">xi</span><span class="p">,</span> <span class="n">yi</span><span class="p">,</span> <span class="n">zi</span><span class="p">])</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="n">vec2</span> <span class="o">=</span> <span class="n">wp</span> <span class="o">-</span> <span class="n">wp_curr</span>
+<span class="gp">&gt;&gt;&gt; </span>    <span class="k">if</span> <span class="n">dot</span><span class="p">(</span><span class="n">vec1</span><span class="o">.</span><span class="n">T</span><span class="p">,</span> <span class="n">vec2</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="mi">0</span><span class="p">:</span>
+<span class="gp">&gt;&gt;&gt; </span>        <span class="n">append</span><span class="p">(</span><span class="n">wp</span><span class="p">)</span>
+</pre></div>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>filtered candidate indices in the waypointgraph.
+id_neighbours: all the neighbours at the current location.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>id_smooth</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="Planner.Myopic3D.Myopic3D.get_next_waypoint">
 <span class="sig-name descname"><span class="pre">get_next_waypoint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Planner.Myopic3D.Myopic3D.get_next_waypoint" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="Planner.Myopic3D.Myopic3D.get_vec_from_two_waypoints">
-<span class="sig-name descname"><span class="pre">get_vec_from_two_waypoints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Planner.Myopic3D.Myopic3D.get_vec_from_two_waypoints" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Get next waypoint according to minimum EIBV criterion.</p>
+<p>If no possible candiate locations were found. Then a random location in the neighbourhood is selected.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>designed next waypoint location.</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>wp_next</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
@@ -179,6 +209,7 @@
 <li class="toctree-l2"><a class="reference internal" href="Agent.html">Agent module</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Planner package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="SPDE.html">SPDE package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WGS.html">WGS module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="WaypointGraph.html">WaypointGraph module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="func_test.html">func_test module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tests.html">tests package</a></li>

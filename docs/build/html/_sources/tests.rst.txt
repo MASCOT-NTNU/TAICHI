@@ -20,10 +20,34 @@ tests.test\_planner module
    :undoc-members:
    :show-inheritance:
 
+tests.test\_spde module
+-----------------------
+
+.. automodule:: tests.test_spde
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+tests.test\_spde\_helper module
+-------------------------------
+
+.. automodule:: tests.test_spde_helper
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 tests.test\_waypoint module
 ---------------------------
 
 .. automodule:: tests.test_waypoint
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+tests.test\_wgs module
+----------------------
+
+.. automodule:: tests.test_wgs
    :members:
    :undoc-members:
    :show-inheritance:

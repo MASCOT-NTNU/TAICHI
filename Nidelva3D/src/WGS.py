@@ -22,22 +22,22 @@ from numpy import vectorize
 
 
 class WGS:
-    CIRCUMFERENCE = 40075000  # [m], circumference
-    LATITUDE_ORIGIN = 63.4269097
-    LONGITUDE_ORIGIN = 10.3969375
+    __CIRCUMFERENCE = 40075000  # [m], circumference
+    __LATITUDE_ORIGIN = 63.4269097
+    __LONGITUDE_ORIGIN = 10.3969375
 
     @staticmethod
     @vectorize
     def latlon2xy(lat, lon):
-        x = radians((lat - WGS.LATITUDE_ORIGIN)) / 2 / np.pi * WGS.CIRCUMFERENCE
-        y = radians((lon - WGS.LONGITUDE_ORIGIN)) / 2 / np.pi * WGS.CIRCUMFERENCE * np.cos(radians(lat))
+        x = radians((lat - WGS.__LATITUDE_ORIGIN)) / 2 / np.pi * WGS.__CIRCUMFERENCE
+        y = radians((lon - WGS.__LONGITUDE_ORIGIN)) / 2 / np.pi * WGS.__CIRCUMFERENCE * np.cos(radians(lat))
         return x, y
 
     @staticmethod
     @vectorize
     def xy2latlon(x, y):
-        lat = WGS.LATITUDE_ORIGIN + degrees(x * np.pi * 2.0 / WGS.CIRCUMFERENCE)
-        lon = WGS.LONGITUDE_ORIGIN + degrees(y * np.pi * 2.0 / (WGS.CIRCUMFERENCE * np.cos(radians(lat))))
+        lat = WGS.__LATITUDE_ORIGIN + degrees(x * np.pi * 2.0 / WGS.__CIRCUMFERENCE)
+        lon = WGS.__LONGITUDE_ORIGIN + degrees(y * np.pi * 2.0 / (WGS.__CIRCUMFERENCE * np.cos(radians(lat))))
         return lat, lon
 
 

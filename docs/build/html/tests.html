@@ -56,7 +56,14 @@
 <dl class="py method">
 <dt class="sig sig-object py" id="tests.test_myopic3d.TestMyopic.test_get_candidates">
 <span class="sig-name descname"><span class="pre">test_get_candidates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_myopic3d.TestMyopic.test_get_candidates" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Test if candidate locations are legal or not.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_myopic3d.TestMyopic.test_get_next_waypoint">
+<span class="sig-name descname"><span class="pre">test_get_next_waypoint</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_myopic3d.TestMyopic.test_get_next_waypoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test if next waypoint is properly selected.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -93,6 +100,56 @@
 <span class="sig-name descname"><span class="pre">test_update_planner</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_planner.TestPlanner.test_update_planner" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test update planner method.</p>
 </dd></dl>
+
+</dd></dl>
+
+</section>
+<section id="module-tests.test_spde">
+<span id="tests-test-spde-module"></span><h2>tests.test_spde module<a class="headerlink" href="#module-tests.test_spde" title="Permalink to this headline">¶</a></h2>
+<p>Unit test for SPDE helper
+This module tests the SPDE helper object.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="tests.test_spde.TestSPDE">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">tests.test_spde.</span></span><span class="sig-name descname"><span class="pre">TestSPDE</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_spde.TestSPDE" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<p>Test class for spde.</p>
+</dd></dl>
+
+</section>
+<section id="module-tests.test_spde_helper">
+<span id="tests-test-spde-helper-module"></span><h2>tests.test_spde_helper module<a class="headerlink" href="#module-tests.test_spde_helper" title="Permalink to this headline">¶</a></h2>
+<p>Unit test for SPDE helper
+This module tests the SPDE helper object.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="tests.test_spde_helper.TestSPDEHelper">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">tests.test_spde_helper.</span></span><span class="sig-name descname"><span class="pre">TestSPDEHelper</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_spde_helper.TestSPDEHelper" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
+<p>Test class for spde helper class.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_spde_helper.TestSPDEHelper.setUp">
+<span class="sig-name descname"><span class="pre">setUp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#tests.test_spde_helper.TestSPDEHelper.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_spde_helper.TestSPDEHelper.test_get_eibv_at_locations">
+<span class="sig-name descname"><span class="pre">test_get_eibv_at_locations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_spde_helper.TestSPDEHelper.test_get_eibv_at_locations" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_spde_helper.TestSPDEHelper.test_get_ibv">
+<span class="sig-name descname"><span class="pre">test_get_ibv</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_spde_helper.TestSPDEHelper.test_get_ibv" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_spde_helper.TestSPDEHelper.test_get_ind_from_location">
+<span class="sig-name descname"><span class="pre">test_get_ind_from_location</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_spde_helper.TestSPDEHelper.test_get_ind_from_location" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_spde_helper.TestSPDEHelper.test_get_spde_grid">
+<span class="sig-name descname"><span class="pre">test_get_spde_grid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_spde_helper.TestSPDEHelper.test_get_spde_grid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
@@ -163,6 +220,11 @@ This module tests the planner object.</p>
 <dd></dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="tests.test_waypoint.TestWaypoint.run_test_get_waypoints_from_ind">
+<span class="sig-name descname"><span class="pre">run_test_get_waypoints_from_ind</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_waypoint.TestWaypoint.run_test_get_waypoints_from_ind" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="tests.test_waypoint.TestWaypoint.run_test_illegal_lateral_neighbours">
 <span class="sig-name descname"><span class="pre">run_test_illegal_lateral_neighbours</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_waypoint.TestWaypoint.run_test_illegal_lateral_neighbours" title="Permalink to this definition">¶</a></dt>
 <dd><p>Test if lateral neighbours are legal.</p>
@@ -179,6 +241,17 @@ This module tests the planner object.</p>
 <span class="sig-name descname"><span class="pre">run_test_neighbours_plotting</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_waypoint.TestWaypoint.run_test_neighbours_plotting" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
+</dd></dl>
+
+</section>
+<section id="module-tests.test_wgs">
+<span id="tests-test-wgs-module"></span><h2>tests.test_wgs module<a class="headerlink" href="#module-tests.test_wgs" title="Permalink to this headline">¶</a></h2>
+<p>Unit test for WaypointGraph
+This module tests the planner object.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="tests.test_wgs.TestWGS">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">tests.test_wgs.</span></span><span class="sig-name descname"><span class="pre">TestWGS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_wgs.TestWGS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
 </dd></dl>
 
 </section>
@@ -211,6 +284,7 @@ This module tests the planner object.</p>
 <li class="toctree-l2"><a class="reference internal" href="Agent.html">Agent module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Planner.html">Planner package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="SPDE.html">SPDE package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="WGS.html">WGS module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="WaypointGraph.html">WaypointGraph module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="func_test.html">func_test module</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">tests package</a></li>

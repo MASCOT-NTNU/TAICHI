@@ -200,13 +200,13 @@ class WaypointGraph:
 
     def get_polygon_obstacles(self):
         """
-        Returns: obstacles' polygons
+        Returns: obstacles' polygons.
         """
         return self.__polygon_obstacles
 
     def get_waypoint_from_ind(self, ind: Union[int, list, np.ndarray]) -> np.ndarray:
         """
-        Return waypoint locations using ind
+        Return waypoint locations using ind.
         """
         return self.__waypoints[ind, :]
 

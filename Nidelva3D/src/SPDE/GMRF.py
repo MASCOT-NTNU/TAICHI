@@ -1,6 +1,7 @@
 """
-This helper solves the auxiliary problems associated with SPDE class.
+This helper solves all the essential problems associated with SPDE class.
 """
+from numpy import ndarray
 
 from SPDE.spde import spde
 from typing import Union
@@ -11,7 +12,7 @@ from scipy.stats import norm
 import os
 
 
-class SPDEHelper:
+class GMRF:
     __gmrf_grid = None
 
     def __init__(self):
@@ -30,41 +31,39 @@ class SPDEHelper:
         z = depth
         self.__gmrf_grid = np.stack((x, y, z), axis=1)
 
-    def get_eibv_at_locations(self, locations: np.ndarray) -> np.ndarray:
+    def get_eibv_at_locations(self, loc: np.ndarray) -> np.ndarray:
         """
         Get EIBV at candidate locations.
         Args:
-            locations: np.array([[x1, y1, z1],
-                                 [x2, y2, z2],
-                                 ...
-                                 [xn, yn, zn]])
+            loc: np.array([[x1, y1, z1],
+                           [x2, y2, z2],
+                           ...
+                           [xn, yn, zn]])
         Returns:
             EIBV associated with each location.
         """
         # s1: get indices
-        id = self.get_ind_from_location(locations)
+        id = self.get_ind_from_location(loc)
         # s2: get post variance from spde
         post_var = self.__spde.candidate(ks=id)
         # s3: get eibv using post variance
         eibv = []
         for i in range(len(id)):
-            p = norm.cdf(self.__spde.threshold, self.__spde.mu, post_var[:, i])
-            bv = p * (1 - p)
-            ibv = np.sum(bv)
+            ibv = GMRF.get_ibv(self.__spde.threshold, self.__spde.mu, post_var[:, i])
             eibv.append(ibv)
         return np.array(eibv)
 
     def get_ind_from_location(self, loc: np.ndarray) -> Union[int, np.ndarray, None]:
         """
         Args:
-            location: np.array([xp, yp, zp])
+            loc: np.array([xp, yp, zp])
         Returns: index of the closest waypoint.
         """
         if len(loc) > 0:
             dm = loc.ndim
             if dm == 1:
                 d = cdist(self.__gmrf_grid, loc.reshape(1, -1))
-                return np.argmin(d, axis=0)[0]
+                return np.argmin(d, axis=0)
             elif dm == 2:
                 d = cdist(self.__gmrf_grid, loc)
                 return np.argmin(d, axis=0)
@@ -72,6 +71,16 @@ class SPDEHelper:
                 return None
         else:
             return None
+
+    @staticmethod
+    def get_ibv(threshold: float, mu: np.ndarray, sigma_diag: np.ndarray) -> np.ndarray:
+        """
+        Calculate the integrated bernoulli variance given mean and variance.
+        """
+        p = norm.cdf(threshold, mu, sigma_diag)
+        bv = p * (1 - p)
+        ibv = np.sum(bv)
+        return ibv
 
     def get_location_from_ind(self, ind: Union[int, list]) -> np.ndarray:
         return self.__gmrf_grid[ind]
@@ -81,6 +90,6 @@ class SPDEHelper:
 
 
 if __name__ == "__main__":
-    s = SPDEHelper()
+    s = GMRF()
 
 

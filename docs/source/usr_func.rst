@@ -20,6 +20,14 @@ usr\_func.is\_list\_empty module
    :undoc-members:
    :show-inheritance:
 
+usr\_func.sort\_polygon\_vertices module
+----------------------------------------
+
+.. automodule:: usr_func.sort_polygon_vertices
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 

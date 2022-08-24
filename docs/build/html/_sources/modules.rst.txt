@@ -8,6 +8,7 @@ src
    Agent
    Planner
    SPDE
+   WGS
    WaypointGraph
    func_test
    tests

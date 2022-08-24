@@ -14,10 +14,10 @@ from abc import abstractmethod
 
 class Planner:
 
-    _id_prev = 0
-    _id_now = 0
-    _id_next = 0
-    _id_pion = 0
+    __id_prev = 0
+    __id_now = 0
+    __id_next = 0
+    __id_pion = 0
 
     def __init__(self) -> None:
         """ Initialises the planner. """
@@ -30,10 +30,10 @@ class Planner:
         Args:
             id_pioneer: index for the pioneer waypoint.
         """
-        self._id_prev = self._id_now
-        self._id_now = self._id_next
-        self._id_next = self._id_pion
-        self._id_pion = id_pioneer
+        self.__id_prev = self.__id_now
+        self.__id_now = self.__id_next
+        self.__id_next = self.__id_pion
+        self.__id_pion = id_pioneer
 
     @abstractmethod
     def get_candidates(self):
@@ -44,26 +44,26 @@ class Planner:
         pass
 
     def get_next_index(self) -> int:
-        return self._id_next
+        return self.__id_next
 
     def get_current_index(self) -> int:
-        return self._id_now
+        return self.__id_now
 
     def get_previous_index(self) -> int:
-        return self._id_prev
+        return self.__id_prev
 
     def get_pioneer_index(self) -> int:
-        return self._id_pion
+        return self.__id_pion
 
     def set_next_index(self, ind: int) -> None:
-        self._id_next = ind
+        self.__id_next = ind
 
     def set_current_index(self, ind: int) -> None:
-        self._id_now = ind
+        self.__id_now = ind
 
     def set_previous_index(self, ind: int) -> None:
-        self._id_prev = ind
+        self.__id_prev = ind
 
     def set_pioneer_index(self, ind: int) -> None:
-        self._id_pion = ind
+        self.__id_pion = ind
 
