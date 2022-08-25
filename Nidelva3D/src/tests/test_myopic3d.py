@@ -15,7 +15,7 @@ import os
 
 
 class TestMyopic(TestCase):
-    """ Common test class for the waypoint graph module
+    """ Common test class for myopic3d planner module.
     """
 
     def setUp(self) -> None:

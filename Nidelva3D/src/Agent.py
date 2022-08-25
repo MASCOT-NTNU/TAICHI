@@ -6,11 +6,14 @@ import os
 from WGS import WGS
 from usr_func.sort_polygon_vertices import sort_polygon_vertices
 from WaypointGraph import WaypointGraph
-from SPDE.GMRF import GMRF
 from Planner.Myopic3D import Myopic3D
 
 
 class Agent:
+
+    __loc_start = [0, 0, 0]
+    __loc_end = [0, 0, 0]
+    __mission_time = 0
 
     def __init__(self):
         pass
@@ -36,14 +39,13 @@ class Agent:
         # self.waypoints = self.wp.get_waypoints()
         # self.hash_neighbours = self.wp.get_hash_neighbour()
 
-    def setup_sensor(self):
-        self.gmrf = GMRF()
+    # def setup_sensor(self):
+        pass
 
     def setup_planner(self):
         self.myopic = Myopic3D(self.wp)
 
     def setup_actuator(self):
-
         pass
 
     def run(self):

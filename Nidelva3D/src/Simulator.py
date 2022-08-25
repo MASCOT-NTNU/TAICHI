@@ -7,7 +7,7 @@ Args:
      __loc_prev: previous location at [xp, yp, zp]
      __salinity: salinity measured at current location.
      __temperature: temperature measured at current location.
-     __ctd: ctd data in the format of [x, y, z, salinity, temperature
+     __ctd: ctd data in the format of [x, y, z, salinity, temperature]
 """
 import numpy as np
 
@@ -23,6 +23,9 @@ class Simulator:
     def __init__(self):
         pass
 
+    def set_ground_truth(self):
+        pass
+
     def get_location(self):
         return self.__loc
 
@@ -32,7 +35,7 @@ class Simulator:
     def get_temperature(self):
         return self.__temperature
 
-    def move_to_location(self, loc: np.ndarray):
+    def get_ctd_along_path(self, loc: np.ndarray):
         """
         Append data to ctd according to the measurements from previous location to current location.
         """
