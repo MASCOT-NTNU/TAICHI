@@ -4,6 +4,7 @@
 from unittest import TestCase
 from AUVSimulator.CTDSimulator import CTDSimulator
 import numpy as np
+from numpy import testing
 
 
 def value(x, y, z):
@@ -26,7 +27,9 @@ class TestCTDSimulator(TestCase):
         self.ctd.setup_ctd(truth)
 
     def test_get_salinity_at_loc(self):
-        print("Hello")
+        """
+        Test get salinity from location
+        """
         # c1: value at the corner
         x = 0
         y = 0
@@ -46,4 +49,12 @@ class TestCTDSimulator(TestCase):
         loc = np.array([x, y, z])
         v = self.ctd.get_salinity_at_loc(loc)
         self.assertEqual(v, value(x, y, 1))
+
+        # c4: multiple values
+        loc = np.array([[0, 0, 0],
+                        [5, 5, .5],
+                        [5, 5, 1.]])
+        v = self.ctd.get_salinity_at_loc(loc)
+        self.assertIsNone(testing.assert_array_equal(v, value(loc[:, 0], loc[:, 1], loc[:, 2])))
+
 

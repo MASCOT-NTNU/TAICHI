@@ -5,9 +5,10 @@ src
    :maxdepth: 4
 
    AUV
+   AUVSimulator
    Agent
+   GMRF
    Planner
-   SPDE
    WGS
    WaypointGraph
    func_test

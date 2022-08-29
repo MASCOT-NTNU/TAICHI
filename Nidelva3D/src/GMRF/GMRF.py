@@ -1,8 +1,7 @@
 """
 This helper solves all the essential problems associated with GMRF class.
 """
-from numpy import ndarray
-
+# from numpy import ndarray
 from GMRF.spde import spde
 from typing import Union
 from WGS import WGS
@@ -10,10 +9,14 @@ import numpy as np
 from scipy.spatial.distance import cdist
 from scipy.stats import norm
 import os
+import time
 
 
 class GMRF:
+    __MIN_DEPTH_FOR_DATA_ASSIMILATION = .0
+    __GMRF_DISTANCE_NEIGHBOUR = 32
     __gmrf_grid = None
+    __N_gmrf_grid = 0
 
     def __init__(self):
         self.__spde = spde()
@@ -30,6 +33,41 @@ class GMRF:
         x, y = WGS.latlon2xy(lat, lon)
         z = depth
         self.__gmrf_grid = np.stack((x, y, z), axis=1)
+        self.__N_gmrf_grid = self.__gmrf_grid.shape[0]
+
+    def assimilate_data(self, dataset: np.ndarray) -> tuple:
+        """
+        Assimilate dataset to spde kernel.
+        It computes the distance matrix between gmrf grid and dataset grid. Then the values are averged to each cell.
+        Args:
+            dataset: np.array([x, y, z, sal])
+        """
+        ind_remove_noise_layer = np.where(np.abs(dataset[:, 2]) >= self.__MIN_DEPTH_FOR_DATA_ASSIMILATION)[0]
+        # ind_remove_noise_layer = np.arange(len(dataset))
+        dataset = dataset[ind_remove_noise_layer, :]
+        xd = dataset[:, 0].reshape(-1, 1)
+        yd = dataset[:, 1].reshape(-1, 1)
+        zd = dataset[:, 2].reshape(-1, 1)
+        Fgmrf = np.ones([1, self.__N_gmrf_grid])
+        Fdata = np.ones([dataset.shape[0], 1])
+        xg = self.__gmrf_grid[:, 0].reshape(-1, 1)
+        yg = self.__gmrf_grid[:, 1].reshape(-1, 1)
+        zg = self.__gmrf_grid[:, 2].reshape(-1, 1)
+        t1 = time.time()
+        dx = (xd @ Fgmrf - Fdata @ xg.T) ** 2
+        dy = (yd @ Fgmrf - Fdata @ yg.T) ** 2
+        dz = ((zd @ Fgmrf - Fdata @ zg.T) * self.__GMRF_DISTANCE_NEIGHBOUR) ** 2
+        dist = dx + dy + dz
+        ind_min_distance = np.argmin(dist, axis=1)
+        ind_assimilated = np.unique(ind_min_distance)
+        salinity_assimilated = np.zeros([len(ind_assimilated), 1])
+        for i in range(len(ind_assimilated)):
+            ind_selected = np.where(ind_min_distance == ind_assimilated[i])[0]
+            salinity_assimilated[i] = np.mean(dataset[ind_selected, 3])
+        self.__spde.update(rel=salinity_assimilated, ks=ind_assimilated)
+        t2 = time.time()
+        print("Data assimilation takes: ", t2 - t1)
+        return ind_assimilated, salinity_assimilated, ind_min_distance
 
     def get_eibv_at_locations(self, loc: np.ndarray) -> np.ndarray:
         """

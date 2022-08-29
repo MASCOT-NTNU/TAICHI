@@ -15,9 +15,6 @@ class CTDSimulator:
     __field_grid = np.empty([0, 3])
     __field_salinity = np.empty([0, 1])
 
-    def __int__(self):
-        pass
-
     def setup_ctd(self, field_truth: np.ndarray):
         """
         Set the simulated field.

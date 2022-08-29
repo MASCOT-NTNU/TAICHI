@@ -1,5 +1,5 @@
 """
-Agent object.
+Agent object abstract the entire adaptive agent by wrapping all the other components together inside the class.
 """
 import numpy as np
 import os
@@ -7,16 +7,13 @@ from WGS import WGS
 from usr_func.sort_polygon_vertices import sort_polygon_vertices
 from WaypointGraph import WaypointGraph
 from Planner.Myopic3D import Myopic3D
+from AUVSimulator.AUVSimulator import AUVSimulator
 
 
 class Agent:
 
-    __loc_start = [0, 0, 0]
-    __loc_end = [0, 0, 0]
-    __mission_time = 0
-
-    def __init__(self):
-        pass
+    __loc_start = np.array([0, 0, 0])
+    __loc_end = np.array([0, 0, 0])
 
     def setup_operational_area(self):
         box = np.load(os.getcwd() + "/GMRF/models/grid.npy")
@@ -36,35 +33,38 @@ class Agent:
         self.wp.set_polygon_obstacles(self.polygon_obstacle)
         self.wp.construct_waypoints()
         self.wp.construct_hash_neighbours()
-        # self.waypoints = self.wp.get_waypoints()
-        # self.hash_neighbours = self.wp.get_hash_neighbour()
 
-    # def setup_sensor(self):
-        pass
-
-    def setup_planner(self):
+    def setup_agent(self):
+        # s1: setup planner
         self.myopic = Myopic3D(self.wp)
 
-    def setup_actuator(self):
-        pass
+        # s2: setup AUV
+        self.auv = AUVSimulator()
 
     def run(self):
-        while True:
+        self.auv.move_to_location(self.__loc_start)
+        ctd_data = self.auv.get_ctd_data()
+        self.myopic.gmrf.assimilate_data(ctd_data)
+        wp = self.myopic.get_next_waypoint()
+        self.auv.move_to_location(wp)
+        i = 0
+        NUMS = 60
+        while i < NUMS:
             """
             """
             # s1: sense
-            #   - get ctd along path
-            #   - get data from simulator
+            #   - get ctd along path from the simulator
+            ctd_data = self.auv.get_ctd_data()
             #   - update field
+            self.myopic.gmrf.assimilate_data(ctd_data)
             # s2: plan
             #   - plan next waypoint
+            wp = self.myopic.get_next_waypoint()
             #   - update planner
+            self.myopic.update_planner()
             # s3: act
             #   - move to location
-            break
-        pass
-
-
+            self.auv.move_to_location(wp)
 
 
 if __name__ == "__main__":

@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html>
+<html lang="en">
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
 
     <title>src &#8212; TAICHI 0.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
@@ -12,6 +12,7 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
+    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -34,7 +35,7 @@
           <div class="body" role="main">
             
   <section id="src">
-<h1>src<a class="headerlink" href="#src" title="Permalink to this headline">¶</a></h1>
+<h1>src<a class="headerlink" href="#src" title="Permalink to this heading">¶</a></h1>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="AUV.html">AUV package</a><ul>
@@ -44,20 +45,28 @@
 <li class="toctree-l2"><a class="reference internal" href="AUV.html#module-AUV">Module contents</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="AUVSimulator.html">AUVSimulator package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="AUVSimulator.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="AUVSimulator.html#auvsimulator-auvsimulator-module">AUVSimulator.AUVSimulator module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="AUVSimulator.html#auvsimulator-ctdsimulator-module">AUVSimulator.CTDSimulator module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="AUVSimulator.html#module-AUVSimulator.Messenger">AUVSimulator.Messenger module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="AUVSimulator.html#module-AUVSimulator">Module contents</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="Agent.html">Agent module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="GMRF.html">GMRF package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="GMRF.html#submodules">Submodules</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GMRF.html#gmrf-gmrf-module">GMRF.GMRF module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GMRF.html#gmrf-spde-module">GMRF.spde module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GMRF.html#module-GMRF">Module contents</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="Planner.html">Planner package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="Planner.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Planner.html#planner-lawnmower-module">Planner.Lawnmower module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Planner.html#module-Planner.Myopic3D">Planner.Myopic3D module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Planner.html#planner-myopic3d-module">Planner.Myopic3D module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Planner.html#module-Planner.Planner">Planner.Planner module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Planner.html#module-Planner">Module contents</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="SPDE.html">SPDE package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="SPDE.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SPDE.html#module-SPDE.SPDEHelper">SPDE.SPDEHelper module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SPDE.html#module-SPDE.spde">SPDE.spde module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SPDE.html#module-SPDE">Module contents</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="WGS.html">WGS module</a></li>
@@ -65,11 +74,15 @@
 <li class="toctree-l1"><a class="reference internal" href="func_test.html">func_test module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="tests.html">tests package</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="tests.html#submodules">Submodules</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tests.html#module-tests.test_myopic3d">tests.test_myopic3d module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tests.html#module-tests.test_agent">tests.test_agent module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tests.html#tests-test-ctd-simulator-module">tests.test_ctd_simulator module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tests.html#tests-test-gmrf-module">tests.test_gmrf module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tests.html#module-tests.test_messenger">tests.test_messenger module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tests.html#tests-test-myopic3d-module">tests.test_myopic3d module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tests.html#module-tests.test_planner">tests.test_planner module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tests.html#tests-test-simulator-module">tests.test_simulator module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tests.html#module-tests.test_spde">tests.test_spde module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tests.html#module-tests.test_spde_helper">tests.test_spde_helper module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="tests.html#module-tests.test_waypoint">tests.test_waypoint module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="tests.html#tests-test-waypoint-module">tests.test_waypoint module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tests.html#module-tests.test_wgs">tests.test_wgs module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="tests.html#module-tests">Module contents</a></li>
 </ul>
@@ -78,7 +91,7 @@
 <li class="toctree-l2"><a class="reference internal" href="usr_func.html#submodules">Submodules</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usr_func.html#module-usr_func.is_even">usr_func.is_even module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usr_func.html#module-usr_func.is_list_empty">usr_func.is_list_empty module</a></li>
-<li class="toctree-l2"><a class="reference internal" href="usr_func.html#module-usr_func.sort_polygon_vertices">usr_func.sort_polygon_vertices module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="usr_func.html#usr-func-sort-polygon-vertices-module">usr_func.sort_polygon_vertices module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="usr_func.html#module-usr_func">Module contents</a></li>
 </ul>
 </li>
@@ -107,9 +120,10 @@
 <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">src</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="AUV.html">AUV package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="AUVSimulator.html">AUVSimulator package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Agent.html">Agent module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="GMRF.html">GMRF package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Planner.html">Planner package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="SPDE.html">SPDE package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="WGS.html">WGS module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="WaypointGraph.html">WaypointGraph module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="func_test.html">func_test module</a></li>
@@ -137,7 +151,7 @@
     </form>
     </div>
 </div>
-<script>$('#searchbox').show(0);</script>
+<script>document.getElementById('searchbox').style.display = "block"</script>
 
 
 
@@ -154,7 +168,7 @@
       &copy;2022, Yaolin Ge.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.2.0</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.1.1</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |
