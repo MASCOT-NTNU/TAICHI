@@ -19,7 +19,7 @@ class TestMyopic(TestCase):
     """
 
     def setUp(self) -> None:
-        box = np.load(os.getcwd() + "/SPDE/models/grid.npy")
+        box = np.load(os.getcwd() + "/GMRF/models/grid.npy")
         polygon = box[:, 2:]
         polygon_xy = np.stack((WGS.latlon2xy(polygon[:, 0], polygon[:, 1])), axis=1)
         polygon_b = sort_polygon_vertices(polygon_xy)

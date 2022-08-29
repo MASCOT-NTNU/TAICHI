@@ -3,7 +3,7 @@ Myopic3D path planner determines the next waypoint according to minimum EIBV cri
 """
 from Planner.Planner import Planner
 from WaypointGraph import WaypointGraph
-from SPDE.GMRF import GMRF
+from GMRF.GMRF import GMRF
 from usr_func.is_list_empty import is_list_empty
 import numpy as np
 

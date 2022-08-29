@@ -1,5 +1,5 @@
-""" Unit test for SPDE helper
-This module tests the SPDE helper object.
+""" Unit test for GMRF helper
+This module tests the GMRF helper object.
 """
 from unittest import TestCase
 

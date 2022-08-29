@@ -19,7 +19,7 @@ class Agent:
         pass
 
     def setup_operational_area(self):
-        box = np.load(os.getcwd() + "/SPDE/models/grid.npy")
+        box = np.load(os.getcwd() + "/GMRF/models/grid.npy")
         polygon = box[:, 2:]
         polygon_xy = np.stack((WGS.latlon2xy(polygon[:, 0], polygon[:, 1])), axis=1)
         polygon_b = sort_polygon_vertices(polygon_xy)
@@ -53,8 +53,14 @@ class Agent:
             """
             """
             # s1: sense
+            #   - get ctd along path
+            #   - get data from simulator
+            #   - update field
             # s2: plan
+            #   - plan next waypoint
+            #   - update planner
             # s3: act
+            #   - move to location
             break
         pass
 

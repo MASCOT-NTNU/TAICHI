@@ -2,7 +2,7 @@ import numpy as np
 from scipy import sparse
 from sksparse.cholmod import cholesky
 import os
-FILEPATH = os.getcwd() + "/SPDE/"
+FILEPATH = os.getcwd() + "/GMRF/"
 DEFAULT_NUM_SAMPLES = 250
 
 

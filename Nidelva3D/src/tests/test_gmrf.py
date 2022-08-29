@@ -1,9 +1,9 @@
-""" Unit test for SPDE helper
-This module tests the SPDE helper object.
+""" Unit test for GMRF helper
+This module tests the GMRF helper object.
 """
 
 from unittest import TestCase
-from SPDE.GMRF import GMRF
+from GMRF.GMRF import GMRF
 import numpy as np
 from numpy import testing
 

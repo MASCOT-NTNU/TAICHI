@@ -1,9 +1,9 @@
 """
-This helper solves all the essential problems associated with SPDE class.
+This helper solves all the essential problems associated with GMRF class.
 """
 from numpy import ndarray
 
-from SPDE.spde import spde
+from GMRF.spde import spde
 from typing import Union
 from WGS import WGS
 import numpy as np
@@ -23,7 +23,7 @@ class GMRF:
         """
         Construct GMRF grid by converting lats, lons to xy.
         """
-        filepath = os.getcwd() + "/SPDE/models/"
+        filepath = os.getcwd() + "/GMRF/models/"
         lat = np.load(filepath + "lats.npy")
         lon = np.load(filepath + "lons.npy")
         depth = np.load(filepath + "depth.npy")
