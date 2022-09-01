@@ -2,8 +2,8 @@
 This module tests the agent object.
 """
 
-
 from unittest import TestCase
+from Agent import Agent
 
 
 class TestAgent(TestCase):
@@ -11,8 +11,10 @@ class TestAgent(TestCase):
     Test class for agent module.
     """
 
-    def test_set_operational_area(self):
-        
-        pass
+    def setUp(self) -> None:
+        self.agent = Agent()
+
+    def test_run(self):
+        self.agent.run()
 
 

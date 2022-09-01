@@ -39,11 +39,201 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">¶</a></h2>
 </section>
-<section id="gmrf-gmrf-module">
-<h2>GMRF.GMRF module<a class="headerlink" href="#gmrf-gmrf-module" title="Permalink to this heading">¶</a></h2>
+<section id="module-GMRF.GMRF">
+<span id="gmrf-gmrf-module"></span><h2>GMRF.GMRF module<a class="headerlink" href="#module-GMRF.GMRF" title="Permalink to this heading">¶</a></h2>
+<p>This helper solves all the essential problems associated with GMRF class.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="GMRF.GMRF.GMRF">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GMRF.GMRF.</span></span><span class="sig-name descname"><span class="pre">GMRF</span></span><a class="headerlink" href="#GMRF.GMRF.GMRF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="GMRF.GMRF.GMRF.assimilate_data">
+<span class="sig-name descname"><span class="pre">assimilate_data</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#GMRF.GMRF.GMRF.assimilate_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Assimilate dataset to spde kernel.
+It computes the distance matrix between gmrf grid and dataset grid. Then the values are averged to each cell.
+:param dataset: np.array([x, y, z, sal])</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GMRF.GMRF.GMRF.construct_gmrf_grid">
+<span class="sig-name descname"><span class="pre">construct_gmrf_grid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#GMRF.GMRF.GMRF.construct_gmrf_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Construct GMRF grid by converting lats, lons to xy.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GMRF.GMRF.GMRF.get_eibv_at_locations">
+<span class="sig-name descname"><span class="pre">get_eibv_at_locations</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#GMRF.GMRF.GMRF.get_eibv_at_locations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get EIBV at candidate locations.
+:param loc: np.array([[x1, y1, z1],</p>
+<blockquote>
+<div><p>[x2, y2, z2],
+…
+[xn, yn, zn]])</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>EIBV associated with each location.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GMRF.GMRF.GMRF.get_gmrf_grid">
+<span class="sig-name descname"><span class="pre">get_gmrf_grid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#GMRF.GMRF.GMRF.get_gmrf_grid" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns: gmrf_grid (private variable)</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GMRF.GMRF.GMRF.get_ibv">
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_ibv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">threshold</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">mu</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sigma_diag</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#GMRF.GMRF.GMRF.get_ibv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calculate the integrated bernoulli variance given mean and variance.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GMRF.GMRF.GMRF.get_ind_from_location">
+<span class="sig-name descname"><span class="pre">get_ind_from_location</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#GMRF.GMRF.GMRF.get_ind_from_location" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>loc</strong> – np.array([xp, yp, zp])</p>
+</dd>
+</dl>
+<p>Returns: index of the closest waypoint.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GMRF.GMRF.GMRF.get_location_from_ind">
+<span class="sig-name descname"><span class="pre">get_location_from_ind</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#GMRF.GMRF.GMRF.get_location_from_ind" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get that location given its index in the gmrf grid.
+:param ind: int or list of int specify where the locations are in gmrf grid.</p>
+<dl class="simple">
+<dt>Returns: numpy array containing locations np.array([[x1, y1, z1],</dt><dd><p>[x2, y2, z2],
+…
+[xn, yn, zn]])</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
-<section id="gmrf-spde-module">
-<h2>GMRF.spde module<a class="headerlink" href="#gmrf-spde-module" title="Permalink to this heading">¶</a></h2>
+<section id="module-GMRF.spde">
+<span id="gmrf-spde-module"></span><h2>GMRF.spde module<a class="headerlink" href="#module-GMRF.spde" title="Permalink to this heading">¶</a></h2>
+<dl class="py class">
+<dt class="sig sig-object py" id="GMRF.spde.spde">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GMRF.spde.</span></span><span class="sig-name descname"><span class="pre">spde</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduce</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prev</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GMRF.spde.spde" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="GMRF.spde.spde.candidate">
+<span class="sig-name descname"><span class="pre">candidate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">250</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GMRF.spde.spde.candidate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the marginal variance of all location given that a location (ks) in the GMRF has been measured.
+Uses Monte Carlo samples to calculate the marginal variance for all locations.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ks</strong> (<em>integer</em>) – Array of indicies of possible candidate locations</p></li>
+<li><p><strong>n</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of samples used in the Monte Carlo estimate. Defaults to 40.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GMRF.spde.spde.cholesky">
+<span class="sig-name descname"><span class="pre">cholesky</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Q</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GMRF.spde.spde.cholesky" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function calculating the cholesky decoposition of a positive definite precision matrix of the GMRF. Uses the c++ package Cholmod</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>Q</strong> (<em>[</em><em>N</em><em>,</em><em>N</em><em>] </em><em>sparse csc matrix</em>) – Sparse matrix from scipy.sparse</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GMRF.spde.spde.loadModel">
+<span class="sig-name descname"><span class="pre">loadModel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GMRF.spde.spde.loadModel" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GMRF.spde.spde.loadPrev">
+<span class="sig-name descname"><span class="pre">loadPrev</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GMRF.spde.spde.loadPrev" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GMRF.spde.spde.mvar">
+<span class="sig-name descname"><span class="pre">mvar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Q_fac</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">250</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GMRF.spde.spde.mvar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Monte Carlo Estimate of the marginal variance of a GMRF.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>Q_fac</strong> (<em>Cholmod object</em><em>, </em><em>optional</em>) – Cholmod cholesky object. Defaults to None.</p></li>
+<li><p><strong>n</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of samples used in the Monte Varlo estimate. Defaults to 40.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GMRF.spde.spde.postProcessing">
+<span class="sig-name descname"><span class="pre">postProcessing</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GMRF.spde.spde.postProcessing" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GMRF.spde.spde.resetQ">
+<span class="sig-name descname"><span class="pre">resetQ</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GMRF.spde.spde.resetQ" title="Permalink to this definition">¶</a></dt>
+<dd><p>Resets Q to initial values for the same grid</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GMRF.spde.spde.sample">
+<span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GMRF.spde.spde.sample" title="Permalink to this definition">¶</a></dt>
+<dd><p>Samples the GMRF. Only used to test.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><p><strong>n</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of realizations. Defaults to 1.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GMRF.spde.spde.save">
+<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GMRF.spde.spde.save" title="Permalink to this definition">¶</a></dt>
+<dd><p>Saves conditional mean and marginal variance</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GMRF.spde.spde.saveModel">
+<span class="sig-name descname"><span class="pre">saveModel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GMRF.spde.spde.saveModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method to save the current model for future loading at current update</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GMRF.spde.spde.setCoefLM">
+<span class="sig-name descname"><span class="pre">setCoefLM</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GMRF.spde.spde.setCoefLM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Find fixed effects in simple linear model linking SINMOD to predicted GMRF field</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GMRF.spde.spde.setThreshold">
+<span class="sig-name descname"><span class="pre">setThreshold</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GMRF.spde.spde.setThreshold" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set threshold for Excursion set</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GMRF.spde.spde.update">
+<span class="sig-name descname"><span class="pre">update</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">rel</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ks</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GMRF.spde.spde.update" title="Permalink to this definition">¶</a></dt>
+<dd><p>Update mean and precision of the GMRF given some measurements in the field.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>rel</strong> (<em>[</em><em>k</em><em>,</em><em>1</em><em>]</em><em>-array</em>) – k number of measurements of the GMRF. (k&gt;0).</p></li>
+<li><p><strong>ks</strong> (<em>[</em><em>k</em><em>,</em><em>]</em><em>-array</em>) – k number of indicies describing the index of the measurment in the field.</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="module-GMRF">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-GMRF" title="Permalink to this heading">¶</a></h2>

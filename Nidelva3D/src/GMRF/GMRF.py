@@ -1,7 +1,6 @@
 """
 This helper solves all the essential problems associated with GMRF class.
 """
-# from numpy import ndarray
 from GMRF.spde import spde
 from typing import Union
 from WGS import WGS
@@ -13,7 +12,7 @@ import time
 
 
 class GMRF:
-    __MIN_DEPTH_FOR_DATA_ASSIMILATION = .0
+    __MIN_DEPTH_FOR_DATA_ASSIMILATION = .0  # TODO: change it back to .25
     __GMRF_DISTANCE_NEIGHBOUR = 32
     __gmrf_grid = None
     __N_gmrf_grid = 0
@@ -43,7 +42,6 @@ class GMRF:
             dataset: np.array([x, y, z, sal])
         """
         ind_remove_noise_layer = np.where(np.abs(dataset[:, 2]) >= self.__MIN_DEPTH_FOR_DATA_ASSIMILATION)[0]
-        # ind_remove_noise_layer = np.arange(len(dataset))
         dataset = dataset[ind_remove_noise_layer, :]
         xd = dataset[:, 0].reshape(-1, 1)
         yd = dataset[:, 1].reshape(-1, 1)
@@ -53,7 +51,7 @@ class GMRF:
         xg = self.__gmrf_grid[:, 0].reshape(-1, 1)
         yg = self.__gmrf_grid[:, 1].reshape(-1, 1)
         zg = self.__gmrf_grid[:, 2].reshape(-1, 1)
-        t1 = time.time()
+        # t1 = time.time()
         dx = (xd @ Fgmrf - Fdata @ xg.T) ** 2
         dy = (yd @ Fgmrf - Fdata @ yg.T) ** 2
         dz = ((zd @ Fgmrf - Fdata @ zg.T) * self.__GMRF_DISTANCE_NEIGHBOUR) ** 2
@@ -65,18 +63,20 @@ class GMRF:
             ind_selected = np.where(ind_min_distance == ind_assimilated[i])[0]
             salinity_assimilated[i] = np.mean(dataset[ind_selected, 3])
         self.__spde.update(rel=salinity_assimilated, ks=ind_assimilated)
-        t2 = time.time()
-        print("Data assimilation takes: ", t2 - t1)
+        # t2 = time.time()
+        # print("Data assimilation takes: ", t2 - t1)
         return ind_assimilated, salinity_assimilated, ind_min_distance
 
     def get_eibv_at_locations(self, loc: np.ndarray) -> np.ndarray:
         """
         Get EIBV at candidate locations.
+
         Args:
             loc: np.array([[x1, y1, z1],
                            [x2, y2, z2],
                            ...
                            [xn, yn, zn]])
+
         Returns:
             EIBV associated with each location.
         """
@@ -121,9 +121,21 @@ class GMRF:
         return ibv
 
     def get_location_from_ind(self, ind: Union[int, list]) -> np.ndarray:
+        """
+        Get that location given its index in the gmrf grid.
+        Args:
+            ind: int or list of int specify where the locations are in gmrf grid.
+        Returns: numpy array containing locations np.array([[x1, y1, z1],
+                                                            [x2, y2, z2],
+                                                            ...
+                                                            [xn, yn, zn]])
+        """
         return self.__gmrf_grid[ind]
 
-    def get_gmrf_grid(self):
+    def get_gmrf_grid(self) -> np.ndarray:
+        """
+        Returns: gmrf_grid (private variable)
+        """
         return self.__gmrf_grid
 
 

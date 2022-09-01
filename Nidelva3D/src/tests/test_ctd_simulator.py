@@ -24,7 +24,7 @@ class TestCTDSimulator(TestCase):
         z = z.reshape(-1, 1)
         v = value(x, y, z)
         truth = np.hstack((x, y, z, v))
-        self.ctd.setup_ctd(truth)
+        self.ctd.setup_ctd_ground_field(truth)
 
     def test_get_salinity_at_loc(self):
         """

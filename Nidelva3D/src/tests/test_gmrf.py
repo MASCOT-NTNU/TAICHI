@@ -64,7 +64,12 @@ class TestGMRF(TestCase):
         self.assertIsNotNone(eibv)
 
     def test_assimilate_data(self):
-        """ Test if it can assimilate data with given dataset. """
+        """
+        Test if it can assimilate data with given dataset.
+        - 100 grid points within the grid.
+        - 10 replicates with 10 grid points not within the grid.
+        - no location.
+        """
         grid = self.gmrf.get_gmrf_grid()
         # c1: grid points on grid
         ind = np.random.randint(0, grid.shape[0], 100)
@@ -94,4 +99,9 @@ class TestGMRF(TestCase):
             dz = grid[ind_min, 2] - z
             gap = np.sqrt(dx ** 2 + dy ** 2 + dz ** 2)
             self.assertLess(np.amax(gap), 5.2)
+
+        # c3: no location
+        dataset = np.empty([0, 4])
+        ida, sal_a, ind_min = self.gmrf.assimilate_data(dataset)
+        self.assertTrue([True if len(ida) == 0 else False])
 

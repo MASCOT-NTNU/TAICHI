@@ -34,8 +34,39 @@
 
           <div class="body" role="main">
             
-  <section id="wgs-module">
-<h1>WGS module<a class="headerlink" href="#wgs-module" title="Permalink to this heading">¶</a></h1>
+  <section id="module-WGS">
+<span id="wgs-module"></span><h1>WGS module<a class="headerlink" href="#module-WGS" title="Permalink to this heading">¶</a></h1>
+<p>WGS 84 coordinate system.
+North-East-Down reference is employed.</p>
+<p>It converts (lat, lon) in degrees to (x, y) in meters given a specific origin.
+The selected origin is at Nidarosdomen in Trondheim.</p>
+<p class="rubric">Example</p>
+<div class="doctest highlight-default notranslate"><div class="highlight"><pre><span></span><span class="gp">&gt;&gt;&gt; </span><span class="n">wgs</span> <span class="o">=</span> <span class="n">WGS</span><span class="p">()</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="n">wgs</span><span class="o">.</span><span class="n">latlon2xy</span><span class="p">(</span><span class="mf">64.55</span><span class="p">,</span> <span class="mf">10.55</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="mf">11131.944444443812</span> <span class="mf">4783.655665331498</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">x</span><span class="p">,</span> <span class="n">y</span> <span class="o">=</span> <span class="mi">1000</span><span class="p">,</span> <span class="mi">2000</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span> <span class="o">=</span> <span class="n">wgs</span><span class="o">.</span><span class="n">xy2latlon</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="nb">print</span><span class="p">(</span><span class="n">lat</span><span class="p">,</span> <span class="n">lon</span><span class="p">)</span>
+<span class="gp">&gt;&gt;&gt; </span><span class="mf">64.45898315658141</span> <span class="mf">10.49166998986048</span>
+</pre></div>
+</div>
+<dl class="py class">
+<dt class="sig sig-object py" id="WGS.WGS">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">WGS.</span></span><span class="sig-name descname"><span class="pre">WGS</span></span><a class="headerlink" href="#WGS.WGS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="WGS.WGS.latlon2xy">
+<span class="sig-name descname"><span class="pre">latlon2xy</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;numpy.vectorize</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#WGS.WGS.latlon2xy" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="WGS.WGS.xy2latlon">
+<span class="sig-name descname"><span class="pre">xy2latlon</span></span><em class="property"><span class="w"> </span><span class="p"><span class="pre">=</span></span><span class="w"> </span><span class="pre">&lt;numpy.vectorize</span> <span class="pre">object&gt;</span></em><a class="headerlink" href="#WGS.WGS.xy2latlon" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 
 

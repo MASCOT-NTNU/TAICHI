@@ -15,7 +15,10 @@ class CTDSimulator:
     __field_grid = np.empty([0, 3])
     __field_salinity = np.empty([0, 1])
 
-    def setup_ctd(self, field_truth: np.ndarray):
+    def __init__(self):
+        self.setup_ctd_ground_field()
+
+    def setup_ctd_ground_field(self) -> None:
         """
         Set the simulated field.
         Args:
@@ -24,7 +27,8 @@ class CTDSimulator:
             - y: distance along north direction.
             - z: distance along depth direction.
         """
-        self.__field = field_truth
+
+        self.__field = None
         self.__field_grid = self.__field[:, :3]
         self.__field_salinity = self.__field[:, -1]
 

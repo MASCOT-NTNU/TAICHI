@@ -1,13 +1,12 @@
 """
 AUVSimulator module simulates the data collection behaviour of an AUV in the mission.
-It generates all possible data samples along the path from the previous location to the current location.
+It only emulates the resulting trajectory of an AUV, not the detailed behaviour.
 
 # Args:
 #      __loc: current location at [x, y, z]
 #      __loc_prev: previous location at [xp, yp, zp]
-#      __salinity: salinity measured at current location.
-#      __temperature: temperature measured at current location.
-#      __ctd: ctd data in the format of [x, y, z, salinity, temperature]
+#      __speed: speed of an AUV in m/s
+#      __ctd_data: ctd measurements gathered along the trajectory.
 """
 import numpy as np
 from AUVSimulator.CTDSimulator import CTDSimulator
@@ -19,6 +18,8 @@ class AUVSimulator:
     __loc_prev = np.array([0, 0, 0])
     __speed = 1.2
     __ctd_data = np.empty([0, 4])
+    __arrival = False
+    __popup = False
 
     def __init__(self):
         self.ctd = CTDSimulator()
@@ -33,6 +34,7 @@ class AUVSimulator:
         self.__set_previous_location(self.__loc)
         self.__set_location(loc)
         self.__collect_data()
+        self.move()
 
     def __set_location(self, loc: np.ndarray):
         """
@@ -85,7 +87,6 @@ class AUVSimulator:
     def __collect_data(self) -> None:
         """
         Append data along the trajectory from the previous location to the current location.
-        Returns:
         """
         x_start, y_start, z_start = self.__loc_prev
         x_end, y_end, z_end = self.__loc
@@ -94,12 +95,25 @@ class AUVSimulator:
         dz = z_end - z_start
         dist = np.sqrt(dx ** 2 + dy ** 2 + dz ** 2)
         N = int(np.ceil(dist / self.__speed) * 2)
-        x_path = np.linspace(x_start, x_end, N)
-        y_path = np.linspace(y_start, y_end, N)
-        z_path = np.linspace(z_start, z_end, N)
-        loc = np.stack((x_path, y_path, z_path), axis=1)
-        sal = self.ctd.get_salinity_at_loc(loc)
-        self.__ctd_data = np.stack((x_path, y_path, z_path, sal), axis=1)
+        if N != 0:
+            x_path = np.linspace(x_start, x_end, N)
+            y_path = np.linspace(y_start, y_end, N)
+            z_path = np.linspace(z_start, z_end, N)
+            loc = np.stack((x_path, y_path, z_path), axis=1)
+            sal = self.ctd.get_salinity_at_loc(loc)
+            self.__ctd_data = np.stack((x_path, y_path, z_path, sal), axis=1)
+
+    def arrive(self):
+        self.__arrival = True
+
+    def move(self):
+        self.__arrival = False
+
+    def is_arrived(self):
+        return self.__arrival
+
+    def popup(self):
+        self.__popup = True
 
 
 if __name__ == "__main__":

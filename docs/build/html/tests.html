@@ -56,11 +56,82 @@ This module tests the agent object.</p>
 </dd></dl>
 
 </section>
-<section id="tests-test-ctd-simulator-module">
-<h2>tests.test_ctd_simulator module<a class="headerlink" href="#tests-test-ctd-simulator-module" title="Permalink to this heading">¶</a></h2>
+<section id="module-tests.test_ctd_simulator">
+<span id="tests-test-ctd-simulator-module"></span><h2>tests.test_ctd_simulator module<a class="headerlink" href="#module-tests.test_ctd_simulator" title="Permalink to this heading">¶</a></h2>
+<p>Unit test for CTD simulator</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="tests.test_ctd_simulator.TestCTDSimulator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tests.test_ctd_simulator.</span></span><span class="sig-name descname"><span class="pre">TestCTDSimulator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_ctd_simulator.TestCTDSimulator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TestCase</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_ctd_simulator.TestCTDSimulator.setUp">
+<span class="sig-name descname"><span class="pre">setUp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#tests.test_ctd_simulator.TestCTDSimulator.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_ctd_simulator.TestCTDSimulator.test_get_salinity_at_loc">
+<span class="sig-name descname"><span class="pre">test_get_salinity_at_loc</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_ctd_simulator.TestCTDSimulator.test_get_salinity_at_loc" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test get salinity from location</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_ctd_simulator.value">
+<span class="sig-prename descclassname"><span class="pre">tests.test_ctd_simulator.</span></span><span class="sig-name descname"><span class="pre">value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_ctd_simulator.value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </section>
-<section id="tests-test-gmrf-module">
-<h2>tests.test_gmrf module<a class="headerlink" href="#tests-test-gmrf-module" title="Permalink to this heading">¶</a></h2>
+<section id="module-tests.test_gmrf">
+<span id="tests-test-gmrf-module"></span><h2>tests.test_gmrf module<a class="headerlink" href="#module-tests.test_gmrf" title="Permalink to this heading">¶</a></h2>
+<p>Unit test for GMRF
+This module tests the GMRF object.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="tests.test_gmrf.TestGMRF">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tests.test_gmrf.</span></span><span class="sig-name descname"><span class="pre">TestGMRF</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_gmrf.TestGMRF" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TestCase</span></code></p>
+<p>Test class for spde helper class.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_gmrf.TestGMRF.setUp">
+<span class="sig-name descname"><span class="pre">setUp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#tests.test_gmrf.TestGMRF.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_gmrf.TestGMRF.test_assimilate_data">
+<span class="sig-name descname"><span class="pre">test_assimilate_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_gmrf.TestGMRF.test_assimilate_data" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test if it can assimilate data with given dataset.
+- 100 grid points within the grid.
+- 10 replicates with 10 grid points not within the grid.
+- no location.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_gmrf.TestGMRF.test_get_eibv_at_locations">
+<span class="sig-name descname"><span class="pre">test_get_eibv_at_locations</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#tests.test_gmrf.TestGMRF.test_get_eibv_at_locations" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test if it can return eibv for the given locations.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_gmrf.TestGMRF.test_get_ibv">
+<span class="sig-name descname"><span class="pre">test_get_ibv</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#tests.test_gmrf.TestGMRF.test_get_ibv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test if GMRF is able to compute IBV</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_gmrf.TestGMRF.test_get_ind_from_location">
+<span class="sig-name descname"><span class="pre">test_get_ind_from_location</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#tests.test_gmrf.TestGMRF.test_get_ind_from_location" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test if given a location, it will return the correct index in GMRF grid.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_gmrf.TestGMRF.test_get_spde_grid">
+<span class="sig-name descname"><span class="pre">test_get_spde_grid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#tests.test_gmrf.TestGMRF.test_get_spde_grid" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="module-tests.test_messenger">
 <span id="tests-test-messenger-module"></span><h2>tests.test_messenger module<a class="headerlink" href="#module-tests.test_messenger" title="Permalink to this heading">¶</a></h2>
@@ -99,8 +170,35 @@ This module tests the Messenger object.</p>
 </dd></dl>
 
 </section>
-<section id="tests-test-myopic3d-module">
-<h2>tests.test_myopic3d module<a class="headerlink" href="#tests-test-myopic3d-module" title="Permalink to this heading">¶</a></h2>
+<section id="module-tests.test_myopic3d">
+<span id="tests-test-myopic3d-module"></span><h2>tests.test_myopic3d module<a class="headerlink" href="#module-tests.test_myopic3d" title="Permalink to this heading">¶</a></h2>
+<p>Unit test for Myopic3D</p>
+<p>This module tests the myopic3d object.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="tests.test_myopic3d.TestMyopic">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tests.test_myopic3d.</span></span><span class="sig-name descname"><span class="pre">TestMyopic</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_myopic3d.TestMyopic" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TestCase</span></code></p>
+<p>Common test class for myopic3d planner module.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_myopic3d.TestMyopic.setUp">
+<span class="sig-name descname"><span class="pre">setUp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#tests.test_myopic3d.TestMyopic.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_myopic3d.TestMyopic.test_get_candidates">
+<span class="sig-name descname"><span class="pre">test_get_candidates</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_myopic3d.TestMyopic.test_get_candidates" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test if candidate locations are legal or not.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_myopic3d.TestMyopic.test_planning_two_step_ahead">
+<span class="sig-name descname"><span class="pre">test_planning_two_step_ahead</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_myopic3d.TestMyopic.test_planning_two_step_ahead" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test the planning mechanisms for the workflow.</p>
+</dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="module-tests.test_planner">
 <span id="tests-test-planner-module"></span><h2>tests.test_planner module<a class="headerlink" href="#module-tests.test_planner" title="Permalink to this heading">¶</a></h2>
@@ -138,8 +236,42 @@ This module tests the Messenger object.</p>
 </dd></dl>
 
 </section>
-<section id="tests-test-simulator-module">
-<h2>tests.test_simulator module<a class="headerlink" href="#tests-test-simulator-module" title="Permalink to this heading">¶</a></h2>
+<section id="module-tests.test_simulator">
+<span id="tests-test-simulator-module"></span><h2>tests.test_simulator module<a class="headerlink" href="#module-tests.test_simulator" title="Permalink to this heading">¶</a></h2>
+<p>Unit test for AUV Simulator</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="tests.test_simulator.TestAUVSimulator">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tests.test_simulator.</span></span><span class="sig-name descname"><span class="pre">TestAUVSimulator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_simulator.TestAUVSimulator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TestCase</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_simulator.TestAUVSimulator.setUp">
+<span class="sig-name descname"><span class="pre">setUp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#tests.test_simulator.TestAUVSimulator.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_simulator.TestAUVSimulator.test_arrived">
+<span class="sig-name descname"><span class="pre">test_arrived</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_simulator.TestAUVSimulator.test_arrived" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_simulator.TestAUVSimulator.test_data_collection">
+<span class="sig-name descname"><span class="pre">test_data_collection</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_simulator.TestAUVSimulator.test_data_collection" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_simulator.TestAUVSimulator.test_move_to_location">
+<span class="sig-name descname"><span class="pre">test_move_to_location</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_simulator.TestAUVSimulator.test_move_to_location" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test if the AUV moves according to the given direction.</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="tests.test_simulator.value">
+<span class="sig-prename descclassname"><span class="pre">tests.test_simulator.</span></span><span class="sig-name descname"><span class="pre">value</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_simulator.value" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 </section>
 <section id="module-tests.test_spde">
 <span id="tests-test-spde-module"></span><h2>tests.test_spde module<a class="headerlink" href="#module-tests.test_spde" title="Permalink to this heading">¶</a></h2>
@@ -153,8 +285,95 @@ This module tests the GMRF helper object.</p>
 </dd></dl>
 
 </section>
-<section id="tests-test-waypoint-module">
-<h2>tests.test_waypoint module<a class="headerlink" href="#tests-test-waypoint-module" title="Permalink to this heading">¶</a></h2>
+<section id="module-tests.test_waypoint">
+<span id="tests-test-waypoint-module"></span><h2>tests.test_waypoint module<a class="headerlink" href="#module-tests.test_waypoint" title="Permalink to this heading">¶</a></h2>
+<p>Unit test for WaypointGraph
+This module tests the planner object.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="tests.test_waypoint.TC1">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tests.test_waypoint.</span></span><span class="sig-name descname"><span class="pre">TC1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_waypoint.TC1" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tests.test_waypoint.TestWaypoint" title="tests.test_waypoint.TestWaypoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestWaypoint</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_waypoint.TC1.setUp">
+<span class="sig-name descname"><span class="pre">setUp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#tests.test_waypoint.TC1.setUp" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_waypoint.TC1.test_all">
+<span class="sig-name descname"><span class="pre">test_all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_waypoint.TC1.test_all" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="tests.test_waypoint.TC2">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tests.test_waypoint.</span></span><span class="sig-name descname"><span class="pre">TC2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_waypoint.TC2" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#tests.test_waypoint.TestWaypoint" title="tests.test_waypoint.TestWaypoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestWaypoint</span></code></a></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_waypoint.TC2.setUp">
+<span class="sig-name descname"><span class="pre">setUp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#tests.test_waypoint.TC2.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>setup parameters</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_waypoint.TC2.test_all">
+<span class="sig-name descname"><span class="pre">test_all</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_waypoint.TC2.test_all" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="tests.test_waypoint.TestWaypoint">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tests.test_waypoint.</span></span><span class="sig-name descname"><span class="pre">TestWaypoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_waypoint.TestWaypoint" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TestCase</span></code></p>
+<p>Common test class for the waypoint graph module</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_waypoint.TestWaypoint.run_test_depths">
+<span class="sig-name descname"><span class="pre">run_test_depths</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_waypoint.TestWaypoint.run_test_depths" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test if depths are properly generated.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_waypoint.TestWaypoint.run_test_empty_waypoints">
+<span class="sig-name descname"><span class="pre">run_test_empty_waypoints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_waypoint.TestWaypoint.run_test_empty_waypoints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test if it generates empty waypoint.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_waypoint.TestWaypoint.run_test_get_ind_from_waypoints">
+<span class="sig-name descname"><span class="pre">run_test_get_ind_from_waypoints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_waypoint.TestWaypoint.run_test_get_ind_from_waypoints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test waypoint interpolation works. Given random location, it should return indices for the nearest locations.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_waypoint.TestWaypoint.run_test_get_vector_between_two_waypoints">
+<span class="sig-name descname"><span class="pre">run_test_get_vector_between_two_waypoints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_waypoint.TestWaypoint.run_test_get_vector_between_two_waypoints" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_waypoint.TestWaypoint.run_test_get_waypoints_from_ind">
+<span class="sig-name descname"><span class="pre">run_test_get_waypoints_from_ind</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_waypoint.TestWaypoint.run_test_get_waypoints_from_ind" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_waypoint.TestWaypoint.run_test_illegal_lateral_neighbours">
+<span class="sig-name descname"><span class="pre">run_test_illegal_lateral_neighbours</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_waypoint.TestWaypoint.run_test_illegal_lateral_neighbours" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test if lateral neighbours are legal.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_waypoint.TestWaypoint.run_test_illegal_waypoints">
+<span class="sig-name descname"><span class="pre">run_test_illegal_waypoints</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_waypoint.TestWaypoint.run_test_illegal_waypoints" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test if any waypoints are not within the border polygon or colliding with obstacles.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_waypoint.TestWaypoint.run_test_neighbours_plotting">
+<span class="sig-name descname"><span class="pre">run_test_neighbours_plotting</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_waypoint.TestWaypoint.run_test_neighbours_plotting" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="module-tests.test_wgs">
 <span id="tests-test-wgs-module"></span><h2>tests.test_wgs module<a class="headerlink" href="#module-tests.test_wgs" title="Permalink to this heading">¶</a></h2>
