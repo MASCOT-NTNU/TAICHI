@@ -5,9 +5,6 @@ Messenger module handles data sharing and message sharing functionality between 
 
 class Messenger:
 
-    def __init__(self):
-        pass
-
     def send_sms(self):
         print("SMS")
         return "SMS"

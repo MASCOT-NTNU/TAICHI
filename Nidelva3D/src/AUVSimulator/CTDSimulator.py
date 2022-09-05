@@ -2,7 +2,9 @@
 CTDSimulator module simulates CTD sensor.
 """
 
+import os
 import numpy as np
+import pandas as pd
 from typing import Union
 from scipy.spatial.distance import cdist
 
@@ -11,24 +13,16 @@ class CTDSimulator:
     """
     CTD module handles the simulated truth value at each specific location.
     """
-    __field = np.empty([0, 4])
-    __field_grid = np.empty([0, 3])
-    __field_salinity = np.empty([0, 1])
+    __field = None
+    __field_grid = None
+    __field_salinity = None
 
     def __init__(self):
-        self.setup_ctd_ground_field()
-
-    def setup_ctd_ground_field(self) -> None:
         """
-        Set the simulated field.
-        Args:
-            field_truth: data matrix containing np.array([[x, y, z, s]]).
-            - x: distance along east direction.
-            - y: distance along north direction.
-            - z: distance along depth direction.
+        Set up the CTD simulated truth field.
         """
-
-        self.__field = None
+        path = os.getcwd() + "/AUVSimulator/simulated_truth.csv"
+        self.__field = pd.read_csv(path).to_numpy()
         self.__field_grid = self.__field[:, :3]
         self.__field_salinity = self.__field[:, -1]
 
@@ -66,5 +60,9 @@ class CTDSimulator:
             return self.__field_salinity[ind]
         else:
             return None
+
+
+if __name__ == "__main__":
+    c = CTDSimulator()
 
 

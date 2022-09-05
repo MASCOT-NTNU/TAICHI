@@ -4,14 +4,6 @@ Planner package
 Submodules
 ----------
 
-Planner.Lawnmower module
-------------------------
-
-.. automodule:: Planner.Lawnmower
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
 Planner.Myopic3D module
 -----------------------
 
@@ -24,6 +16,14 @@ Planner.Planner module
 ----------------------
 
 .. automodule:: Planner.Planner
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Planner.ZigZag module
+---------------------
+
+.. automodule:: Planner.ZigZag
    :members:
    :undoc-members:
    :show-inheritance:

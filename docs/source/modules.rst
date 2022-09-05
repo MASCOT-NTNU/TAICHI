@@ -9,6 +9,7 @@ src
    Agent
    GMRF
    Planner
+   Visualiser
    WGS
    WaypointGraph
    func_test

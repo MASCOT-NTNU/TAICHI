@@ -2,59 +2,70 @@
 """
 
 from unittest import TestCase
+from WGS import WGS
 from AUVSimulator.CTDSimulator import CTDSimulator
+from AUVSimulator.SINMOD import SINMOD
+from Planner.Myopic3D import Myopic3D
 import numpy as np
 from numpy import testing
-
-
-def value(x, y, z):
-    return 2 * x + 3 * y + 4 * z
+import pandas as pd
+import os
 
 
 class TestCTDSimulator(TestCase):
 
     def setUp(self) -> None:
         self.ctd = CTDSimulator()
-        xv = np.arange(10)
-        yv = np.arange(10)
-        zv = np.linspace(0, 1, 5)
-        x, y, z = np.meshgrid(xv, yv, zv)
-        x = x.reshape(-1, 1)
-        y = y.reshape(-1, 1)
-        z = z.reshape(-1, 1)
-        v = value(x, y, z)
-        truth = np.hstack((x, y, z, v))
-        self.ctd.setup_ctd_ground_field(truth)
+        # path = os.getcwd() + "/AUVSimulator/simulated_truth_wgs.csv"
+        # self.truth = pd.read_csv(path).to_numpy()
+        self.sinmod = SINMOD()
 
     def test_get_salinity_at_loc(self):
         """
         Test get salinity from location
         """
-        # c1: value at the corner
-        x = 0
-        y = 0
-        z = 0
-        loc = np.array([x, y, z])
+        # c1: value at the corners
+        path = os.getcwd() + "/GMRF/models/grid.npy"
+        box = np.load(path)
+        lat = box[:, 2]
+        lon = box[:, -1]
+        x, y = WGS.latlon2xy(lat, lon)
+        z = .5 * np.ones_like(x)
+        loc = np.vstack((x, y, z)).T
         v = self.ctd.get_salinity_at_loc(loc)
-        self.assertEqual(v, value(x, y, z))
+        loc_wgs = np.vstack((lat, lon, z)).T
+        ve = self.sinmod.get_data_at_coordinates(loc_wgs)[:, -1]
+        self.assertIsNone(testing.assert_array_almost_equal(v, ve))
 
         # c2: value within the field
-        x, y, z = 5, 5, .5
+        lat, lon = 63.456175, 10.402070
+        x, y = WGS.latlon2xy(lat, lon)
+        z = 0.5
         loc = np.array([x, y, z])
         v = self.ctd.get_salinity_at_loc(loc)
-        self.assertEqual(v, value(x, y, z))
+        loc_wgs = np.array([lat, lon, z]).reshape(1, -1)
+        ve = self.sinmod.get_data_at_coordinates(loc_wgs)[:, -1]
+        self.assertIsNone(testing.assert_array_almost_equal(v, ve))
 
-        # c3: value outside
-        x, y, z = 5, 5, 1.5
-        loc = np.array([x, y, z])
-        v = self.ctd.get_salinity_at_loc(loc)
-        self.assertEqual(v, value(x, y, 1))
+        # # c3: value outside
+        # lat, lon = 63.446239, 10.380011
+        # x, y = WGS.latlon2xy(lat, lon)
+        # z = 0.5
+        # loc = np.array([x, y, z])
+        # v = self.ctd.get_salinity_at_loc(loc)
+        # loc_wgs = np.array([lat, lon, z]).reshape(1, -1)
+        # ve = self.sinmod.get_data_at_coordinates(loc_wgs)[:, -1]
+        # self.assertIsNone(testing.assert_array_almost_equal(v, ve))
 
-        # c4: multiple values
-        loc = np.array([[0, 0, 0],
-                        [5, 5, .5],
-                        [5, 5, 1.]])
+        # c4: all values inside
+        m = Myopic3D()
+        g = m.gmrf.get_gmrf_grid()
+        ind = np.random.randint(0, len(g), 200)
+        loc = g[ind, :]
         v = self.ctd.get_salinity_at_loc(loc)
-        self.assertIsNone(testing.assert_array_equal(v, value(loc[:, 0], loc[:, 1], loc[:, 2])))
+        lat, lon = WGS.xy2latlon(loc[:, 0], loc[:, 1])
+        loc_wgs = np.vstack((lat, lon, loc[:, 2])).T
+        ve = self.sinmod.get_data_at_coordinates(loc_wgs)[:, -1]
+        self.assertIsNone(testing.assert_array_almost_equal(v, ve))
 
 

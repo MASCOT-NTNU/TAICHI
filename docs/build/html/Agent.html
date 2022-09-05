@@ -34,40 +34,8 @@
 
           <div class="body" role="main">
             
-  <section id="module-Agent">
-<span id="agent-module"></span><h1>Agent module<a class="headerlink" href="#module-Agent" title="Permalink to this heading">¶</a></h1>
-<p>Agent object abstract the entire adaptive agent by wrapping all the other components together inside the class.
-It handles the procedure of the execution by integrating all essential modules and expand its functionalities.</p>
-<p>The goal of the agent is to conduct the autonomous sampling operation by using the following procedure:
-- Sense
-- Plan
-- Act</p>
-<p>Sense refers to the in-situ measurements. Once the agent obtains the sampled values in the field. Then it can plan based
-on the updated knowledge for the field. Therefore, it can act according to the planned manoeuvres.</p>
-<dl class="py class">
-<dt class="sig sig-object py" id="Agent.Agent">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">Agent.</span></span><span class="sig-name descname"><span class="pre">Agent</span></span><a class="headerlink" href="#Agent.Agent" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="Agent.Agent.run">
-<span class="sig-name descname"><span class="pre">run</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#Agent.Agent.run" title="Permalink to this definition">¶</a></dt>
-<dd><p>Run the autonomous operation accroding to Sense, Plan, Act philosophy.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="Agent.Agent.setup_agent">
-<span class="sig-name descname"><span class="pre">setup_agent</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#Agent.Agent.setup_agent" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set up the planning strategies and the AUV simulator for the operation.</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="Agent.Agent.setup_operational_area">
-<span class="sig-name descname"><span class="pre">setup_operational_area</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#Agent.Agent.setup_operational_area" title="Permalink to this definition">¶</a></dt>
-<dd><p>Set the waypoint graph for the whole field according to those polygon constrains.</p>
-</dd></dl>
-
-</dd></dl>
-
+  <section id="agent-module">
+<h1>Agent module<a class="headerlink" href="#agent-module" title="Permalink to this heading">¶</a></h1>
 </section>
 
 
@@ -95,6 +63,7 @@ on the updated knowledge for the field. Therefore, it can act according to the p
 <li class="toctree-l2 current"><a class="current reference internal" href="#">Agent module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="GMRF.html">GMRF package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Planner.html">Planner package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Visualiser.html">Visualiser package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="WGS.html">WGS module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="WaypointGraph.html">WaypointGraph module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="func_test.html">func_test module</a></li>

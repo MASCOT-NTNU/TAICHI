@@ -12,6 +12,14 @@ tests.test\_agent module
    :undoc-members:
    :show-inheritance:
 
+tests.test\_auv\_simulator module
+---------------------------------
+
+.. automodule:: tests.test_auv_simulator
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 tests.test\_ctd\_simulator module
 ---------------------------------
 
@@ -52,18 +60,10 @@ tests.test\_planner module
    :undoc-members:
    :show-inheritance:
 
-tests.test\_simulator module
-----------------------------
+tests.test\_sinmod module
+-------------------------
 
-.. automodule:: tests.test_simulator
-   :members:
-   :undoc-members:
-   :show-inheritance:
-
-tests.test\_spde module
------------------------
-
-.. automodule:: tests.test_spde
+.. automodule:: tests.test_sinmod
    :members:
    :undoc-members:
    :show-inheritance:
@@ -80,6 +80,14 @@ tests.test\_wgs module
 ----------------------
 
 .. automodule:: tests.test_wgs
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+tests.test\_zigzag module
+-------------------------
+
+.. automodule:: tests.test_zigzag
    :members:
    :undoc-members:
    :show-inheritance:

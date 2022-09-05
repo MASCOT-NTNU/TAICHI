@@ -8,14 +8,16 @@ import numpy as np
 from scipy.spatial.distance import cdist
 from scipy.stats import norm
 import os
+from usr_func.sort_polygon_vertices import sort_polygon_vertices
 import time
 
 
 class GMRF:
-    __MIN_DEPTH_FOR_DATA_ASSIMILATION = .0  # TODO: change it back to .25
+    __MIN_DEPTH_FOR_DATA_ASSIMILATION = .25
     __GMRF_DISTANCE_NEIGHBOUR = 32
     __gmrf_grid = None
     __N_gmrf_grid = 0
+    __rotated_angle = .0
 
     def __init__(self):
         self.__spde = spde()
@@ -33,6 +35,16 @@ class GMRF:
         z = depth
         self.__gmrf_grid = np.stack((x, y, z), axis=1)
         self.__N_gmrf_grid = self.__gmrf_grid.shape[0]
+
+        """
+        Get the rotation of the grid, used for later plotting. 
+        """
+        box = np.load(filepath + "grid.npy")
+        polygon = box[:, 2:]
+        polygon = np.stack((WGS.latlon2xy(polygon[:, 0], polygon[:, 1])), axis=1)
+        polygon = sort_polygon_vertices(polygon)
+        self.__rotated_angle = np.math.atan2(polygon[1, 0] - polygon[0, 0],
+                                             polygon[1, 1] - polygon[0, 1])
 
     def assimilate_data(self, dataset: np.ndarray) -> tuple:
         """
@@ -56,7 +68,7 @@ class GMRF:
         dy = (yd @ Fgmrf - Fdata @ yg.T) ** 2
         dz = ((zd @ Fgmrf - Fdata @ zg.T) * self.__GMRF_DISTANCE_NEIGHBOUR) ** 2
         dist = dx + dy + dz
-        ind_min_distance = np.argmin(dist, axis=1)
+        ind_min_distance = np.argmin(dist, axis=1)  # used only for unittest.
         ind_assimilated = np.unique(ind_min_distance)
         salinity_assimilated = np.zeros([len(ind_assimilated), 1])
         for i in range(len(ind_assimilated)):
@@ -137,6 +149,24 @@ class GMRF:
         Returns: gmrf_grid (private variable)
         """
         return self.__gmrf_grid
+
+    def get_rotated_angle(self):
+        """
+        Returns: rotated angle of the gmrf grid.
+        """
+        return self.__rotated_angle
+
+    def get_mu(self):
+        """
+        Returns: conditional mean of the GMRF field.
+        """
+        return self.__spde.mu
+
+    def get_mvar(self):
+        """
+        Returns: conditional mariginal variance of the GMRF field.
+        """
+        return self.__spde.mvar()
 
 
 if __name__ == "__main__":

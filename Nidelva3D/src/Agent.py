@@ -10,9 +10,10 @@ The goal of the agent is to conduct the autonomous sampling operation by using t
 Sense refers to the in-situ measurements. Once the agent obtains the sampled values in the field. Then it can plan based
 on the updated knowledge for the field. Therefore, it can act according to the planned manoeuvres.
 """
-import numpy as np
 from Planner.Myopic3D import Myopic3D
 from AUVSimulator.AUVSimulator import AUVSimulator
+from Visualiser.Visualiser import Visualiser
+import numpy as np
 import time
 
 
@@ -21,20 +22,24 @@ class Agent:
     __loc_start = np.array([0, 0, 0])
     __loc_end = np.array([0, 0, 0])
     __NUM_STEP = 10
+    __counter = 0
 
     def __init__(self) -> None:
         """
         Set up the planning strategies and the AUV simulator for the operation.
         """
-        # s1: setup planner
+        # s1: setup planner.
         self.myopic = Myopic3D()
 
-        # s2: setup AUV
+        # s2: setup AUV simulator.
         self.auv = AUVSimulator()
+
+        # s3: setup Visualiser.
+        self.visualiser = Visualiser()
 
     def run(self):
         """
-        Run the autonomous operation accroding to Sense, Plan, Act philosophy.
+        Run the autonomous operation according to Sense, Plan, Act philosophy.
         """
 
         # c1: start the operation from scratch.
@@ -48,17 +53,30 @@ class Agent:
         # a1: move to current location
         self.auv.move_to_location(self.myopic.wp.get_waypoint_from_ind(id_curr))
 
-        counter = 0
         t_start = time.time()
         t_pop_last = time.time()
 
         while True:
             t_end = time.time()
-            if t_end - t_start >= 5:
+            """
+            Simulating the AUV behaviour, not the actual one
+            """
+            t_gap = t_end - t_start
+            if t_gap >= 5:
                 self.auv.arrive()
                 t_start = time.time()
+
+            if self.__counter == 0:
+                if t_end - t_pop_last >= 20:
+                    self.auv.popup()
+                    t_pop_last = time.time()
+
             if self.auv.is_arrived():
-                if counter == 0:
+                if t_end - t_pop_last >= 20:
+                    self.auv.popup()
+                    t_pop_last = time.time()
+
+                if self.__counter == 0:
                     # s2: get next index using get_pioneer_waypoint
                     ind = self.myopic.get_pioneer_waypoint_index()
                     self.myopic.set_next_index(ind)
@@ -74,10 +92,10 @@ class Agent:
                     self.myopic.get_pioneer_waypoint_index()
 
                     # # s5: obtain CTD data
-                    # ctd_data = self.auv.get_ctd_data()
+                    ctd_data = self.auv.get_ctd_data()
 
                     # # s5: assimilate data
-                    # self.myopic.gmrf.assimilate_data(ctd_data)
+                    self.myopic.gmrf.assimilate_data(ctd_data)
                 else:
                     ind = self.myopic.get_current_index()
                     loc = self.myopic.wp.get_waypoint_from_ind(ind)
@@ -95,14 +113,19 @@ class Agent:
                     # ss3: plan ahead.
                     self.myopic.get_pioneer_waypoint_index()
 
-                    if counter == self.__NUM_STEP:
+                    if self.__counter == self.__NUM_STEP:
                         break
-                counter += 1
-            else:
-                pass
+                print("counter: ", self.__counter)
+                print(self.myopic.get_current_index())
+                print(self.myopic.get_trajectory_indices())
+                self.__counter += 1
+
+    def get_counter(self):
+        return self.__counter
 
 
 if __name__ == "__main__":
     a = Agent()
+    a.run()
 
 

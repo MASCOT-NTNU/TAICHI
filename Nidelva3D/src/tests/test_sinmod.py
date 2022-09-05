@@ -18,7 +18,6 @@ class TestSINMOD(TestCase):
     def setUp(self) -> None:
         self.sinmod = SINMOD()
 
-
     def test_get_data_from_sinmod(self) -> None:
         # c1: one depth layer
         N = 40
@@ -58,7 +57,5 @@ class TestSINMOD(TestCase):
                         cmap=get_cmap("BrBG", 10), vmin=10, vmax=30)
             plt.colorbar()
         plt.show()
-
-
 
 

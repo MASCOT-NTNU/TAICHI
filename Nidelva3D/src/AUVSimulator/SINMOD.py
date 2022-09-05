@@ -4,6 +4,7 @@ Then the data will be extracted to the desired coordinates by using minimum dist
 """
 
 from WGS import WGS
+from Planner.Myopic3D import Myopic3D
 import os
 import re
 import numpy as np
@@ -15,7 +16,7 @@ import pandas as pd
 
 class SINMOD:
     """
-
+    SINMOD handler
     """
     __SINMOD_MAX_DEPTH_LAYER = 10
     __sinmod_filepath = os.getcwd() + "/../../../../Data/Nidelva/SINMOD_DATA/samples/"
@@ -136,6 +137,83 @@ class SINMOD:
 
 if __name__ == "__main__":
     s = SINMOD()
+    my = Myopic3D()
+    grid = my.gmrf.get_gmrf_grid()
+    lat, lon = WGS.xy2latlon(grid[:, 0], grid[:, 1])
+    grid_wgs = np.vstack((lat, lon, grid[:, 2])).T
+    N = 5000
+    for i in np.arange(0, len(grid_wgs), N):
+        print(i)
+        g = grid_wgs[i:i+N, :]
+        d = s.get_data_at_coordinates(g)
+        ddf = pd.DataFrame(d, columns=['lat', 'lon', 'depth', 'salinity'])
+        ddf.to_csv("/Users/yaolin/Downloads/data/df_{:05d}.csv".format(i), index=False)
+        # df = np.append(df, d, axis=0)
+
+    path = "/Users/yaolin/Downloads/data/"
+    files = os.listdir(path)
+    dt = np.empty([0, 4])
+    for file in files:
+        if file.endswith(".csv"):
+            df = pd.read_csv(path + file)
+            dt = np.append(dt, df.to_numpy(), axis=0)
+
+    dtf = pd.DataFrame(dt, columns=['lat', 'lon', 'depth', 'salinity'])
+    dtf.to_csv(path + "total/data.csv", index=False)
+
+    x, y = WGS.latlon2xy(dt[:, 0], dt[:, 1])
+    dn = np.vstack((x, y, dt[:, 2], dt[:, -1])).T
+    dnf = pd.DataFrame(dn, columns=['x', 'y', 'z', 'salinity'])
+    dnf.to_csv(path + "total/data_ned.csv", index=False)
+
+    import matplotlib.pyplot as plt
+    import plotly
+    import plotly.graph_objects as go
+
+    fig = go.Figure(data=[go.Scatter3d(
+        x=dt[:, 1],
+        y=dt[:, 0],
+        z=-dt[:, 2],
+        mode='markers',
+        marker=dict(
+            size=4,
+            color=dt[:, -1],  # set color to an array/list of desired values
+            colorscale='RdBu',  # choose a colorscale
+            showscale=True,
+        ),
+    )])
+
+    figpath = os.getcwd() + "/../fig/GroundTruth.html"
+    plotly.offline.plot(fig, filename=figpath, auto_open=True)
+
+
+# import os
+# import pandas as pd
+# import plotly
+# import plotly.graph_objects as go
+#
+# dt = pd.read_csv(os.getcwd() + "/AUVSimulator/simulated_truth_wgs.csv").to_numpy()
+# x, y = WGS.latlon2xy(dt[:, 0], dt[:, 1])
+# dn = np.vstack((x, y, dt[:, 2], dt[:, -1])).T
+# dnf = pd.DataFrame(dn, columns=['x', 'y', 'z', 'salinity'])
+# dnf.to_csv(os.getcwd() + "/AUVSimulator/simulated_truth.csv", index=False)
+#
+#
+# fig = go.Figure(data=[go.Scatter3d(
+#     x=dt[:, 1],
+#     y=dt[:, 0],
+#     z=-dt[:, 2],
+#     mode='markers',
+#     marker=dict(
+#         size=4,
+#         color=dt[:, -1],  # set color to an array/list of desired values
+#         colorscale='RdBu',  # choose a colorscale
+#         showscale=True,
+#     ),
+# )])
+#
+# figpath = os.getcwd() + "/../fig/GroundTruth.html"
+# plotly.offline.plot(fig, filename=figpath, auto_open=True)
 
 
 

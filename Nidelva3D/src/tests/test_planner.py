@@ -39,7 +39,8 @@ class TestPlanner(TestCase):
         id_pion = self.planner.get_pioneer_index()
         id_next = self.planner.get_next_index()
         id_pion_new = 22
-        self.planner.update_planner(id_pion_new)
+        self.planner.update_planner()
+        self.planner.set_pioneer_index(id_pion_new)
         self.assertEqual(id_pion_new, self.planner.get_pioneer_index())
         self.assertEqual(id_pion, self.planner.get_next_index())
         self.assertEqual(id_next, self.planner.get_current_index())

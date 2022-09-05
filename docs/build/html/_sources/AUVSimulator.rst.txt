@@ -28,6 +28,14 @@ AUVSimulator.Messenger module
    :undoc-members:
    :show-inheritance:
 
+AUVSimulator.SINMOD module
+--------------------------
+
+.. automodule:: AUVSimulator.SINMOD
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 Module contents
 ---------------
 
