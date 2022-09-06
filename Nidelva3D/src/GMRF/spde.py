@@ -33,7 +33,7 @@ class spde:
         self.lons = tmp[:,3] # min & max longitudes
         self.x = tmp[:,0] # min & max x grid location
         self.y = tmp[:,1] # min & max y grid locations
-        self.threshold = self.setTreshold()
+        self.setThreshold()
 
 
     def sample(self,n = 1):
@@ -43,7 +43,7 @@ class spde:
             n (int, optional): Number of realizations. Defaults to 1.
         """
         z = np.random.normal(size = self.n*n).reshape(self.n,n)
-        data = self.mu + self.Q_fac.apply_Pt(self.Q_fac.solve_Lt(z,use_LDLt_decomposition=False)) + np.random.normal(size = self.n*n).reshape(self.n,n)*self.sigma
+        data = self.mu[:,np.newaxis] + self.Q_fac.apply_Pt(self.Q_fac.solve_Lt(z,use_LDLt_decomposition=False)) + np.random.normal(size = self.n*n).reshape(self.n,n)*self.sigma
         return(data)
 
     def cholesky(self,Q):
@@ -89,11 +89,13 @@ class spde:
             rel ([k,1]-array): k number of measurements of the GMRF. (k>0).
             ks ([k,]-array): k number of indicies describing the index of the measurment in the field.
         """
+        mu = self.mu.reshape(-1,1)
         if ks.size>0:
             S = self.Stot[ks,:]
             self.Q = self.Q + S.transpose()@S*1/self.sigma**2
             self.Q_fac.cholesky_inplace(self.Q)
-            self.mu = self.mu - self.Q_fac.solve_A(S.transpose().tocsc())@(S@self.mu - rel)*1/self.sigma**2
+            mu = mu - self.Q_fac.solve_A(S.transpose().tocsc())@(S@mu - rel)*1/self.sigma**2
+        self.mu = mu.reshape(-1)
 
     def mvar(self,Q_fac = None, n=DEFAULT_NUM_SAMPLES):
         """Monte Carlo Estimate of the marginal variance of a GMRF.
