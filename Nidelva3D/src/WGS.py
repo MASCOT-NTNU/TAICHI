@@ -40,6 +40,15 @@ class WGS:
         lon = WGS.__LONGITUDE_ORIGIN + degrees(y * np.pi * 2.0 / (WGS.__CIRCUMFERENCE * np.cos(radians(lat))))
         return lat, lon
 
+    @staticmethod
+    def get_origin() -> tuple:
+        """ Return origin lat, lon in degrees. """
+        return WGS.__LATITUDE_ORIGIN, WGS.__LONGITUDE_ORIGIN
+
+    @staticmethod
+    def get_circumference() -> float:
+        return WGS.__CIRCUMFERENCE
+
 
 if __name__ == "__main__":
     wgs = WGS()

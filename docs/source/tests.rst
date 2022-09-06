@@ -68,6 +68,14 @@ tests.test\_sinmod module
    :undoc-members:
    :show-inheritance:
 
+tests.test\_visualiser module
+-----------------------------
+
+.. automodule:: tests.test_visualiser
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 tests.test\_waypoint module
 ---------------------------
 

@@ -92,6 +92,16 @@ This module tests the GMRF object.</p>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TestCase</span></code></p>
 <p>Test class for spde helper class.</p>
 <dl class="py method">
+<dt class="sig sig-object py" id="tests.test_gmrf.TestGMRF.plot_mu">
+<span class="sig-name descname"><span class="pre">plot_mu</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_gmrf.TestGMRF.plot_mu" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_gmrf.TestGMRF.plot_var">
+<span class="sig-name descname"><span class="pre">plot_var</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_gmrf.TestGMRF.plot_var" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="tests.test_gmrf.TestGMRF.setUp">
 <span class="sig-name descname"><span class="pre">setUp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#tests.test_gmrf.TestGMRF.setUp" title="Permalink to this definition">¶</a></dt>
 <dd><p>Hook method for setting up the test fixture before exercising it.</p>
@@ -128,6 +138,14 @@ This module tests the GMRF object.</p>
 <dt class="sig sig-object py" id="tests.test_gmrf.TestGMRF.test_get_spde_grid">
 <span class="sig-name descname"><span class="pre">test_get_spde_grid</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#tests.test_gmrf.TestGMRF.test_get_spde_grid" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_gmrf.TestGMRF.test_get_updated_mu_mvar">
+<span class="sig-name descname"><span class="pre">test_get_updated_mu_mvar</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_gmrf.TestGMRF.test_get_updated_mu_mvar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Test if the assimilation works as desired.
+- c1: 1 value.
+- c2: many values.</p>
+</dd></dl>
 
 </dd></dl>
 
@@ -210,6 +228,27 @@ This module tests the Messenger object.</p>
 </section>
 <section id="tests-test-sinmod-module">
 <h2>tests.test_sinmod module<a class="headerlink" href="#tests-test-sinmod-module" title="Permalink to this heading">¶</a></h2>
+</section>
+<section id="module-tests.test_visualiser">
+<span id="tests-test-visualiser-module"></span><h2>tests.test_visualiser module<a class="headerlink" href="#module-tests.test_visualiser" title="Permalink to this heading">¶</a></h2>
+<p>Unit test for Visualiser</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="tests.test_visualiser.TestVisualiser">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tests.test_visualiser.</span></span><span class="sig-name descname"><span class="pre">TestVisualiser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_visualiser.TestVisualiser" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TestCase</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_visualiser.TestVisualiser.setUp">
+<span class="sig-name descname"><span class="pre">setUp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#tests.test_visualiser.TestVisualiser.setUp" title="Permalink to this definition">¶</a></dt>
+<dd><p>Hook method for setting up the test fixture before exercising it.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="tests.test_visualiser.TestVisualiser.test_plot">
+<span class="sig-name descname"><span class="pre">test_plot</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_visualiser.TestVisualiser.test_plot" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 </section>
 <section id="module-tests.test_waypoint">
 <span id="tests-test-waypoint-module"></span><h2>tests.test_waypoint module<a class="headerlink" href="#module-tests.test_waypoint" title="Permalink to this heading">¶</a></h2>
@@ -312,8 +351,8 @@ This module tests the planner object.</p>
 </dd></dl>
 
 </section>
-<section id="module-tests.test_zigzag">
-<span id="tests-test-zigzag-module"></span><h2>tests.test_zigzag module<a class="headerlink" href="#module-tests.test_zigzag" title="Permalink to this heading">¶</a></h2>
+<section id="tests-test-zigzag-module">
+<h2>tests.test_zigzag module<a class="headerlink" href="#tests-test-zigzag-module" title="Permalink to this heading">¶</a></h2>
 </section>
 <section id="module-tests">
 <span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-tests" title="Permalink to this heading">¶</a></h2>

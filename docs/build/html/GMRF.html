@@ -113,6 +113,24 @@ It computes the distance matrix between gmrf grid and dataset grid. Then the val
 </dl>
 </dd></dl>
 
+<dl class="py method">
+<dt class="sig sig-object py" id="GMRF.GMRF.GMRF.get_mu">
+<span class="sig-name descname"><span class="pre">get_mu</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GMRF.GMRF.GMRF.get_mu" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns: conditional mean of the GMRF field.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GMRF.GMRF.GMRF.get_mvar">
+<span class="sig-name descname"><span class="pre">get_mvar</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GMRF.GMRF.GMRF.get_mvar" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns: conditional mariginal variance of the GMRF field.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="GMRF.GMRF.GMRF.get_rotated_angle">
+<span class="sig-name descname"><span class="pre">get_rotated_angle</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GMRF.GMRF.GMRF.get_rotated_angle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns: rotated angle of the gmrf grid.</p>
+</dd></dl>
+
 </dd></dl>
 
 </section>
@@ -120,7 +138,7 @@ It computes the distance matrix between gmrf grid and dataset grid. Then the val
 <span id="gmrf-spde-module"></span><h2>GMRF.spde module<a class="headerlink" href="#module-GMRF.spde" title="Permalink to this heading">¶</a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="GMRF.spde.spde">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GMRF.spde.</span></span><span class="sig-name descname"><span class="pre">spde</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">reduce</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">prev</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GMRF.spde.spde" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">GMRF.spde.</span></span><span class="sig-name descname"><span class="pre">spde</span></span><a class="headerlink" href="#GMRF.spde.spde" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="GMRF.spde.spde.candidate">
@@ -149,16 +167,6 @@ Uses Monte Carlo samples to calculate the marginal variance for all locations.</
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="GMRF.spde.spde.loadModel">
-<span class="sig-name descname"><span class="pre">loadModel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GMRF.spde.spde.loadModel" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="GMRF.spde.spde.loadPrev">
-<span class="sig-name descname"><span class="pre">loadPrev</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GMRF.spde.spde.loadPrev" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="GMRF.spde.spde.mvar">
 <span class="sig-name descname"><span class="pre">mvar</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">Q_fac</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">250</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GMRF.spde.spde.mvar" title="Permalink to this definition">¶</a></dt>
 <dd><p>Monte Carlo Estimate of the marginal variance of a GMRF.</p>
@@ -173,17 +181,6 @@ Uses Monte Carlo samples to calculate the marginal variance for all locations.</
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="GMRF.spde.spde.postProcessing">
-<span class="sig-name descname"><span class="pre">postProcessing</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GMRF.spde.spde.postProcessing" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="GMRF.spde.spde.resetQ">
-<span class="sig-name descname"><span class="pre">resetQ</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GMRF.spde.spde.resetQ" title="Permalink to this definition">¶</a></dt>
-<dd><p>Resets Q to initial values for the same grid</p>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="GMRF.spde.spde.sample">
 <span class="sig-name descname"><span class="pre">sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#GMRF.spde.spde.sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Samples the GMRF. Only used to test.</p>
@@ -192,24 +189,6 @@ Uses Monte Carlo samples to calculate the marginal variance for all locations.</
 <dd class="field-odd"><p><strong>n</strong> (<em>int</em><em>, </em><em>optional</em>) – Number of realizations. Defaults to 1.</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="GMRF.spde.spde.save">
-<span class="sig-name descname"><span class="pre">save</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GMRF.spde.spde.save" title="Permalink to this definition">¶</a></dt>
-<dd><p>Saves conditional mean and marginal variance</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="GMRF.spde.spde.saveModel">
-<span class="sig-name descname"><span class="pre">saveModel</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GMRF.spde.spde.saveModel" title="Permalink to this definition">¶</a></dt>
-<dd><p>Method to save the current model for future loading at current update</p>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="GMRF.spde.spde.setCoefLM">
-<span class="sig-name descname"><span class="pre">setCoefLM</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#GMRF.spde.spde.setCoefLM" title="Permalink to this definition">¶</a></dt>
-<dd><p>Find fixed effects in simple linear model linking SINMOD to predicted GMRF field</p>
 </dd></dl>
 
 <dl class="py method">

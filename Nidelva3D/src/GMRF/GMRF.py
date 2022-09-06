@@ -8,7 +8,9 @@ import numpy as np
 from scipy.spatial.distance import cdist
 from scipy.stats import norm
 import os
+import pandas as pd
 from usr_func.sort_polygon_vertices import sort_polygon_vertices
+from usr_func.checkfolder import checkfolder
 import time
 
 
@@ -18,10 +20,13 @@ class GMRF:
     __gmrf_grid = None
     __N_gmrf_grid = 0
     __rotated_angle = .0
+    __cnt = 0
 
     def __init__(self):
         self.__spde = spde()
         self.construct_gmrf_grid()
+        self.foldername = os.getcwd() + "/GMRF/data/{:d}/".format(int(time.time()))
+        checkfolder(self.foldername)
 
     def construct_gmrf_grid(self) -> None:
         """
@@ -75,6 +80,10 @@ class GMRF:
             ind_selected = np.where(ind_min_distance == ind_assimilated[i])[0]
             salinity_assimilated[i] = np.mean(dataset[ind_selected, 3])
         self.__spde.update(rel=salinity_assimilated, ks=ind_assimilated)
+        data = np.hstack((ind_assimilated.reshape(-1, 1), salinity_assimilated))
+        df = pd.DataFrame(data, columns=['ind', 'salinity'])
+        df.to_csv(self.foldername + "D_{:03d}.csv".format(self.__cnt))
+        self.__cnt += 1
         # t2 = time.time()
         # print("Data assimilation takes: ", t2 - t1)
         return ind_assimilated, salinity_assimilated, ind_min_distance

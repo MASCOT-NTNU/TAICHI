@@ -38,6 +38,26 @@
 <section id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">¶</a></h2>
 </section>
+<section id="module-usr_func.interpolate_2d">
+<span id="usr-func-interpolate-2d-module"></span><h2>usr_func.interpolate_2d module<a class="headerlink" href="#module-usr_func.interpolate_2d" title="Permalink to this heading">¶</a></h2>
+<p>Interpolates values in 2d grid discretization.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="usr_func.interpolate_2d.interpolate_2d">
+<span class="sig-prename descclassname"><span class="pre">usr_func.interpolate_2d.</span></span><span class="sig-name descname"><span class="pre">interpolate_2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nx</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ny</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">interpolation_method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'linear'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#usr_func.interpolate_2d.interpolate_2d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Use griddata to interpolate to a finer results</p>
+</dd></dl>
+
+</section>
+<section id="module-usr_func.interpolate_3d">
+<span id="usr-func-interpolate-3d-module"></span><h2>usr_func.interpolate_3d module<a class="headerlink" href="#module-usr_func.interpolate_3d" title="Permalink to this heading">¶</a></h2>
+<p>This function interpolates 3d values.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="usr_func.interpolate_3d.interpolate_3d">
+<span class="sig-prename descclassname"><span class="pre">usr_func.interpolate_3d.</span></span><span class="sig-name descname"><span class="pre">interpolate_3d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">y</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">z</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">tuple</span></span></span><a class="headerlink" href="#usr_func.interpolate_3d.interpolate_3d" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolates values for 3d grid by interpolate on 2d layers and combine them together</p>
+</dd></dl>
+
+</section>
 <section id="module-usr_func.is_even">
 <span id="usr-func-is-even-module"></span><h2>usr_func.is_even module<a class="headerlink" href="#module-usr_func.is_even" title="Permalink to this heading">¶</a></h2>
 <p>This function tests if a given integer is even or not.</p>
@@ -70,6 +90,15 @@
 </dd></dl>
 
 </section>
+<section id="module-usr_func.refill_nan_values">
+<span id="usr-func-refill-nan-values-module"></span><h2>usr_func.refill_nan_values module<a class="headerlink" href="#module-usr_func.refill_nan_values" title="Permalink to this heading">¶</a></h2>
+<p>Refills nan values with neighbouring values.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="usr_func.refill_nan_values.refill_nan_values">
+<span class="sig-prename descclassname"><span class="pre">usr_func.refill_nan_values.</span></span><span class="sig-name descname"><span class="pre">refill_nan_values</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#usr_func.refill_nan_values.refill_nan_values" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</section>
 <section id="module-usr_func.sort_polygon_vertices">
 <span id="usr-func-sort-polygon-vertices-module"></span><h2>usr_func.sort_polygon_vertices module<a class="headerlink" href="#module-usr_func.sort_polygon_vertices" title="Permalink to this heading">¶</a></h2>
 <p>This function sorts the polygon with the counter-clockwise direction.</p>
@@ -87,6 +116,25 @@
 </dd>
 </dl>
 <p>Returns: sorted polygon with the direction of counter-clockwise.</p>
+</dd></dl>
+
+</section>
+<section id="module-usr_func.vectorize">
+<span id="usr-func-vectorize-module"></span><h2>usr_func.vectorize module<a class="headerlink" href="#module-usr_func.vectorize" title="Permalink to this heading">¶</a></h2>
+<p>Vectorize the input array.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="usr_func.vectorize.vectorize">
+<span class="sig-prename descclassname"><span class="pre">usr_func.vectorize.</span></span><span class="sig-name descname"><span class="pre">vectorize</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#usr_func.vectorize.vectorize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Vectorize the input array according to column first ordering.
+:param array: (n, m) dimension array.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns<span class="colon">:</span></dt>
+<dd class="field-odd"><p>(n*m,  1) dimension vector.</p>
+</dd>
+<dt class="field-even">Return type<span class="colon">:</span></dt>
+<dd class="field-even"><p>vector</p>
+</dd>
+</dl>
 </dd></dl>
 
 </section>

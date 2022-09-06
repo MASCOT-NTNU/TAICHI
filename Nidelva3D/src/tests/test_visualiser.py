@@ -2,7 +2,7 @@
 """
 
 from unittest import TestCase
-from Visualiser.Visualiser import Visualiser
+from Visualiser.Visualiser_myopic import Visualiser
 
 
 class TestVisualiser(TestCase):
