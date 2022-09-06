@@ -21,7 +21,7 @@ class Agent:
 
     __loc_start = np.array([0, 0, 0])
     __loc_end = np.array([0, 0, 0])
-    __NUM_STEP = 100
+    __NUM_STEP = 40
     __counter = 0
 
     def __init__(self) -> None:
@@ -69,7 +69,7 @@ class Agent:
                 t_start = time.time()
 
             if self.__counter == 0:
-                if t_end - t_pop_last >= 20:
+                if t_end - t_pop_last >= 50:
                     self.auv.popup()
                     print("POP UP")
                     t_pop_last = time.time()
@@ -124,7 +124,6 @@ class Agent:
                 print(self.myopic.get_trajectory_indices())
                 self.visualiser.plot_agent()
                 self.__counter += 1
-
 
     def get_counter(self):
         return self.__counter
