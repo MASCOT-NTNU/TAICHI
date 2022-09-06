@@ -12,5 +12,6 @@ class TestVisualiser(TestCase):
         pass
 
     def test_plot(self):
+        self.v.plot_agent()
         pass
 

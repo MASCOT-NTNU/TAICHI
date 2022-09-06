@@ -34,8 +34,7 @@ class spde:
         self.x = tmp[:,0] # min & max x grid location
         self.y = tmp[:,1] # min & max y grid locations
         self.setThreshold()
-
-
+    
     def sample(self,n = 1):
         """Samples the GMRF. Only used to test.
 
@@ -43,7 +42,7 @@ class spde:
             n (int, optional): Number of realizations. Defaults to 1.
         """
         z = np.random.normal(size = self.n*n).reshape(self.n,n)
-        data = self.mu[:,np.newaxis] + self.Q_fac.apply_Pt(self.Q_fac.solve_Lt(z,use_LDLt_decomposition=False)) + np.random.normal(size = self.n*n).reshape(self.n,n)*self.sigma
+        data = self.mu[:, np.newaxis] + self.Q_fac.apply_Pt(self.Q_fac.solve_Lt(z,use_LDLt_decomposition=False)) + np.random.normal(size = self.n*n).reshape(self.n,n)*self.sigma
         return(data)
 
     def cholesky(self,Q):
@@ -94,6 +93,7 @@ class spde:
             S = self.Stot[ks,:]
             self.Q = self.Q + S.transpose()@S*1/self.sigma**2
             self.Q_fac.cholesky_inplace(self.Q)
+
             mu = mu - self.Q_fac.solve_A(S.transpose().tocsc())@(S@mu - rel)*1/self.sigma**2
         self.mu = mu.reshape(-1)
 
