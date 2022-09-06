@@ -21,7 +21,7 @@ class Agent:
 
     __loc_start = np.array([0, 0, 0])
     __loc_end = np.array([0, 0, 0])
-    __NUM_STEP = 10
+    __NUM_STEP = 100
     __counter = 0
 
     def __init__(self) -> None:
@@ -35,7 +35,7 @@ class Agent:
         self.auv = AUVSimulator()
 
         # s3: setup Visualiser.
-        self.visualiser = Visualiser()
+        self.visualiser = Visualiser(self)
 
     def run(self):
         """
@@ -56,6 +56,8 @@ class Agent:
         t_start = time.time()
         t_pop_last = time.time()
 
+        self.visualiser.plot_agent()
+
         while True:
             t_end = time.time()
             """
@@ -69,11 +71,13 @@ class Agent:
             if self.__counter == 0:
                 if t_end - t_pop_last >= 20:
                     self.auv.popup()
+                    print("POP UP")
                     t_pop_last = time.time()
 
             if self.auv.is_arrived():
                 if t_end - t_pop_last >= 20:
                     self.auv.popup()
+                    print("POPUP")
                     t_pop_last = time.time()
 
                 if self.__counter == 0:
@@ -118,7 +122,9 @@ class Agent:
                 print("counter: ", self.__counter)
                 print(self.myopic.get_current_index())
                 print(self.myopic.get_trajectory_indices())
+                self.visualiser.plot_agent()
                 self.__counter += 1
+
 
     def get_counter(self):
         return self.__counter
