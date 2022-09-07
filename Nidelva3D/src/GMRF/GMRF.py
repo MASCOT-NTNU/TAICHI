@@ -28,7 +28,7 @@ class GMRF:
         t = int(time.time())
         f = os.getcwd()
         self.foldername = f + "/GMRF/data/{:d}/".format(t)
-        self.foldername_ctd = f + "/GMRF/raw_ctd/{:d}".format(t)
+        self.foldername_ctd = f + "/GMRF/raw_ctd/{:d}/".format(t)
         checkfolder(self.foldername)
         checkfolder(self.foldername_ctd)
 
