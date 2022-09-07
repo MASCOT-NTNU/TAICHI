@@ -25,11 +25,12 @@ class GMRF:
     def __init__(self):
         self.__spde = spde()
         self.construct_gmrf_grid()
-        t = time.time()
+        t = int(time.time())
         f = os.getcwd()
-        self.foldername = f + "/GMRF/data/{:d}/".format(int(t))
-        self.foldername_ctd = f + "/GMRF/raw_ctd/{:d}".format(int(t))
+        self.foldername = f + "/GMRF/data/{:d}/".format(t)
+        self.foldername_ctd = f + "/GMRF/raw_ctd/{:d}".format(t)
         checkfolder(self.foldername)
+        checkfolder(self.foldername_ctd)
 
     def construct_gmrf_grid(self) -> None:
         """
@@ -45,7 +46,7 @@ class GMRF:
         self.__N_gmrf_grid = self.__gmrf_grid.shape[0]
 
         """
-        Get the rotation of the grid, used for later plotting. 
+        Get the rotation of the grid, used for later plotting.
         """
         box = np.load(filepath + "grid.npy")
         polygon = box[:, 2:]
@@ -185,5 +186,3 @@ class GMRF:
 
 if __name__ == "__main__":
     s = GMRF()
-
-
