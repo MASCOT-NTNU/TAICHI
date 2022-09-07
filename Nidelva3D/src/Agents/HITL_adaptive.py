@@ -10,18 +10,14 @@ The goal of the agent is to conduct the autonomous sampling operation by using t
 Sense refers to the in-situ measurements. Once the agent obtains the sampled values in the field. Then it can plan based
 on the updated knowledge for the field. Therefore, it can act according to the planned manoeuvres.
 """
-import math
-
-import rospy
-
 from Planner.Myopic3D import Myopic3D
-# from AUVSimulator.AUVSimulator import AUVSimulator
-# from Visualiser.Visualiser_myopic import Visualiser
 from AUV.Thor import Thor
 from WGS import WGS
 import numpy as np
 import time
 import os
+import math
+import rospy
 
 
 class Agent:
@@ -65,33 +61,27 @@ class Agent:
         lat, lon = WGS.xy2latlon(wp[0], wp[1])
         self.auv.auv_handler.setWaypoint(math.radians(lat), math.radians(lon), wp[2], speed=speed)
 
-        t_start = time.time()
         t_pop_last = time.time()
         update_time = rospy.get_time()
 
         ctd_data = []
         while not rospy.is_shutdown():
             if self.auv.init:
+                t_now = time.time()
+
                 # s1: append data
                 loc_auv = self.auv.get_vehicle_pos()
                 ctd_data.append([loc_auv[0], loc_auv[1], loc_auv[2], self.auv.get_salinity()])
 
-                t_end = time.time()
-                t_gap = t_end - t_start
-
-                if t_gap >= 5:
-                    self.auv.arrive()
-                    t_start = time.time()
-
                 if self.__counter == 0:
-                    if t_end - t_pop_last >= max_submerged_time:
+                    if t_now - t_pop_last >= max_submerged_time:
                         self.auv.auv_handler.PopUp(sms=True, iridium=True, popup_duration=popup_time,
                                                    phone_number=phone, iridium_dest=iridium)
                         t_pop_last = time.time()
 
                 if ((self.auv.auv_handler.getState() == "waiting") and
                         (rospy.get_time() - update_time) > 5.):
-                    if t_end - t_pop_last >= 20:
+                    if t_now - t_pop_last >= max_submerged_time:
                         self.auv.auv_handler.PopUp(sms=True, iridium=True, popup_duration=popup_time,
                                                    phone_number=phone, iridium_dest=iridium)
                         t_pop_last = time.time()
@@ -105,6 +95,7 @@ class Agent:
                         loc = self.myopic.wp.get_waypoint_from_ind(ind)
                         lat, lon = WGS.xy2latlon(loc[0], loc[1])
                         self.auv.auv_handler.setWaypoint(math.radians(lat), math.radians(lon), loc[2], speed=speed)
+                        update_time = rospy.get_time()
 
                         # s3: update planner -> so curr and next waypoint is updated
                         self.myopic.update_planner()
@@ -123,7 +114,7 @@ class Agent:
                         loc = self.myopic.wp.get_waypoint_from_ind(ind)
                         lat, lon = WGS.xy2latlon(loc[0], loc[1])
                         self.auv.auv_handler.setWaypoint(math.radians(lat), math.radians(lon), loc[2], speed=speed)
-
+                        update_time = rospy.get_time()
 
                         # a1: gather AUV data
                         ctd_data = np.array(ctd_data)
@@ -151,6 +142,9 @@ class Agent:
                     print(self.myopic.get_current_index())
                     print(self.myopic.get_trajectory_indices())
                     self.__counter += 1
+                self.auv.last_state = self.auv.auv_handler.getState()
+                self.auv.auv_handler.spin()
+            self.auv.rate.sleep()
 
     def get_counter(self):
         return self.__counter

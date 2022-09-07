@@ -32,7 +32,6 @@ class Thor:
         self.last_state = "unavailable"
         self.rate.sleep()
         self.init = True
-
         self.sms_pub_ = rospy.Publisher("/IMC/In/Sms", Sms, queue_size = 10)
 
     def SalinityCB(self, msg):
@@ -47,6 +46,15 @@ class Thor:
         E = offset_east * circum * np.cos(math.radians(lat_origin)) / (2.0 * np.pi)
         D = msg.depth.data
         self.__vehicle_pos = [N, E, D]
+
+    def send_SMS_mission_complete(self):
+        print("Mission complete! will be sent via SMS")
+        SMS = Sms()
+        SMS.number.data = self.__phone_number
+        SMS.timeout.data = 60
+        SMS.contents.data = "Congrats, Mission complete!"
+        self.sms_pub_.publish(SMS)
+        print("Finished SMS sending!")
 
     def get_vehicle_pos(self):
         return self.__vehicle_pos
@@ -68,12 +76,3 @@ class Thor:
 
     def get_iridium(self):
         return self.__iridium_destination
-
-    def send_SMS_mission_complete(self):
-        print("Mission complete! will be sent via SMS")
-        SMS = Sms()
-        SMS.number.data = self.__phone_number
-        SMS.timeout.data = 60
-        SMS.contents.data = "Congrats, Mission complete!"
-        self.sms_pub_.publish(SMS)
-        print("Finished SMS sending!")
