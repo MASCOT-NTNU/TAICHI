@@ -10,8 +10,9 @@ The goal of the agent is to conduct the autonomous sampling operation by using t
 Sense refers to the in-situ measurements. Once the agent obtains the sampled values in the field. Then it can plan based
 on the updated knowledge for the field. Therefore, it can act according to the planned manoeuvres.
 """
+
 from Planner.Myopic3D import Myopic3D
-from AUV.Thor import Thor
+from AUV.AUV1 import AUV
 from WGS import WGS
 import numpy as np
 import time
@@ -34,7 +35,7 @@ class Agent:
         self.myopic = Myopic3D()
 
         # s2: setup AUV simulator.
-        self.auv = Thor()
+        self.auv = AUV()
 
     def run(self):
         """
@@ -104,10 +105,10 @@ class Agent:
                         # s4: get pioneer waypoint
                         self.myopic.get_pioneer_waypoint_index()
 
-                        # # s5: obtain CTD data
+                        # s5: obtain CTD data
                         ctd_data = np.array(ctd_data)
 
-                        # # s5: assimilate data
+                        # s6: assimilate data
                         self.myopic.gmrf.assimilate_data(ctd_data)
                         ctd_data = []
                     else:

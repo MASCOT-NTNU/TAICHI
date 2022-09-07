@@ -25,7 +25,10 @@ class GMRF:
     def __init__(self):
         self.__spde = spde()
         self.construct_gmrf_grid()
-        self.foldername = os.getcwd() + "/GMRF/data/{:d}/".format(int(time.time()))
+        t = time.time()
+        f = os.getcwd()
+        self.foldername = f + "/GMRF/data/{:d}/".format(int(t))
+        self.foldername_ctd = f + "/GMRF/raw_ctd/{:d}".format(int(t))
         checkfolder(self.foldername)
 
     def construct_gmrf_grid(self) -> None:
@@ -58,6 +61,8 @@ class GMRF:
         Args:
             dataset: np.array([x, y, z, sal])
         """
+        df = pd.DataFrame(dataset, columns=['x', 'y', 'z', 'salinity'])
+        df.to_csv(self.foldername_ctd + "D_{:03d}.csv".format(self.__cnt))
         ind_remove_noise_layer = np.where(np.abs(dataset[:, 2]) >= self.__MIN_DEPTH_FOR_DATA_ASSIMILATION)[0]
         dataset = dataset[ind_remove_noise_layer, :]
         xd = dataset[:, 0].reshape(-1, 1)

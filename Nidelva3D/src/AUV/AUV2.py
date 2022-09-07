@@ -9,7 +9,7 @@ from auv_handler import AuvHandler
 from imc_ros_interface.msg import Temperature, Salinity, EstimatedState, Sms
 
 
-class Harald:
+class AUV:
 
     __speed = 1.5  # [m/s]
     __depth = .0

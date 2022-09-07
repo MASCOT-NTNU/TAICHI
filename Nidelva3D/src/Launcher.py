@@ -1,3 +1,7 @@
+"""
+Launches the mission.
+"""
+
 from Agents.HITL_adaptive import Agent
 
 
