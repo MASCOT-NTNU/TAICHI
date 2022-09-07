@@ -7,4 +7,4 @@ conda install -n TAICHI -c conda-forge scikit-gstat
 conda instal -n TAICHI -c conda-forge ros-rospy
 conda install -n TAICHI -c anaconda pandas
 conda install -n TAICHI -c conda-forge shapely
-conda install -n -c conda-forge matplotlib
+conda install -n TAICHI -c conda-forge matplotlib
