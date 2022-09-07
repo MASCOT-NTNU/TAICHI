@@ -68,6 +68,7 @@ class Agent:
         while not rospy.is_shutdown():
             if self.auv.init:
                 t_now = time.time()
+                print("counter: ", self.__counter)
 
                 # s1: append data
                 loc_auv = self.auv.get_vehicle_pos()

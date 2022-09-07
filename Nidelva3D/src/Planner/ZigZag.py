@@ -172,4 +172,48 @@ class ZigZag:
 
 if __name__ == "__main__":
     z = ZigZag()
+    z.construct_path()
+    path = z.get_zigzag_path()
+    lat, lon = WGS.xy2latlon(path[:, 0], path[:, 1])
+    wp = np.vstack((lat, lon, path[:, 2])).T
+    import matplotlib.pyplot as plt
+    plt.plot(wp[:, 1], wp[:, 0], 'k.-')
+    plt.show()
+
+    import plotly
+    import plotly.graph_objects as go
+
+    fig = go.Figure(data=go.Scatter3d(
+        x=wp[:, 1],
+        y=wp[:, 0],
+        z=-wp[:, 2],
+        mode="markers+lines",
+        marker=dict(
+            size=2,
+            color='black',
+        ),
+        line=dict(
+            width=1,
+            color='yellow',
+        )
+    ))
+
+    fig.add_trace(go.Scatter3d(
+        x=[wp[0, 1]],
+        y=[wp[0, 0]],
+        z=[-wp[0, 2]],
+        mode="markers",
+        marker=dict(
+            size=20,
+            color='red',
+        ),
+    ))
+
+    plotly.offline.plot(fig, filename='/Users/yaolin/Downloads/test_wp.html', auto_open=True)
+    import pandas as pd
+    df = pd.DataFrame(wp, columns=['lat', 'lon', 'depth'])
+    df.to_csv("/Users/yaolin/Downloads/wp.csv", index=False)
+
+
+
 
