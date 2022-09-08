@@ -21,7 +21,7 @@ class ZigZag:
     __depth_diff = np.diff(__depth_limit)
     __marginal_distance = 100  # [m] away from the borders.
     __max_pitch = math.radians(10)  # [deg] for AUV.
-    __dist_yoyo_lateral = .0
+    __dist_yoyo_lateral = 60  # [m]
     __zigzag_yoyo_path = np.empty([0, 3])
 
     def __init__(self) -> None:
@@ -82,7 +82,7 @@ class ZigZag:
         ye = ymax - self.__marginal_distance
 
         # s4: get yoyo gap distance.
-        self.get_yoyo_lateral_distance()
+        # self.get_yoyo_lateral_distance()
 
         # s5: use vertice to connect a path.
         path = np.empty([0, 3])
