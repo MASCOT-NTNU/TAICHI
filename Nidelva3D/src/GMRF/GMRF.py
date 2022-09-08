@@ -29,8 +29,10 @@ class GMRF:
         f = os.getcwd()
         self.foldername = f + "/GMRF/data/{:d}/".format(t)
         self.foldername_ctd = f + "/GMRF/raw_ctd/{:d}/".format(t)
+        self.foldername_thres = f + "/GMRF/threshold/{:d}/".format(t)
         checkfolder(self.foldername)
         checkfolder(self.foldername_ctd)
+        checkfolder(self.foldername_thres)
 
     def construct_gmrf_grid(self) -> None:
         """
@@ -62,8 +64,10 @@ class GMRF:
         Args:
             dataset: np.array([x, y, z, sal])
         """
+        # ss1: save raw ctd
         df = pd.DataFrame(dataset, columns=['x', 'y', 'z', 'salinity'])
         df.to_csv(self.foldername_ctd + "D_{:03d}.csv".format(self.__cnt))
+
         ind_remove_noise_layer = np.where(np.abs(dataset[:, 2]) >= self.__MIN_DEPTH_FOR_DATA_ASSIMILATION)[0]
         dataset = dataset[ind_remove_noise_layer, :]
         xd = dataset[:, 0].reshape(-1, 1)
@@ -86,9 +90,17 @@ class GMRF:
             ind_selected = np.where(ind_min_distance == ind_assimilated[i])[0]
             salinity_assimilated[i] = np.mean(dataset[ind_selected, 3])
         self.__spde.update(rel=salinity_assimilated, ks=ind_assimilated)
+
+        # ss2: save assimilated data
         data = np.hstack((ind_assimilated.reshape(-1, 1), salinity_assimilated))
         df = pd.DataFrame(data, columns=['ind', 'salinity'])
         df.to_csv(self.foldername + "D_{:03d}.csv".format(self.__cnt))
+
+        # ss3: save threshold
+        threshold = self.__spde.getThreshold()
+        df = pd.DataFrame(threshold.reshape(1, -1), columns=['threshold'])
+        df.to_csv(self.foldername_thres + "D_{:03d}.csv".format(self.__cnt))
+
         self.__cnt += 1
         # t2 = time.time()
         # print("Data assimilation takes: ", t2 - t1)
