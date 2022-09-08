@@ -128,7 +128,7 @@ class TestGMRF(TestCase):
         x, y = WGS.latlon2xy(lat, lon)
         dataset = np.array([[x, y, depth, value]])
         self.gmrf.assimilate_data(dataset)
-        file = "/Users/yaolin/Downloads/"
+        file = "/Users/yaoling/Downloads/"
         self.plot_mu(file + "mu_cond")
         self.plot_var(file + "var_cond")
 
@@ -141,7 +141,7 @@ class TestGMRF(TestCase):
         value = 15
         dataset = np.array([[x, y, z, value]])
         self.gmrf.assimilate_data(dataset)
-        file = "/Users/yaolin/Downloads/"
+        # file = "/Users/yaoling/Downloads/"
         self.plot_mu(file + "mu_cond2")
         self.plot_var(file + "var_cond2")
 
@@ -154,7 +154,7 @@ class TestGMRF(TestCase):
         value = np.array([5, 10, 25])
         dataset = np.vstack((x, y, z, value)).T
         self.gmrf.assimilate_data(dataset)
-        file = "/Users/yaolin/Downloads/"
+        # file = "/Users/yaoling/Downloads/"
         self.plot_mu(file + "mu_cond3")
         self.plot_var(file + "var_cond3")
 
