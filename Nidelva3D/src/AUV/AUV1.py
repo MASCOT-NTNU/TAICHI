@@ -21,10 +21,10 @@ class AUV:
     __vehicle_pos = [0, 0, 0]
 
     def __init__(self):
-        self.node_name = 'Thor'
+        self.node_name = 'AUV1'
         rospy.init_node(self.node_name, anonymous=True)
         self.rate = rospy.Rate(1)  # 1Hz
-        self.auv_handler = AuvHandler(self.node_name, "Thor")
+        self.auv_handler = AuvHandler(self.node_name, "AUV1")
 
         rospy.Subscriber("/IMC/Out/Salinity", Salinity, self.SalinityCB)
         rospy.Subscriber("/Vehicle/Out/EstimatedState_filtered", EstimatedState, self.EstimatedStateCB)

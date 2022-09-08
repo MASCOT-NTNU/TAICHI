@@ -34,7 +34,7 @@ class Agent:
         # s1: setup planner.
         self.myopic = Myopic3D()
 
-        # s2: setup AUV simulator.
+        # s2: setup AUV.
         self.auv = AUV()
 
     def run(self):

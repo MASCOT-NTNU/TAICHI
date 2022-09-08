@@ -10,9 +10,11 @@ The goal of the agent is to conduct the autonomous sampling operation by using t
 Sense refers to the in-situ measurements. Once the agent obtains the sampled values in the field. Then it can plan based
 on the updated knowledge for the field. Therefore, it can act according to the planned manoeuvres.
 """
+import math
+
 from Planner.ZigZag import ZigZag
-from AUVSimulator.AUVSimulator import AUVSimulator
-from Visualiser.Visualiser_zigzag import Visualiser
+from AUV.AUV2 import AUV
+from WGS import WGS
 import numpy as np
 import time
 import os
@@ -20,9 +22,8 @@ import os
 
 class Agent:
 
-    __NUM_STEP = 200
+    __NUM_STEP = 0
     __counter = 0
-    __traj = np.empty([0, 3])
 
     def __init__(self) -> None:
         """
@@ -31,70 +32,71 @@ class Agent:
         # s1: setup planner.
         self.zz = ZigZag()
 
-        # s2: setup AUV simulator.
-        self.auv = AUVSimulator()
-
-        # s3: setup Visualiser.
-        self.visualiser = Visualiser(self, figpath=os.getcwd() + "/../fig/ZigZag/")
+        # s2: setup AUV.
+        self.auv = AUV()
 
     def run(self):
         """
         Run the autonomous operation according to Sense, Plan, Act philosophy.
         """
+        # 00: get information from AUV
+        speed = self.auv.get_speed()
+        max_submerged_time = self.auv.get_submerged_time()
+        popup_time = self.auv.get_popup_time()
+        phone = self.auv.get_phone_number()
+        iridium = self.auv.get_iridium()
 
         # a0: get starting location
         path = self.zz.get_zigzag_path()
         loc_start = path[0]
+        self.__NUM_STEP = len(path)
 
         # a1: move to current location
-        self.auv.move_to_location(loc_start)
-        self.__traj = np.append(self.__traj, loc_start.reshape(1, -1))
+        lat, lon = WGS.xy2latlon(loc_start[0], loc_start[1])
+        self.auv.auv_handler.setWaypoint(math.radians(lat), math.radians(lon), loc_start[2], speed=speed)
 
-        t_start = time.time()
         t_pop_last = time.time()
+        update_time = rospy.get_time()
 
-        self.visualiser.plot_agent()
-
-        while True:
-            t_end = time.time()
-            """
-            Simulating the AUV behaviour, not the actual one
-            """
-            t_gap = t_end - t_start
-            if t_gap >= 5:
-                self.auv.arrive()
-                t_start = time.time()
-
-            if self.__counter == 0:
-                if t_end - t_pop_last >= 50:
-                    self.auv.popup()
-                    print("POP UP")
-                    t_pop_last = time.time()
-
-            if self.auv.is_arrived():
-                if t_end - t_pop_last >= 20:
-                    self.auv.popup()
-                    print("POPUP")
-                    t_pop_last = time.time()
-
-                loc = path[self.__counter]
-                self.auv.move_to_location(loc)
-                self.__traj = np.append(self.__traj, loc.reshape(1, -1))
-
-                # a1: gather AUV data
-                ctd_data = self.auv.get_ctd_data()
-
-                if self.__counter == self.__NUM_STEP:
-                    break
+        ctd_data = []
+        while not rospy.is_shutdown():
+            if self.auv.init:
+                t_now = time.time()
                 print("counter: ", self.__counter)
-                self.visualiser.plot_agent()
-                self.__counter += 1
+
+                # s1: append data:
+                loc_auv = self.auv.get_vehicle_pos()
+                ctd_data.append([loc_auv[0], loc_auv[1], loc_auv[2], self.auv.get_salinity()])
+
+                if self.__counter == 0:
+                    if t_now - t_pop_last >= max_submerged_time:
+                        self.auv.auv_handler.PopUp(sms=True, iridium=True, popup_duration=popup_time,
+                                                   phone_number=phone, iridium_dest=iridium)
+                        t_pop_last = time.time()
+
+                if ((self.auv.auv_handler.getState() == "waiting") and
+                        (rospy.get_time() - update_time) > 5.):
+                    if t_now - t_pop_last >= max_submerged_time:
+                        self.auv.auv_handler.PopUp(sms=True, iridium=True, popup_duration=popup_time,
+                                                   phone_number=phone, iridium_dest=iridium)
+                        t_pop_last = time.time()
+
+                    loc = path[self.__counter]
+                    lat, lon = WGS.xy2latlon(loc[0], loc[1])
+                    self.auv.auv_handler.setWaypoint(math.radians(lat), math.radians(lon), loc[2], speed=speed)
+                    update_time = rospy.get_time()
+
+                    if self.__counter >= self.__NUM_STEP:
+                        break
+                    print("counter: ", self.__counter)
+                    self.__counter += 1
+
+                self.auv.last_state = self.auv.auv_handler.getState()
+                self.auv.auv_handler.spin()
+            self.auv.rate.sleep()
 
     def get_counter(self):
         return self.__counter
-
-    def get_traj(self):
-        return self.__traj
 
 
 if __name__ == "__main__":

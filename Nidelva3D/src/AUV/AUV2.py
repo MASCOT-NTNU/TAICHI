@@ -21,10 +21,10 @@ class AUV:
     __vehicle_pos = [0, 0, 0]
 
     def __init__(self):
-        self.node_name = 'Harald'
+        self.node_name = 'AUV2'
         rospy.init_node(self.node_name, anonymous=True)
         self.rate = rospy.Rate(1)  # 1Hz
-        self.auv_handler = AuvHandler(self.node_name, "Harald")
+        self.auv_handler = AuvHandler(self.node_name, "AUV2")
 
         rospy.Subscriber("/IMC/Out/Salinity", Salinity, self.SalinityCB)
         rospy.Subscriber("/Vehicle/Out/EstimatedState_filtered", EstimatedState, self.EstimatedStateCB)
@@ -32,7 +32,6 @@ class AUV:
         self.last_state = "unavailable"
         self.rate.sleep()
         self.init = True
-
         self.sms_pub_ = rospy.Publisher("/IMC/In/Sms", Sms, queue_size = 10)
 
     def SalinityCB(self, msg):
@@ -48,12 +47,6 @@ class AUV:
         D = msg.depth.data
         self.__vehicle_pos = [N, E, D]
 
-    def get_vehicle_pos(self):
-        return self.__vehicle_pos
-
-    def get_salinity(self):
-        return self.__currentSalinity
-
     def send_SMS_mission_complete(self):
         print("Mission complete! will be sent via SMS")
         SMS = Sms()
@@ -62,3 +55,24 @@ class AUV:
         SMS.contents.data = "Congrats, Mission complete!"
         self.sms_pub_.publish(SMS)
         print("Finished SMS sending!")
+
+    def get_vehicle_pos(self):
+        return self.__vehicle_pos
+
+    def get_salinity(self):
+        return self.__currentSalinity
+
+    def get_speed(self):
+        return self.__speed
+
+    def get_submerged_time(self):
+        return self.__max_submerged_time
+
+    def get_popup_time(self):
+        return self.__min_popup_time
+
+    def get_phone_number(self):
+        return self.__phone_number
+
+    def get_iridium(self):
+        return self.__iridium_destination
