@@ -11,13 +11,13 @@ Sense refers to the in-situ measurements. Once the agent obtains the sampled val
 on the updated knowledge for the field. Therefore, it can act according to the planned manoeuvres.
 """
 import math
-
 from Planner.ZigZag import ZigZag
 from AUV.AUV2 import AUV
 from WGS import WGS
 import numpy as np
 import time
 import os
+import rospy
 
 
 class Agent:
