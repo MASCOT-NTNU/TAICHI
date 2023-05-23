@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html lang="en">
+<html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>tests package &#8212; TAICHI 0.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
@@ -12,7 +12,6 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
-    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -35,20 +34,23 @@
           <div class="body" role="main">
             
   <section id="tests-package">
-<h1>tests package<a class="headerlink" href="#tests-package" title="Permalink to this heading">¶</a></h1>
+<h1>tests package<a class="headerlink" href="#tests-package" title="Permalink to this headline">¶</a></h1>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">¶</a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </section>
-<section id="tests-test-agent-module">
-<h2>tests.test_agent module<a class="headerlink" href="#tests-test-agent-module" title="Permalink to this heading">¶</a></h2>
+<section id="tests-test-agent-adaptive-module">
+<h2>tests.test_agent_adaptive module<a class="headerlink" href="#tests-test-agent-adaptive-module" title="Permalink to this headline">¶</a></h2>
+</section>
+<section id="tests-test-agent-zigzag-module">
+<h2>tests.test_agent_zigzag module<a class="headerlink" href="#tests-test-agent-zigzag-module" title="Permalink to this headline">¶</a></h2>
 </section>
 <section id="module-tests.test_auv_simulator">
-<span id="tests-test-auv-simulator-module"></span><h2>tests.test_auv_simulator module<a class="headerlink" href="#module-tests.test_auv_simulator" title="Permalink to this heading">¶</a></h2>
+<span id="tests-test-auv-simulator-module"></span><h2>tests.test_auv_simulator module<a class="headerlink" href="#module-tests.test_auv_simulator" title="Permalink to this headline">¶</a></h2>
 <p>Unit test for AUV Simulator</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="tests.test_auv_simulator.TestAUVSimulator">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tests.test_auv_simulator.</span></span><span class="sig-name descname"><span class="pre">TestAUVSimulator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_auv_simulator.TestAUVSimulator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TestCase</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="tests.test_auv_simulator.TestAUVSimulator.setUp">
 <span class="sig-name descname"><span class="pre">setUp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#tests.test_auv_simulator.TestAUVSimulator.setUp" title="Permalink to this definition">¶</a></dt>
@@ -80,16 +82,16 @@
 
 </section>
 <section id="tests-test-ctd-simulator-module">
-<h2>tests.test_ctd_simulator module<a class="headerlink" href="#tests-test-ctd-simulator-module" title="Permalink to this heading">¶</a></h2>
+<h2>tests.test_ctd_simulator module<a class="headerlink" href="#tests-test-ctd-simulator-module" title="Permalink to this headline">¶</a></h2>
 </section>
 <section id="module-tests.test_gmrf">
-<span id="tests-test-gmrf-module"></span><h2>tests.test_gmrf module<a class="headerlink" href="#module-tests.test_gmrf" title="Permalink to this heading">¶</a></h2>
+<span id="tests-test-gmrf-module"></span><h2>tests.test_gmrf module<a class="headerlink" href="#module-tests.test_gmrf" title="Permalink to this headline">¶</a></h2>
 <p>Unit test for GMRF
 This module tests the GMRF object.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="tests.test_gmrf.TestGMRF">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tests.test_gmrf.</span></span><span class="sig-name descname"><span class="pre">TestGMRF</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_gmrf.TestGMRF" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TestCase</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
 <p>Test class for spde helper class.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="tests.test_gmrf.TestGMRF.plot_mu">
@@ -151,13 +153,13 @@ This module tests the GMRF object.</p>
 
 </section>
 <section id="module-tests.test_messenger">
-<span id="tests-test-messenger-module"></span><h2>tests.test_messenger module<a class="headerlink" href="#module-tests.test_messenger" title="Permalink to this heading">¶</a></h2>
+<span id="tests-test-messenger-module"></span><h2>tests.test_messenger module<a class="headerlink" href="#module-tests.test_messenger" title="Permalink to this headline">¶</a></h2>
 <p>Unit test for Messenger
 This module tests the Messenger object.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="tests.test_messenger.TestMessenger">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tests.test_messenger.</span></span><span class="sig-name descname"><span class="pre">TestMessenger</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_messenger.TestMessenger" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TestCase</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="tests.test_messenger.TestMessenger.setUp">
 <span class="sig-name descname"><span class="pre">setUp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#tests.test_messenger.TestMessenger.setUp" title="Permalink to this definition">¶</a></dt>
@@ -188,16 +190,16 @@ This module tests the Messenger object.</p>
 
 </section>
 <section id="tests-test-myopic3d-module">
-<h2>tests.test_myopic3d module<a class="headerlink" href="#tests-test-myopic3d-module" title="Permalink to this heading">¶</a></h2>
+<h2>tests.test_myopic3d module<a class="headerlink" href="#tests-test-myopic3d-module" title="Permalink to this headline">¶</a></h2>
 </section>
 <section id="module-tests.test_planner">
-<span id="tests-test-planner-module"></span><h2>tests.test_planner module<a class="headerlink" href="#module-tests.test_planner" title="Permalink to this heading">¶</a></h2>
+<span id="tests-test-planner-module"></span><h2>tests.test_planner module<a class="headerlink" href="#module-tests.test_planner" title="Permalink to this headline">¶</a></h2>
 <p>Unit test for planner</p>
 <p>This module tests the planner object.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="tests.test_planner.TestPlanner">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tests.test_planner.</span></span><span class="sig-name descname"><span class="pre">TestPlanner</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_planner.TestPlanner" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TestCase</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
 <p>Common test class for the waypoint graph module</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="tests.test_planner.TestPlanner.setUp">
@@ -227,15 +229,15 @@ This module tests the Messenger object.</p>
 
 </section>
 <section id="tests-test-sinmod-module">
-<h2>tests.test_sinmod module<a class="headerlink" href="#tests-test-sinmod-module" title="Permalink to this heading">¶</a></h2>
+<h2>tests.test_sinmod module<a class="headerlink" href="#tests-test-sinmod-module" title="Permalink to this headline">¶</a></h2>
 </section>
 <section id="module-tests.test_visualiser">
-<span id="tests-test-visualiser-module"></span><h2>tests.test_visualiser module<a class="headerlink" href="#module-tests.test_visualiser" title="Permalink to this heading">¶</a></h2>
+<span id="tests-test-visualiser-module"></span><h2>tests.test_visualiser module<a class="headerlink" href="#module-tests.test_visualiser" title="Permalink to this headline">¶</a></h2>
 <p>Unit test for Visualiser</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="tests.test_visualiser.TestVisualiser">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tests.test_visualiser.</span></span><span class="sig-name descname"><span class="pre">TestVisualiser</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_visualiser.TestVisualiser" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TestCase</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="tests.test_visualiser.TestVisualiser.setUp">
 <span class="sig-name descname"><span class="pre">setUp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#tests.test_visualiser.TestVisualiser.setUp" title="Permalink to this definition">¶</a></dt>
@@ -251,13 +253,13 @@ This module tests the Messenger object.</p>
 
 </section>
 <section id="module-tests.test_waypoint">
-<span id="tests-test-waypoint-module"></span><h2>tests.test_waypoint module<a class="headerlink" href="#module-tests.test_waypoint" title="Permalink to this heading">¶</a></h2>
+<span id="tests-test-waypoint-module"></span><h2>tests.test_waypoint module<a class="headerlink" href="#module-tests.test_waypoint" title="Permalink to this headline">¶</a></h2>
 <p>Unit test for WaypointGraph
-This module tests the planner object.</p>
+This module tests the waypoint graph generation.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="tests.test_waypoint.TC1">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tests.test_waypoint.</span></span><span class="sig-name descname"><span class="pre">TC1</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_waypoint.TC1" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#tests.test_waypoint.TestWaypoint" title="tests.test_waypoint.TestWaypoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestWaypoint</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#tests.test_waypoint.TestWaypoint" title="tests.test_waypoint.TestWaypoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">tests.test_waypoint.TestWaypoint</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="tests.test_waypoint.TC1.setUp">
 <span class="sig-name descname"><span class="pre">setUp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#tests.test_waypoint.TC1.setUp" title="Permalink to this definition">¶</a></dt>
@@ -273,7 +275,7 @@ This module tests the planner object.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="tests.test_waypoint.TC2">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tests.test_waypoint.</span></span><span class="sig-name descname"><span class="pre">TC2</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_waypoint.TC2" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="#tests.test_waypoint.TestWaypoint" title="tests.test_waypoint.TestWaypoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">TestWaypoint</span></code></a></p>
+<dd><p>Bases: <a class="reference internal" href="#tests.test_waypoint.TestWaypoint" title="tests.test_waypoint.TestWaypoint"><code class="xref py py-class docutils literal notranslate"><span class="pre">tests.test_waypoint.TestWaypoint</span></code></a></p>
 <dl class="py method">
 <dt class="sig sig-object py" id="tests.test_waypoint.TC2.setUp">
 <span class="sig-name descname"><span class="pre">setUp</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#tests.test_waypoint.TC2.setUp" title="Permalink to this definition">¶</a></dt>
@@ -290,7 +292,7 @@ This module tests the planner object.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="tests.test_waypoint.TestWaypoint">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tests.test_waypoint.</span></span><span class="sig-name descname"><span class="pre">TestWaypoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_waypoint.TestWaypoint" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TestCase</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
 <p>Common test class for the waypoint graph module</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="tests.test_waypoint.TestWaypoint.run_test_depths">
@@ -341,21 +343,21 @@ This module tests the planner object.</p>
 
 </section>
 <section id="module-tests.test_wgs">
-<span id="tests-test-wgs-module"></span><h2>tests.test_wgs module<a class="headerlink" href="#module-tests.test_wgs" title="Permalink to this heading">¶</a></h2>
+<span id="tests-test-wgs-module"></span><h2>tests.test_wgs module<a class="headerlink" href="#module-tests.test_wgs" title="Permalink to this headline">¶</a></h2>
 <p>Unit test for WaypointGraph
 This module tests the planner object.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="tests.test_wgs.TestWGS">
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">tests.test_wgs.</span></span><span class="sig-name descname"><span class="pre">TestWGS</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">methodName</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'runTest'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#tests.test_wgs.TestWGS" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">TestCase</span></code></p>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">unittest.case.TestCase</span></code></p>
 </dd></dl>
 
 </section>
 <section id="tests-test-zigzag-module">
-<h2>tests.test_zigzag module<a class="headerlink" href="#tests-test-zigzag-module" title="Permalink to this heading">¶</a></h2>
+<h2>tests.test_zigzag module<a class="headerlink" href="#tests-test-zigzag-module" title="Permalink to this headline">¶</a></h2>
 </section>
 <section id="module-tests">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-tests" title="Permalink to this heading">¶</a></h2>
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-tests" title="Permalink to this headline">¶</a></h2>
 </section>
 </section>
 
@@ -381,8 +383,10 @@ This module tests the planner object.</p>
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="AUV.html">AUV package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="AUVSimulator.html">AUVSimulator package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Agent.html">Agent module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Agents.html">Agents package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="GMRF.html">GMRF package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Launcher_adaptive.html">Launcher_adaptive module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Launcher_zigzag.html">Launcher_zigzag module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Planner.html">Planner package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Visualiser.html">Visualiser package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="WGS.html">WGS module</a></li>
@@ -414,7 +418,7 @@ This module tests the planner object.</p>
     </form>
     </div>
 </div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -431,7 +435,7 @@ This module tests the planner object.</p>
       &copy;2022, Yaolin Ge.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.1.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

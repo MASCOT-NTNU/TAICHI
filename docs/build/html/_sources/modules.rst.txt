@@ -6,8 +6,10 @@ src
 
    AUV
    AUVSimulator
-   Agent
+   Agents
    GMRF
+   Launcher_adaptive
+   Launcher_zigzag
    Planner
    Visualiser
    WGS

@@ -1,20 +1,40 @@
 """
-This helper solves all the essential problems associated with GMRF class.
+GMRF wraps the spde class and provides a higher level interface for the GMRF model.
+
+Created on 2023-05-22
+Author: Yaolin Ge
+Email: geyaolin@gmail.com
+
+
 """
-from GMRF.spde import spde
-from typing import Union
 from WGS import WGS
+from GMRF.spde import spde
+from usr_func.sort_polygon_vertices import sort_polygon_vertices
+from usr_func.checkfolder import checkfolder
+from typing import Union
 import numpy as np
 from scipy.spatial.distance import cdist
 from scipy.stats import norm
 import os
 import pandas as pd
-from usr_func.sort_polygon_vertices import sort_polygon_vertices
-from usr_func.checkfolder import checkfolder
 import time
 
 
 class GMRF:
+    """
+    GMRF (Gaussian Markov Random Field) class for data assimilation.
+
+
+
+    Attributes:
+        __MIN_DEPTH_FOR_DATA_ASSIMILATION: Minimum depth for data assimilation.
+        __GMRF_DISTANCE_NEIGHBOUR: Distance for GMRF neighbour.
+        __gmrf_grid: GMRF grid.
+        __N_gmrf_grid: Number of GMRF grid.
+        __rotated_angle: Rotated angle.
+        __cnt: Count.
+
+    """
     __MIN_DEPTH_FOR_DATA_ASSIMILATION = .25
     __GMRF_DISTANCE_NEIGHBOUR = 32
     __gmrf_grid = None
@@ -22,21 +42,38 @@ class GMRF:
     __rotated_angle = .0
     __cnt = 0
 
-    def __init__(self):
+    def __init__(self) -> None:
         self.__spde = spde()
-        self.construct_gmrf_grid()
+        self.__create_data_folders()
+        self.__construct_gmrf_grid()
+
+    def __create_data_folders(self) -> None:
+        """
+        Create data folders.
+
+        Method:
+            1. Create a folder for the assimilated data.
+            2. Create a folder for the CTD data.
+            3. Create a folder for the threshold data.
+        """
         t = int(time.time())
         f = os.getcwd()
-        self.foldername = f + "/GMRF/data/{:d}/".format(t)
-        self.foldername_ctd = f + "/GMRF/raw_ctd/{:d}/".format(t)
-        self.foldername_thres = f + "/GMRF/threshold/{:d}/".format(t)
-        checkfolder(self.foldername)
-        checkfolder(self.foldername_ctd)
-        checkfolder(self.foldername_thres)
+        self.__foldername = f + "/GMRF/data/{:d}/".format(t)
+        self.__foldername_ctd = f + "/GMRF/raw_ctd/{:d}/".format(t)
+        self.__foldername_thres = f + "/GMRF/threshold/{:d}/".format(t)
+        checkfolder(self.__foldername)
+        checkfolder(self.__foldername_ctd)
+        checkfolder(self.__foldername_thres)
 
-    def construct_gmrf_grid(self) -> None:
+    def __construct_gmrf_grid(self) -> None:
         """
-        Construct GMRF grid by converting lats, lons to xy.
+        Construct the GMRF grid.
+
+        Method:
+            1. Load the grid from the file.
+            2. Convert the lat/lon to x/y.
+            3. Stack the x/y/z to a 3D array.
+
         """
         filepath = os.getcwd() + "/GMRF/models/"
         lat = np.load(filepath + "lats.npy")
@@ -46,16 +83,16 @@ class GMRF:
         z = depth
         self.__gmrf_grid = np.stack((x, y, z), axis=1)
         self.__N_gmrf_grid = self.__gmrf_grid.shape[0]
-
-        """
-        Get the rotation of the grid, used for later plotting.
-        """
-        box = np.load(filepath + "grid.npy")
-        polygon = box[:, 2:]
-        polygon = np.stack((WGS.latlon2xy(polygon[:, 0], polygon[:, 1])), axis=1)
-        polygon = sort_polygon_vertices(polygon)
-        self.__rotated_angle = np.math.atan2(polygon[1, 0] - polygon[0, 0],
-                                             polygon[1, 1] - polygon[0, 1])
+        z
+        # """
+        # Get the rotation of the grid, used for later plotting.
+        # """
+        # box = np.load(filepath + "grid.npy")
+        # polygon = box[:, 2:]
+        # polygon = np.stack((WGS.latlon2xy(polygon[:, 0], polygon[:, 1])), axis=1)
+        # polygon = sort_polygon_vertices(polygon)
+        # self.__rotated_angle = np.math.atan2(polygon[1, 0] - polygon[0, 0],
+        #                                      polygon[1, 1] - polygon[0, 1])
 
     def assimilate_data(self, dataset: np.ndarray) -> tuple:
         """
@@ -66,7 +103,7 @@ class GMRF:
         """
         # ss1: save raw ctd
         df = pd.DataFrame(dataset, columns=['x', 'y', 'z', 'salinity'])
-        df.to_csv(self.foldername_ctd + "D_{:03d}.csv".format(self.__cnt))
+        df.to_csv(self.__foldername_ctd + "D_{:03d}.csv".format(self.__cnt))
 
         ind_remove_noise_layer = np.where(np.abs(dataset[:, 2]) >= self.__MIN_DEPTH_FOR_DATA_ASSIMILATION)[0]
         dataset = dataset[ind_remove_noise_layer, :]
@@ -94,12 +131,12 @@ class GMRF:
         # ss2: save assimilated data
         data = np.hstack((ind_assimilated.reshape(-1, 1), salinity_assimilated))
         df = pd.DataFrame(data, columns=['ind', 'salinity'])
-        df.to_csv(self.foldername + "D_{:03d}.csv".format(self.__cnt))
+        df.to_csv(self.__foldername + "D_{:03d}.csv".format(self.__cnt))
 
         # ss3: save threshold
         threshold = self.__spde.getThreshold()
         df = pd.DataFrame(threshold.reshape(1, -1), columns=['threshold'])
-        df.to_csv(self.foldername_thres + "D_{:03d}.csv".format(self.__cnt))
+        df.to_csv(self.__foldername_thres + "D_{:03d}.csv".format(self.__cnt))
 
         self.__cnt += 1
         # t2 = time.time()

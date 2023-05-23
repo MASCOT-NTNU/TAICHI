@@ -4,10 +4,18 @@ AUV package
 Submodules
 ----------
 
-AUV.AUV module
---------------
+AUV.AUV1 module
+---------------
 
-.. automodule:: AUV.AUV
+.. automodule:: AUV.AUV1
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+AUV.AUV2 module
+---------------
+
+.. automodule:: AUV.AUV2
    :members:
    :undoc-members:
    :show-inheritance:

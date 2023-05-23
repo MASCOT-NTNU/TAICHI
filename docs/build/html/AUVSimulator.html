@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html lang="en">
+<html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>AUVSimulator package &#8212; TAICHI 0.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
@@ -12,11 +12,10 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
-    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Agent module" href="Agent.html" />
+    <link rel="next" title="Agents package" href="Agents.html" />
     <link rel="prev" title="AUV package" href="AUV.html" />
    
   <link rel="stylesheet" href="_static/custom.css" type="text/css" />
@@ -35,12 +34,12 @@
           <div class="body" role="main">
             
   <section id="auvsimulator-package">
-<h1>AUVSimulator package<a class="headerlink" href="#auvsimulator-package" title="Permalink to this heading">¶</a></h1>
+<h1>AUVSimulator package<a class="headerlink" href="#auvsimulator-package" title="Permalink to this headline">¶</a></h1>
 <section id="submodules">
-<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this heading">¶</a></h2>
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 </section>
 <section id="module-AUVSimulator.AUVSimulator">
-<span id="auvsimulator-auvsimulator-module"></span><h2>AUVSimulator.AUVSimulator module<a class="headerlink" href="#module-AUVSimulator.AUVSimulator" title="Permalink to this heading">¶</a></h2>
+<span id="auvsimulator-auvsimulator-module"></span><h2>AUVSimulator.AUVSimulator module<a class="headerlink" href="#module-AUVSimulator.AUVSimulator" title="Permalink to this headline">¶</a></h2>
 <p>AUVSimulator module simulates the data collection behaviour of an AUV in the mission.
 It only emulates the resulting trajectory of an AUV, not the detailed behaviour.</p>
 <p># Args:
@@ -59,19 +58,19 @@ It only emulates the resulting trajectory of an AUV, not the detailed behaviour.
 
 <dl class="py method">
 <dt class="sig sig-object py" id="AUVSimulator.AUVSimulator.AUVSimulator.get_ctd_data">
-<span class="sig-name descname"><span class="pre">get_ctd_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#AUVSimulator.AUVSimulator.AUVSimulator.get_ctd_data" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_ctd_data</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#AUVSimulator.AUVSimulator.AUVSimulator.get_ctd_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns: CTD dataset</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="AUVSimulator.AUVSimulator.AUVSimulator.get_location">
-<span class="sig-name descname"><span class="pre">get_location</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#AUVSimulator.AUVSimulator.AUVSimulator.get_location" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_location</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#AUVSimulator.AUVSimulator.AUVSimulator.get_location" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns: AUV location</p>
 </dd></dl>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="AUVSimulator.AUVSimulator.AUVSimulator.get_previous_location">
-<span class="sig-name descname"><span class="pre">get_previous_location</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#AUVSimulator.AUVSimulator.AUVSimulator.get_previous_location" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_previous_location</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#AUVSimulator.AUVSimulator.AUVSimulator.get_previous_location" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns: previous AUV location</p>
 </dd></dl>
 
@@ -93,7 +92,7 @@ It only emulates the resulting trajectory of an AUV, not the detailed behaviour.
 
 <dl class="py method">
 <dt class="sig sig-object py" id="AUVSimulator.AUVSimulator.AUVSimulator.move_to_location">
-<span class="sig-name descname"><span class="pre">move_to_location</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#AUVSimulator.AUVSimulator.AUVSimulator.move_to_location" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">move_to_location</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#AUVSimulator.AUVSimulator.AUVSimulator.move_to_location" title="Permalink to this definition">¶</a></dt>
 <dd><p>Move AUV to loc, update previous location to current location.
 :param loc: np.array([x, y, z])</p>
 </dd></dl>
@@ -114,7 +113,7 @@ It only emulates the resulting trajectory of an AUV, not the detailed behaviour.
 
 </section>
 <section id="module-AUVSimulator.CTDSimulator">
-<span id="auvsimulator-ctdsimulator-module"></span><h2>AUVSimulator.CTDSimulator module<a class="headerlink" href="#module-AUVSimulator.CTDSimulator" title="Permalink to this heading">¶</a></h2>
+<span id="auvsimulator-ctdsimulator-module"></span><h2>AUVSimulator.CTDSimulator module<a class="headerlink" href="#module-AUVSimulator.CTDSimulator" title="Permalink to this headline">¶</a></h2>
 <p>CTDSimulator module simulates CTD sensor.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="AUVSimulator.CTDSimulator.CTDSimulator">
@@ -123,13 +122,13 @@ It only emulates the resulting trajectory of an AUV, not the detailed behaviour.
 <p>CTD module handles the simulated truth value at each specific location.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="AUVSimulator.CTDSimulator.CTDSimulator.get_salinity_at_loc">
-<span class="sig-name descname"><span class="pre">get_salinity_at_loc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#AUVSimulator.CTDSimulator.CTDSimulator.get_salinity_at_loc" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_salinity_at_loc</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">loc</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#AUVSimulator.CTDSimulator.CTDSimulator.get_salinity_at_loc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get CTD measurement at a specific location.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>loc</strong> – np.array([[x, y, z]])</p>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>salinity value at loc</p>
 </dd>
 </dl>
@@ -139,7 +138,7 @@ It only emulates the resulting trajectory of an AUV, not the detailed behaviour.
 
 </section>
 <section id="module-AUVSimulator.Messenger">
-<span id="auvsimulator-messenger-module"></span><h2>AUVSimulator.Messenger module<a class="headerlink" href="#module-AUVSimulator.Messenger" title="Permalink to this heading">¶</a></h2>
+<span id="auvsimulator-messenger-module"></span><h2>AUVSimulator.Messenger module<a class="headerlink" href="#module-AUVSimulator.Messenger" title="Permalink to this headline">¶</a></h2>
 <p>Messenger module handles data sharing and message sharing functionality between each agent.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="AUVSimulator.Messenger.Messenger">
@@ -169,10 +168,10 @@ It only emulates the resulting trajectory of an AUV, not the detailed behaviour.
 
 </section>
 <section id="auvsimulator-sinmod-module">
-<h2>AUVSimulator.SINMOD module<a class="headerlink" href="#auvsimulator-sinmod-module" title="Permalink to this heading">¶</a></h2>
+<h2>AUVSimulator.SINMOD module<a class="headerlink" href="#auvsimulator-sinmod-module" title="Permalink to this headline">¶</a></h2>
 </section>
 <section id="module-AUVSimulator">
-<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-AUVSimulator" title="Permalink to this heading">¶</a></h2>
+<span id="module-contents"></span><h2>Module contents<a class="headerlink" href="#module-AUVSimulator" title="Permalink to this headline">¶</a></h2>
 </section>
 </section>
 
@@ -198,8 +197,10 @@ It only emulates the resulting trajectory of an AUV, not the detailed behaviour.
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="AUV.html">AUV package</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">AUVSimulator package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Agent.html">Agent module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Agents.html">Agents package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="GMRF.html">GMRF package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Launcher_adaptive.html">Launcher_adaptive module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Launcher_zigzag.html">Launcher_zigzag module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Planner.html">Planner package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Visualiser.html">Visualiser package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="WGS.html">WGS module</a></li>
@@ -217,7 +218,7 @@ It only emulates the resulting trajectory of an AUV, not the detailed behaviour.
   <li><a href="index.html">Documentation overview</a><ul>
   <li><a href="modules.html">src</a><ul>
       <li>Previous: <a href="AUV.html" title="previous chapter">AUV package</a></li>
-      <li>Next: <a href="Agent.html" title="next chapter">Agent module</a></li>
+      <li>Next: <a href="Agents.html" title="next chapter">Agents package</a></li>
   </ul></li>
   </ul></li>
 </ul>
@@ -231,7 +232,7 @@ It only emulates the resulting trajectory of an AUV, not the detailed behaviour.
     </form>
     </div>
 </div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -248,7 +249,7 @@ It only emulates the resulting trajectory of an AUV, not the detailed behaviour.
       &copy;2022, Yaolin Ge.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.1.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

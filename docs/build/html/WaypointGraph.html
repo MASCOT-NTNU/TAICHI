@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
 
-<html lang="en">
+<html>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.19: https://docutils.sourceforge.io/" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
     <title>WaypointGraph module &#8212; TAICHI 0.1 documentation</title>
     <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
@@ -12,7 +12,6 @@
     <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
     <script src="_static/jquery.js"></script>
     <script src="_static/underscore.js"></script>
-    <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
     <script src="_static/doctools.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -35,26 +34,68 @@
           <div class="body" role="main">
             
   <section id="module-WaypointGraph">
-<span id="waypointgraph-module"></span><h1>WaypointGraph module<a class="headerlink" href="#module-WaypointGraph" title="Permalink to this heading">¶</a></h1>
-<p>Discretizes the rectangular field formed by (xrange, yrange) with distance_neighbour.
-Sets the boundary and neighbour distance for the discretization under NED coordinate system.
-- N: North
-- E: East
-- D: Down</p>
-<dl class="field-list simple">
-<dt class="field-odd">param polygon_border<span class="colon">:</span></dt>
-<dd class="field-odd"><p>border vertices defined by [[x1, y1], [x2, y2], …, [xn, yn]].</p>
-</dd>
-<dt class="field-even">param polygon_obstacles<span class="colon">:</span></dt>
-<dd class="field-even"><p>multiple obstalce vertices defined by [[[x11, y11], [x21, y21], … [xn1, yn1]], [[…]]].</p>
-</dd>
-<dt class="field-odd">param depths<span class="colon">:</span></dt>
-<dd class="field-odd"><p>multiple depth layers [d0, d1, d2, …, dn].</p>
-</dd>
-<dt class="field-even">param distance_neighbour<span class="colon">:</span></dt>
-<dd class="field-even"><p>distance between neighbouring waypoints.</p>
+<span id="waypointgraph-module"></span><h1>WaypointGraph module<a class="headerlink" href="#module-WaypointGraph" title="Permalink to this headline">¶</a></h1>
+<p>This module produces a 3D waypoint graph for the path planning for the AUV.</p>
+<p>Created on 2023-05-21
+:Author: Yaolin Ge
+:Email: <a class="reference external" href="mailto:geyaolin&#37;&#52;&#48;gmail&#46;com">geyaolin<span>&#64;</span>gmail<span>&#46;</span>com</a></p>
+<p>Coordinate system:
+# .. image:: images/ned.jpg
+#    :height: 300px
+#    :width: 200px
+#    :scale: 50 %
+#    :alt: alternate text
+#    :align: center</p>
+<dl class="simple">
+<dt>Input:</dt><dd><ul class="simple">
+<li><dl class="simple">
+<dt>polygon_border: the polygon defines the border of the area.</dt><dd><ul>
+<li><p>np.ndarray.</p></li>
+<li><p>border vertices.</p></li>
+<li><dl class="simple">
+<dt>np.array([[x1, y1],</dt><dd><p>[x2, y2],
+…,
+[xn, yn]]).</p>
 </dd>
 </dl>
+</li>
+<li><p>must not be empty or none.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>polygon_obstacles: the polygons define the obstacles in the area.</dt><dd><ul>
+<li><p>list of np.ndarray.</p></li>
+<li><p>multiple obstalce vertices.</p></li>
+<li><p>np.array([[[x11, y11], [x21, y21], … [xn1, yn1]], [[…]]]).</p></li>
+<li><p>can be an empty list.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>depths: depth layers to be explored in the mission.</dt><dd><ul>
+<li><p>list of float.</p></li>
+<li><p>[d0, d1, d2, …, dn].</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>distance_neighbour: distance between neighbouring waypoints.</dt><dd><ul>
+<li><p>float.</p></li>
+</ul>
+</dd>
+</dl>
+</li>
+</ul>
+</dd>
+</dl>
+<p>Methodology:
+- First, it calculates the border limits and the gap distance between neighbouring waypoints.
+- Second, it produces a rectangular mesh grid using (xrange, yrange, distance_neighbour) as the parameters.
+- Second, it</p>
 <dl>
 <dt>The resulting grid will be like:</dt><dd><blockquote>
 <div></div></blockquote>
@@ -119,9 +160,9 @@ Sets the boundary and neighbour distance for the discretization under NED coordi
 
 <dl class="py method">
 <dt class="sig sig-object py" id="WaypointGraph.WaypointGraph.get_ind_from_waypoint">
-<span class="sig-name descname"><span class="pre">get_ind_from_waypoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">waypoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#WaypointGraph.WaypointGraph.get_ind_from_waypoint" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_ind_from_waypoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">waypoint</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#WaypointGraph.WaypointGraph.get_ind_from_waypoint" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>waypoint</strong> – np.array([xp, yp, zp])</p>
 </dd>
 </dl>
@@ -132,7 +173,7 @@ Sets the boundary and neighbour distance for the discretization under NED coordi
 <dt class="sig sig-object py" id="WaypointGraph.WaypointGraph.get_ind_neighbours">
 <span class="sig-name descname"><span class="pre">get_ind_neighbours</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">list</span></span></span><a class="headerlink" href="#WaypointGraph.WaypointGraph.get_ind_neighbours" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><p><strong>ind</strong> – waypoint index</p>
 </dd>
 </dl>
@@ -153,16 +194,16 @@ Sets the boundary and neighbour distance for the discretization under NED coordi
 
 <dl class="py method">
 <dt class="sig sig-object py" id="WaypointGraph.WaypointGraph.get_vector_between_two_waypoints">
-<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_vector_between_two_waypoints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wp1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wp2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#WaypointGraph.WaypointGraph.get_vector_between_two_waypoints" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">static</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">get_vector_between_two_waypoints</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">wp1</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">wp2</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#WaypointGraph.WaypointGraph.get_vector_between_two_waypoints" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a vector from wp1 to wp2.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Parameters<span class="colon">:</span></dt>
+<dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>wp1</strong> – np.array([x1, y1, z1])</p></li>
 <li><p><strong>wp2</strong> – np.array([x2, y2, z2])</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns<span class="colon">:</span></dt>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p><dl class="simple">
 <dt>np.array([[x2 - x1],</dt><dd><p>[y2 - y1],
 [z2 - z1]])</p>
@@ -170,7 +211,7 @@ Sets the boundary and neighbour distance for the discretization under NED coordi
 </dl>
 </p>
 </dd>
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>vec</p>
 </dd>
 </dl>
@@ -178,7 +219,7 @@ Sets the boundary and neighbour distance for the discretization under NED coordi
 
 <dl class="py method">
 <dt class="sig sig-object py" id="WaypointGraph.WaypointGraph.get_waypoint_from_ind">
-<span class="sig-name descname"><span class="pre">get_waypoint_from_ind</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">ndarray</span></span></span><a class="headerlink" href="#WaypointGraph.WaypointGraph.get_waypoint_from_ind" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">get_waypoint_from_ind</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ind</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">list</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#WaypointGraph.WaypointGraph.get_waypoint_from_ind" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return waypoint locations using ind.</p>
 </dd></dl>
 
@@ -202,7 +243,7 @@ Sets the boundary and neighbour distance for the discretization under NED coordi
 
 <dl class="py method">
 <dt class="sig sig-object py" id="WaypointGraph.WaypointGraph.set_polygon_border">
-<span class="sig-name descname"><span class="pre">set_polygon_border</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#WaypointGraph.WaypointGraph.set_polygon_border" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">set_polygon_border</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#WaypointGraph.WaypointGraph.set_polygon_border" title="Permalink to this definition">¶</a></dt>
 <dd><p>Set the polygon border, only one Nx2 dimension allowed</p>
 </dd></dl>
 
@@ -238,8 +279,10 @@ Sets the boundary and neighbour distance for the discretization under NED coordi
 <li class="toctree-l1 current"><a class="reference internal" href="modules.html">src</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="AUV.html">AUV package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="AUVSimulator.html">AUVSimulator package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="Agent.html">Agent module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Agents.html">Agents package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="GMRF.html">GMRF package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Launcher_adaptive.html">Launcher_adaptive module</a></li>
+<li class="toctree-l2"><a class="reference internal" href="Launcher_zigzag.html">Launcher_zigzag module</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Planner.html">Planner package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="Visualiser.html">Visualiser package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="WGS.html">WGS module</a></li>
@@ -271,7 +314,7 @@ Sets the boundary and neighbour distance for the discretization under NED coordi
     </form>
     </div>
 </div>
-<script>document.getElementById('searchbox').style.display = "block"</script>
+<script>$('#searchbox').show(0);</script>
 
 
 
@@ -288,7 +331,7 @@ Sets the boundary and neighbour distance for the discretization under NED coordi
       &copy;2022, Yaolin Ge.
       
       |
-      Powered by <a href="http://sphinx-doc.org/">Sphinx 5.1.1</a>
+      Powered by <a href="http://sphinx-doc.org/">Sphinx 4.4.0</a>
       &amp; <a href="https://github.com/bitprophet/alabaster">Alabaster 0.7.12</a>
       
       |

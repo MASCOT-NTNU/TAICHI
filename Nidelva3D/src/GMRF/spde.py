@@ -1,3 +1,11 @@
+"""
+SPDE (Stochastic Partial Differential Equation) class for the GMRF model.
+
+Created on 2022-05-02
+Author: Martin Outzen Berild
+Email: martin.o.berild@ntnu.no
+
+"""
 import numpy as np
 from scipy import sparse
 from sksparse.cholmod import cholesky

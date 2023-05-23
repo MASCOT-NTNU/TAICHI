@@ -1,12 +1,10 @@
 """ Unit test for WaypointGraph
-This module tests the planner object.
-
+This module tests the waypoint graph generation.
 """
 
 from unittest import TestCase
 from WaypointGraph import WaypointGraph
 from usr_func.is_list_empty import is_list_empty
-from numpy import testing
 from shapely.geometry import Polygon, Point
 from scipy.spatial.distance import cdist
 import matplotlib.pyplot as plt

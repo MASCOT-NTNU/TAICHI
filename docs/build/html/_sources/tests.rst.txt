@@ -4,10 +4,18 @@ tests package
 Submodules
 ----------
 
-tests.test\_agent module
-------------------------
+tests.test\_agent\_adaptive module
+----------------------------------
 
-.. automodule:: tests.test_agent
+.. automodule:: tests.test_agent_adaptive
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+tests.test\_agent\_zigzag module
+--------------------------------
+
+.. automodule:: tests.test_agent_zigzag
    :members:
    :undoc-members:
    :show-inheritance:

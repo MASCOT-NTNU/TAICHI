@@ -4,6 +4,22 @@ usr\_func package
 Submodules
 ----------
 
+usr\_func.api\_example module
+-----------------------------
+
+.. automodule:: usr_func.api_example
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+usr\_func.checkfolder module
+----------------------------
+
+.. automodule:: usr_func.checkfolder
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 usr\_func.interpolate\_2d module
 --------------------------------
 
