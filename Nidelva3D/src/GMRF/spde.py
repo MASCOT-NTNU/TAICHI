@@ -24,9 +24,9 @@ class spde:
             method (int, optional): If model should contain fixed effects on the SINMOD mean. Defaults to 1.
             prev (bool, optional): Loading previous model (used to clear memory)
         """
-        self.M = 50
-        self.N = 55
-        self.P = 6
+        self.M = 45
+        self.N = 45
+        self.P = 10
         self.n = self.M*self.N*self.P
         self.mu = np.load(FILEPATH + 'models/prior.npy')
         self.Stot = sparse.eye(self.n).tocsc()
