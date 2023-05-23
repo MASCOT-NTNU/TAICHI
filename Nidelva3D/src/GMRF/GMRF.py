@@ -14,7 +14,8 @@ from usr_func.checkfolder import checkfolder
 from typing import Union
 import numpy as np
 from scipy.spatial.distance import cdist
-from scipy.stats import norm
+from scipy.stats import multivariate_normal
+from numba import njit, jit
 import os
 import pandas as pd
 import time
@@ -46,6 +47,7 @@ class GMRF:
         self.__spde = spde()
         self.__create_data_folders()
         self.__construct_gmrf_grid()
+        self.__load_cdf_table()
 
     def __create_data_folders(self) -> None:
         """
@@ -83,16 +85,26 @@ class GMRF:
         z = depth
         self.__gmrf_grid = np.stack((x, y, z), axis=1)
         self.__N_gmrf_grid = self.__gmrf_grid.shape[0]
-        z
-        # """
-        # Get the rotation of the grid, used for later plotting.
-        # """
-        # box = np.load(filepath + "grid.npy")
-        # polygon = box[:, 2:]
-        # polygon = np.stack((WGS.latlon2xy(polygon[:, 0], polygon[:, 1])), axis=1)
-        # polygon = sort_polygon_vertices(polygon)
-        # self.__rotated_angle = np.math.atan2(polygon[1, 0] - polygon[0, 0],
-        #                                      polygon[1, 1] - polygon[0, 1])
+
+        """
+        Get the rotation of the grid, used for later plotting.
+        """
+        box = np.load(filepath + "grid.npy")
+        polygon = box[:, 2:]
+        polygon = np.stack((WGS.latlon2xy(polygon[:, 0], polygon[:, 1])), axis=1)
+        polygon = sort_polygon_vertices(polygon)
+        self.__rotated_angle = np.math.atan2(polygon[1, 0] - polygon[0, 0],
+                                             polygon[1, 1] - polygon[0, 1])
+
+    def __load_cdf_table(self) -> None:
+        """
+        Load cdf table for the analytical solution.
+        """
+        table = np.load("./GMRF/cdf.npz")
+        self.__cdf_z1 = table["z1"]
+        self.__cdf_z2 = table["z2"]
+        self.__cdf_rho = table["rho"]
+        self.__cdf_table = table["cdf"]
 
     def assimilate_data(self, dataset: np.ndarray) -> tuple:
         """
@@ -104,7 +116,6 @@ class GMRF:
         # ss1: save raw ctd
         df = pd.DataFrame(dataset, columns=['x', 'y', 'z', 'salinity'])
         df.to_csv(self.__foldername_ctd + "D_{:03d}.csv".format(self.__cnt))
-
         ind_remove_noise_layer = np.where(np.abs(dataset[:, 2]) >= self.__MIN_DEPTH_FOR_DATA_ASSIMILATION)[0]
         dataset = dataset[ind_remove_noise_layer, :]
         xd = dataset[:, 0].reshape(-1, 1)
@@ -134,7 +145,7 @@ class GMRF:
         df.to_csv(self.__foldername + "D_{:03d}.csv".format(self.__cnt))
 
         # ss3: save threshold
-        threshold = self.__spde.getThreshold()
+        threshold = np.array(self.__spde.getThreshold())
         df = pd.DataFrame(threshold.reshape(1, -1), columns=['threshold'])
         df.to_csv(self.__foldername_thres + "D_{:03d}.csv".format(self.__cnt))
 
@@ -145,7 +156,13 @@ class GMRF:
 
     def get_eibv_at_locations(self, loc: np.ndarray) -> np.ndarray:
         """
-        Get EIBV at candidate locations.
+        Get EIBV at given locations.
+
+        Method:
+            1. Get the indices of the locations.
+            2. Get the marginal variance of the field.
+            3. Get the posterior marginal variance of the field.
+            4. Calculate the EIBV.
 
         Args:
             loc: np.array([[x1, y1, z1],
@@ -154,17 +171,24 @@ class GMRF:
                            [xn, yn, zn]])
 
         Returns:
-            EIBV associated with each location.
+            EIBV associated with given locations.
         """
-        # s1: get indices
-        id = self.get_ind_from_location(loc)
-        # s2: get post variance from spde
-        post_var = self.__spde.candidate(ks=id)
-        # s3: get eibv using post variance
+        # s1: get indices of the locations
+        indices_candidates = self.get_ind_from_location(loc)
+        marginal_variance = self.__spde.candidate(ks=indices_candidates)
+
         eibv = []
-        for i in range(len(id)):
-            ibv = GMRF.get_ibv(self.__spde.threshold, self.__spde.mu, post_var[:, i])
-            eibv.append(ibv)
+        for i in range(len(indices_candidates)):
+            variance_reduction = self.__spde.mvar() - marginal_variance[:, i]
+            eibv_temp1 = self.__get_eibv_analytical(mu=self.__spde.mu, sigma_diag=marginal_variance[:, i],
+                                                    vr_diag=variance_reduction)
+            eibv_temp2 = self.__get_eibv_analytical_fast(mu=self.__spde.mu, sigma_diag=marginal_variance[:, i],
+                                                         vr_diag=variance_reduction)
+            print("eibv_temp1: ", eibv_temp1)
+            print("eibv_temp2: ", eibv_temp2)
+            eibv.append(eibv_temp1)
+
+            # eibv.append(ibv)
         return np.array(eibv)
 
     def get_ind_from_location(self, loc: np.ndarray) -> Union[int, np.ndarray, None]:
@@ -186,15 +210,63 @@ class GMRF:
         else:
             return None
 
-    @staticmethod
-    def get_ibv(threshold: float, mu: np.ndarray, sigma_diag: np.ndarray) -> np.ndarray:
+    def __get_eibv_analytical(self, mu: np.ndarray, sigma_diag: np.ndarray, vr_diag: np.ndarray) -> float:
         """
-        Calculate the integrated bernoulli variance given mean and variance.
+        Calculate the eibv using the analytical formula with a bivariate cumulative dentisty function.
+
+        Input:
+            - mu: mean of the posterior marginal distribution.
+                - np.array([mu1, mu2, ...])
+            - sigma_diag: diagonal elements of the posterior marginal variance.
+                - np.array([sigma1, sigma2, ...])
+            - vr_diag: diagonal elements of the variance reduction.
+                - np.array([vr1, vr2, ...])
         """
-        p = norm.cdf(threshold, mu, sigma_diag)
-        bv = p * (1 - p)
-        ibv = np.sum(bv)
-        return ibv
+        eibv = .0
+        for i in range(len(mu)):
+            sn2 = sigma_diag[i]
+            vn2 = vr_diag[i]
+
+            sn = np.sqrt(sn2)
+            m = mu[i]
+
+            mur = (self.__spde.threshold - m) / sn
+
+            sig2r_1 = sn2 + vn2
+            sig2r = vn2
+
+            eibv += multivariate_normal.cdf(np.array([0, 0]), np.array([-mur, mur]).squeeze(),
+                                            np.array([[sig2r_1, -sig2r],
+                                                      [-sig2r, sig2r_1]]).squeeze())
+        return eibv
+
+    @jit
+    def __get_eibv_analytical_fast(self, mu: np.ndarray, sigma_diag: np.ndarray, vr_diag: np.ndarray) -> float:
+        """
+        Calculate the eibv using the analytical formula but using a loaded cdf dataset.
+        """
+        eibv = .0
+        for i in range(len(mu)):
+            sn2 = sigma_diag[i]
+            vn2 = vr_diag[i]
+
+            sn = np.sqrt(sn2)
+            m = mu[i]
+
+            mur = (self.__spde.threshold - m) / sn
+
+            sig2r_1 = sn2 + vn2
+            sig2r = vn2
+
+            z1 = mur
+            z2 = -mur
+            rho = -sig2r / sig2r_1
+
+            ind1 = np.argmin(np.abs(z1 - self.__cdf_z1))
+            ind2 = np.argmin(np.abs(z2 - self.__cdf_z2))
+            ind3 = np.argmin(np.abs(rho - self.__cdf_rho))
+            eibv += self.__cdf_table[ind1][ind2][ind3]
+        return eibv
 
     def get_location_from_ind(self, ind: Union[int, list]) -> np.ndarray:
         """
