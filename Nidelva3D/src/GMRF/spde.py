@@ -116,18 +116,18 @@ class spde:
             Q_fac = self.Q_fac
         z = np.random.normal(size = self.n*n).reshape(self.n,n)
         data = Q_fac.apply_Pt(Q_fac.solve_Lt(z,use_LDLt_decomposition=False)) 
-        return(data.var(axis = 1) + self.sigma**2)
+        return(data.var(axis = 1))
 
     def setThreshold(self):
         """Set threshold for Excursion set
         """
         ind = np.load(FILEPATH + 'models/boundary.npy')
-        self.threshold = self.mu[ind].mean()
+        self.threshold = 25.8 #self.mu[ind].mean()
         print('Treshold is set to %.2f'%(self.threshold))
 
     def getThreshold(self) -> np.ndarray:
         """ Get updated threshold """
         ind = np.load(FILEPATH + 'models/boundary.npy')
-        threshold = self.mu[ind].mean()
+        threshold = 25.8 #self.mu[ind].mean()
         return threshold
 
