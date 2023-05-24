@@ -13,7 +13,7 @@ import matplotlib.pyplot as plt
 from scipy.spatial.distance import cdist
 from matplotlib.cm import get_cmap
 from time import time
-from numba import jit
+from numba import njit
 
 
 """
@@ -51,11 +51,17 @@ def get_cdf_table(z1: np.ndarray, z2: np.ndarray, rho: np.ndarray):
                 cdf[i, j, k] = multivariate_normal.cdf([z1[i], z2[j]], mean=[0, 0], cov=[[1, rho[k]], [rho[k], 1]])
     return cdf
 
-z1 = np.arange(-3.5, 3.5, .05)
-z2 = np.arange(-3.5, 3.5, .05)
-rho = np.arange(-.999999, 0, .01)
-cdf = get_cdf_table(z1, z2, rho)
-np.savez(os.getcwd()+"/cdf_table.npz", z1=z1, z2=z2, rho=rho, cdf=cdf)
+# cdf_z1 = np.arange(-3.5, 3.5, .05)
+# cdf_z2 = np.arange(-3.5, 3.5, .05)
+# cdf_rho = np.arange(-.999999, 0, .01)
+# cdf = get_cdf_table(cdf_z1, cdf_z2, cdf_rho)
+# np.savez(os.getcwd()+"/cdf_table.npz", z1=cdf_z1, z2=cdf_z2, rho=cdf_rho, cdf=cdf)
+
+df_table = np.load(os.getcwd() + "/cdf_table.npz")
+cdf_z1 = df_table['z1']
+cdf_z2 = df_table['z2']
+cdf_rho = df_table['rho']
+cdf = df_table['cdf']
 
 #%%
 def get_eibv_analytical(mu: np.ndarray, sigma_diag: np.ndarray, vr_diag: np.ndarray) -> float:
@@ -80,8 +86,10 @@ def get_eibv_analytical(mu: np.ndarray, sigma_diag: np.ndarray, vr_diag: np.ndar
                                                   [-sig2r, sig2r_1]]).squeeze())
     return eibv
 
-@jit(nopython=True)
-def get_eibv_analytical_fast(mu: np.ndarray, sigma_diag: np.ndarray, vr_diag: np.ndarray) -> float:
+@njit
+def get_eibv_analytical_fast(mu: np.ndarray, sigma_diag: np.ndarray, vr_diag: np.ndarray,
+                             threshold: float, cdf_z1: np.ndarray, cdf_z2: np.ndarray,
+                             cdf_rho: np.ndarray, cdf_table: np.ndarray) -> float:
     """
     Calculate the eibv using the analytical formula but using a loaded cdf dataset.
     """
@@ -97,27 +105,33 @@ def get_eibv_analytical_fast(mu: np.ndarray, sigma_diag: np.ndarray, vr_diag: np
 
         sig2r_1 = sn2 + vn2
         sig2r = vn2
-        rho_coef = -sig2r / sig2r_1
 
-        # print("z1: ", mur)
-        # print("z2: ", mur)
-        # print("rho: ", rho_coef)
+        z1 = mur
+        z2 = -mur
+        rho = -sig2r / sig2r_1
 
-        ind1 = np.argmin(np.abs(mur - z1))
-        ind2 = np.argmin(np.abs(-mur - z2))
-        ind3 = np.argmin(np.abs(rho_coef - rho))
+        ind1 = np.argmin(np.abs(z1 - cdf_z1))
+        ind2 = np.argmin(np.abs(z2 - cdf_z2))
+        ind3 = np.argmin(np.abs(rho - cdf_rho))
 
-        eibv += cdf[ind1][ind2][ind3]
+        eibv += cdf_table[ind1][ind2][ind3]
         # eibv += multivariate_normal.cdf(np.array([0, 0]), np.array([-mur, mur]).squeeze(),
         #                                 np.array([[sig2r_1, -sig2r],
         #                                           [-sig2r, sig2r_1]]).squeeze())
     return eibv
 
-ind_measureds = np.random.choice(Ngrid, 500, replace=False)
+sigma_diag = np.diag(Sigma)
+vr_diag = sigma_diag
+get_eibv_analytical_fast(mu, sigma_diag, vr_diag, threshold, cdf_z1, cdf_z2, cdf_rho, cdf)
+
+#%%
+# ind_measureds = np.random.choice(Ngrid, 5, replace=False)
+ind_measureds = [10]
 t1 = []
 t2 = []
 eibv_1 = []
 eibv_2 = []
+
 for ind_measured in ind_measureds:
     F = np.zeros([1, Ngrid])
     F[0, ind_measured] = True
@@ -128,19 +142,19 @@ for ind_measured in ind_measureds:
 
     sigma_diag = np.diag(Sigma_posterior)
     vr_diag = np.diag(VR)
+    mu_input = mu.squeeze()
 
     tic = time()
-    eibv1 = get_eibv_analytical(mu, sigma_diag, vr_diag)
+    eibv1 = get_eibv_analytical(mu_input, sigma_diag, vr_diag)
     toc = time()
     t1.append(toc - tic)
     eibv_1.append(eibv1)
 
     tic = time()
-    eibv2 = get_eibv_analytical_fast(mu, sigma_diag, vr_diag)
+    eibv2 = get_eibv_analytical_fast(mu_input, sigma_diag, vr_diag, threshold, cdf_z1, cdf_z2, cdf_rho, cdf)
     toc = time()
     t2.append(toc - tic)
     eibv_2.append(eibv2)
-
 
 print("Average time for analytical: ", np.mean(t1))
 print("Average time for analytical fast: ", np.mean(t2))

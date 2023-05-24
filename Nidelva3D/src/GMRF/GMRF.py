@@ -106,6 +106,15 @@ class GMRF:
         self.__cdf_rho = table["rho"]
         self.__cdf_table = table["cdf"]
 
+        # import matplotlib.pyplot as plt
+        # from matplotlib.pyplot import get_cmap
+        # plt.figure()
+        # plt.imshow(self.__cdf_table[:, :, 0], cmap=get_cmap("BrBG", 10), origin="lower",
+        #            extent=[self.__cdf_z1[0], self.__cdf_z1[-1], self.__cdf_z2[0], self.__cdf_z2[-1]])
+        # plt.colorbar()
+        # plt.show()
+        # plt.show()
+
     def assimilate_data(self, dataset: np.ndarray) -> tuple:
         """
         Assimilate dataset to spde kernel.
@@ -180,10 +189,66 @@ class GMRF:
         eibv = []
         for i in range(len(indices_candidates)):
             variance_reduction = self.__spde.mvar() - marginal_variance[:, i]
-            eibv_temp1 = self.__get_eibv_analytical(mu=self.__spde.mu, sigma_diag=marginal_variance[:, i],
-                                                    vr_diag=variance_reduction)
-            eibv_temp2 = self.__get_eibv_analytical_fast(mu=self.__spde.mu, sigma_diag=marginal_variance[:, i],
-                                                         vr_diag=variance_reduction)
+
+            mu_input = self.__spde.mu
+            sigma_diag_input = marginal_variance[:, i]
+            vr_diag_input = variance_reduction
+            threshold = self.__spde.threshold
+
+            # sigma = 1.0
+            # nugget = .4
+            # eta = 4.5 / .7
+            # threshold = 27.8
+            #
+            # N = 25
+            # x = np.linspace(0, 1, N)
+            # y = np.linspace(0, 1, N)
+            # X, Y = np.meshgrid(x, y)
+            #
+            # grid = np.stack((X.flatten(), Y.flatten()), axis=1)
+            # Ngrid = grid.shape[0]
+            #
+            # dm = cdist(grid, grid, metric='euclidean')
+            # Sigma = sigma ** 2 * (1 + eta * dm) * np.exp(-eta * dm)
+            #
+            # mu = np.linalg.cholesky(Sigma) @ np.random.randn(Sigma.shape[0]).reshape(-1, 1)
+            # mu += np.ones_like(mu) * 28
+            #
+            # import matplotlib.pyplot as plt
+            # from matplotlib.pyplot import get_cmap
+            # plt.scatter(grid[:, 0], grid[:, 1], c=mu, cmap=get_cmap("BrBG", 10))
+            # plt.colorbar()
+            # plt.show()
+            #
+            # ind_measured = 10
+            # F = np.zeros([1, Ngrid])
+            # F[0, ind_measured] = True
+            # R = np.eye(1) * nugget
+            # C = F @ Sigma @ F.T + R
+            # VR = Sigma @ F.T @ np.linalg.solve(C, F @ Sigma)
+            # Sigma_posterior = Sigma - VR
+            #
+            # sigma_diag = np.diag(Sigma_posterior)
+            # vr_diag = np.diag(VR)
+            # mu_input = mu.squeeze()
+            # sigma_diag_input = sigma_diag
+            # vr_diag_input = vr_diag
+
+            import matplotlib.pyplot as plt
+
+            eibv_temp1, EIBV1 = self.__get_eibv_analytical(mu=mu_input, sigma_diag=sigma_diag_input,
+                                                           vr_diag=vr_diag_input, threshold=threshold)
+            eibv_temp2, EIBV2 = GMRF.__get_eibv_analytical_fast(mu=mu_input, sigma_diag=sigma_diag_input,
+                                                         vr_diag=vr_diag_input, threshold=threshold,
+                                                         cdf_z1=self.__cdf_z1, cdf_z2=self.__cdf_z2,
+                                                         cdf_rho=self.__cdf_rho, cdf_table=self.__cdf_table)
+            plt.subplot(211)
+            plt.plot(EIBV1, label="Analytical")
+            plt.subplot(212)
+            plt.plot(EIBV2, label="Fast")
+            plt.legend()
+            plt.show()
+
             print("eibv_temp1: ", eibv_temp1)
             print("eibv_temp2: ", eibv_temp2)
             eibv.append(eibv_temp1)
@@ -210,7 +275,8 @@ class GMRF:
         else:
             return None
 
-    def __get_eibv_analytical(self, mu: np.ndarray, sigma_diag: np.ndarray, vr_diag: np.ndarray) -> float:
+    def __get_eibv_analytical(self, mu: np.ndarray, sigma_diag: np.ndarray, vr_diag: np.ndarray,
+                              threshold: float) -> float:
         """
         Calculate the eibv using the analytical formula with a bivariate cumulative dentisty function.
 
@@ -223,6 +289,7 @@ class GMRF:
                 - np.array([vr1, vr2, ...])
         """
         eibv = .0
+        EIBV = []
         for i in range(len(mu)):
             sn2 = sigma_diag[i]
             vn2 = vr_diag[i]
@@ -230,22 +297,28 @@ class GMRF:
             sn = np.sqrt(sn2)
             m = mu[i]
 
-            mur = (self.__spde.threshold - m) / sn
+            mur = (threshold - m) / sn
 
             sig2r_1 = sn2 + vn2
             sig2r = vn2
 
-            eibv += multivariate_normal.cdf(np.array([0, 0]), np.array([-mur, mur]).squeeze(),
-                                            np.array([[sig2r_1, -sig2r],
-                                                      [-sig2r, sig2r_1]]).squeeze())
-        return eibv
+            eibv_temp = multivariate_normal.cdf(np.array([0, 0]), np.array([-mur, mur]).squeeze(),
+                                                np.array([[sig2r_1, -sig2r], [-sig2r, sig2r_1]]).squeeze())
+            EIBV.append(eibv_temp)
+            eibv += eibv_temp
 
-    @jit
-    def __get_eibv_analytical_fast(self, mu: np.ndarray, sigma_diag: np.ndarray, vr_diag: np.ndarray) -> float:
+        return eibv, EIBV
+
+    @staticmethod
+    @njit
+    def __get_eibv_analytical_fast(mu: np.ndarray, sigma_diag: np.ndarray, vr_diag: np.ndarray,
+                                   threshold: float, cdf_z1: np.ndarray, cdf_z2: np.ndarray,
+                                   cdf_rho: np.ndarray, cdf_table: np.ndarray) -> float:
         """
         Calculate the eibv using the analytical formula but using a loaded cdf dataset.
         """
         eibv = .0
+        EIBV = []
         for i in range(len(mu)):
             sn2 = sigma_diag[i]
             vn2 = vr_diag[i]
@@ -253,7 +326,7 @@ class GMRF:
             sn = np.sqrt(sn2)
             m = mu[i]
 
-            mur = (self.__spde.threshold - m) / sn
+            mur = (threshold - m) / sn
 
             sig2r_1 = sn2 + vn2
             sig2r = vn2
@@ -262,11 +335,12 @@ class GMRF:
             z2 = -mur
             rho = -sig2r / sig2r_1
 
-            ind1 = np.argmin(np.abs(z1 - self.__cdf_z1))
-            ind2 = np.argmin(np.abs(z2 - self.__cdf_z2))
-            ind3 = np.argmin(np.abs(rho - self.__cdf_rho))
-            eibv += self.__cdf_table[ind1][ind2][ind3]
-        return eibv
+            ind1 = np.argmin(np.abs(z1 - cdf_z1))
+            ind2 = np.argmin(np.abs(z2 - cdf_z2))
+            ind3 = np.argmin(np.abs(rho - cdf_rho))
+            eibv += cdf_table[ind1][ind2][ind3]
+            EIBV.append(cdf_table[ind1][ind2][ind3])
+        return eibv, EIBV
 
     def get_location_from_ind(self, ind: Union[int, list]) -> np.ndarray:
         """
