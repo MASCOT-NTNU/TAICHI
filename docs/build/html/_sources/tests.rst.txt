@@ -92,6 +92,14 @@ tests.test\_waypoint module
    :undoc-members:
    :show-inheritance:
 
+tests.test\_waypoint\_graph module
+----------------------------------
+
+.. automodule:: tests.test_waypoint_graph
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 tests.test\_wgs module
 ----------------------
 

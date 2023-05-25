@@ -1,17 +1,26 @@
 """
-Planner selects candidate locations and then decide which one to go next.
+Planner module is the parent class of all the planners. It provides the basic functions for the planner.
+
+Author: Yaolin Ge
+Email: geyaolin@gmail.com
+Date: 2023-05-25
+
+Methodology:
+    1. It updates the planner indices after each iteration.
 
 Args:
     _id_curr: current index
     _id_next: next index
     _id_pion: pioneer index
-
 """
 
 from abc import abstractmethod
 
 
 class Planner:
+    """
+    Planner module is the parent class of all the planners. It provides the basic functions for the planner.
+    """
     __id_curr = 0
     __id_next = 0
     __id_pion = 0

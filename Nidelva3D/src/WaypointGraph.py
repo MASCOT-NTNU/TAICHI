@@ -295,9 +295,9 @@ class WaypointGraph:
         """ Set the neighbour distance """
         self.__neighbour_distance = value
 
-    def set_depth_layers(self, value: list) -> None:
+    def set_depth_layers(self, value: np.ndarray) -> None:
         """ Set the depth layers """
-        self.__depths = np.array(value)
+        self.__depths = value
 
     def set_polygon_border(self, value: np.ndarray) -> None:
         """ Set the polygon border, only one Nx2 dimension allowed """

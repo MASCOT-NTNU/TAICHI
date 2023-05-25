@@ -12,6 +12,22 @@ GMRF.GMRF module
    :undoc-members:
    :show-inheritance:
 
+GMRF.cal\_cdf module
+--------------------
+
+.. automodule:: GMRF.cal_cdf
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+GMRF.eibv\_comparison module
+----------------------------
+
+.. automodule:: GMRF.eibv_comparison
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
 GMRF.spde module
 ----------------
 

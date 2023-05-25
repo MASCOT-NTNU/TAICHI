@@ -1,11 +1,16 @@
 """
-Myopic3D path planner determines the pioneer waypoint according to minimum EIBV criterion.
-It utilises four waypoints to make an asychronous planning system.
+Myopic 3D path planner determines the pioneer waypoint according to minimum EIBV criterion.
 
-- Current waypoint: contains the current location, used to filter illegal next waypoints.
-- Next waypoint: contains the next waypoint, and the AUV should go to next waypoint once it arrives at the current one.
-- Pioneer waypoint: contains the pioneer waypoint which is one step ahead of the next waypoint.
+Author: Youlin Ge
+Email: geyaolin@gmail.com
+Date: 2023-05-23
 
+Methodology:
+    1. Get the current location of the AUV.
+    2. Filter the illegal next waypoints.
+    3. Compute the EIBV of each candidate waypoint.
+    4. Choose the waypoint with the minimum EIBV as the next waypoint.
+    5. Update the pioneer waypoint.
 """
 from Planner.Planner import Planner
 from WaypointGraph import WaypointGraph
@@ -27,27 +32,18 @@ class Myopic3D(Planner):
     __POLYGON_XY = np.stack((WGS.latlon2xy(__POLYGON[:, 0], __POLYGON[:, 1])), axis=1)
     __POLYGON_BORDER = sort_polygon_vertices(__POLYGON_XY)
     __POLYGON_OBSTACLE = [[[]]]
-    __DEPTHS = [0.5, 1.5, 2.5, 3.5, 4.5, 5.5]
+    __DEPTHS = np.array([0.5, 1.5, 2.5, 3.5, 4.5, 5.5])
     __NEIGHBOUR_DISTANCE = 120
 
     def __init__(self) -> None:
         super().__init__()
-        self.wp = WaypointGraph()
-        self.setup_waypoint_graph()
+        self.wp = WaypointGraph(neighbour_distance=self.__NEIGHBOUR_DISTANCE,
+                                depths=self.__DEPTHS,
+                                polygon_border=self.__POLYGON_BORDER,
+                                polygon_obstacles=self.__POLYGON_OBSTACLE)
         self.gmrf = GMRF()
 
-    def setup_waypoint_graph(self) -> None:
-        """
-        Set the waypoint graph for the whole field according to those polygon constrains.
-        """
-        self.wp.set_neighbour_distance(self.__NEIGHBOUR_DISTANCE)
-        self.wp.set_depth_layers(self.__DEPTHS)
-        self.wp.set_polygon_border(self.__POLYGON_BORDER)
-        self.wp.set_polygon_obstacles(self.__POLYGON_OBSTACLE)
-        self.wp.construct_waypoints()
-        self.wp.construct_hash_neighbours()
-
-    def get_candidates_indices(self):
+    def get_candidates_indices(self) -> tuple:
         """
         Filter sharp turn, bottom up and dive down behaviours.
 

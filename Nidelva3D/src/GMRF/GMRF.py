@@ -5,6 +5,17 @@ Created on 2023-05-22
 Author: Yaolin Ge
 Email: geyaolin@gmail.com
 
+Functionality:
+    1. Save the data in folders.
+    2. Assimilate the in-situ data.
+    3. Calculate the EIBV for given locations.
+        - Analytical solver, relatively slow.
+        - Approximate solver, fast.
+
+Notes:
+    1. The EIBV calculation is based on the approximation of the bivariate normal distribution.
+    2. The bivariate CDF is pre-calculated and stored in a joblib interpolater.
+    3. Details should be checked in `cal_cdf_regular_grid_interpolator.py`.
 
 """
 from WGS import WGS
@@ -15,17 +26,16 @@ from typing import Union
 import numpy as np
 from scipy.spatial.distance import cdist
 from scipy.stats import multivariate_normal
-from numba import njit, jit
 import os
 import pandas as pd
 import time
+import joblib
+from scipy.interpolate import RegularGridInterpolator
 
 
 class GMRF:
     """
     GMRF (Gaussian Markov Random Field) class for data assimilation.
-
-
 
     Attributes:
         __MIN_DEPTH_FOR_DATA_ASSIMILATION: Minimum depth for data assimilation.
@@ -47,7 +57,7 @@ class GMRF:
         self.__spde = spde()
         self.__create_data_folders()
         self.__construct_gmrf_grid()
-        self.__load_cdf_table()
+        self.__load_interpolator()
 
     def __create_data_folders(self) -> None:
         """
@@ -96,24 +106,21 @@ class GMRF:
         self.__rotated_angle = np.math.atan2(polygon[1, 0] - polygon[0, 0],
                                              polygon[1, 1] - polygon[0, 1])
 
-    def __load_cdf_table(self) -> None:
-        """
-        Load cdf table for the analytical solution.
-        """
-        table = np.load("./GMRF/cdf.npz")
-        self.__cdf_z1 = table["z1"]
-        self.__cdf_z2 = table["z2"]
-        self.__cdf_rho = table["rho"]
-        self.__cdf_table = table["cdf"]
+    def __load_interpolator(self) -> None:
+        t1 = time.time()
+        self.__rho_values, self.__z1_values, self.__z2_values, self.__cdf_values = joblib.load(
+            os.getcwd() + "/GMRF/interpolator_large.joblib")
+        self.__interpolators = [
+            RegularGridInterpolator((self.__z1_values, self.__z2_values), self.__cdf_values[i, :, :],
+                                    bounds_error=False, fill_value=None) for i in range(self.__rho_values.size)]
+        t2 = time.time()
+        print("Loading interpolators finished, time cost: {:.2f} s".format(t2 - t1))
 
-        # import matplotlib.pyplot as plt
-        # from matplotlib.pyplot import get_cmap
-        # plt.figure()
-        # plt.imshow(self.__cdf_table[:, :, 0], cmap=get_cmap("BrBG", 10), origin="lower",
-        #            extent=[self.__cdf_z1[0], self.__cdf_z1[-1], self.__cdf_z2[0], self.__cdf_z2[-1]])
-        # plt.colorbar()
-        # plt.show()
-        # plt.show()
+    def query(self, rho, z1, z2) -> np.ndarray:
+        # s1, Find the index of the closest rho layer
+        i = np.abs(self.__rho_values - rho).argmin()
+        # s2, Use the interpolator for this layer to interpolate the value
+        return self.__interpolators[i]([[z1, z2]])
 
     def assimilate_data(self, dataset: np.ndarray) -> tuple:
         """
@@ -185,76 +192,21 @@ class GMRF:
         # s1: get indices of the locations
         indices_candidates = self.get_ind_from_location(loc)
         marginal_variance = self.__spde.candidate(ks=indices_candidates)
+        prior_variance = self.__spde.mvar()
 
-        eibv = []
+        eibv = np.zeros_like(indices_candidates)
         for i in range(len(indices_candidates)):
-            variance_reduction = self.__spde.mvar() - marginal_variance[:, i]
-
+            variance_reduction = prior_variance - marginal_variance[:, i]
             mu_input = self.__spde.mu
             sigma_diag_input = marginal_variance[:, i]
             vr_diag_input = variance_reduction
             threshold = self.__spde.threshold
 
-            # sigma = 1.0
-            # nugget = .4
-            # eta = 4.5 / .7
-            # threshold = 27.8
-            #
-            # N = 25
-            # x = np.linspace(0, 1, N)
-            # y = np.linspace(0, 1, N)
-            # X, Y = np.meshgrid(x, y)
-            #
-            # grid = np.stack((X.flatten(), Y.flatten()), axis=1)
-            # Ngrid = grid.shape[0]
-            #
-            # dm = cdist(grid, grid, metric='euclidean')
-            # Sigma = sigma ** 2 * (1 + eta * dm) * np.exp(-eta * dm)
-            #
-            # mu = np.linalg.cholesky(Sigma) @ np.random.randn(Sigma.shape[0]).reshape(-1, 1)
-            # mu += np.ones_like(mu) * 28
-            #
-            # import matplotlib.pyplot as plt
-            # from matplotlib.pyplot import get_cmap
-            # plt.scatter(grid[:, 0], grid[:, 1], c=mu, cmap=get_cmap("BrBG", 10))
-            # plt.colorbar()
-            # plt.show()
-            #
-            # ind_measured = 10
-            # F = np.zeros([1, Ngrid])
-            # F[0, ind_measured] = True
-            # R = np.eye(1) * nugget
-            # C = F @ Sigma @ F.T + R
-            # VR = Sigma @ F.T @ np.linalg.solve(C, F @ Sigma)
-            # Sigma_posterior = Sigma - VR
-            #
-            # sigma_diag = np.diag(Sigma_posterior)
-            # vr_diag = np.diag(VR)
-            # mu_input = mu.squeeze()
-            # sigma_diag_input = sigma_diag
-            # vr_diag_input = vr_diag
-
-            import matplotlib.pyplot as plt
-
-            eibv_temp1, EIBV1 = self.__get_eibv_analytical(mu=mu_input, sigma_diag=sigma_diag_input,
-                                                           vr_diag=vr_diag_input, threshold=threshold)
-            eibv_temp2, EIBV2 = GMRF.__get_eibv_analytical_fast(mu=mu_input, sigma_diag=sigma_diag_input,
-                                                         vr_diag=vr_diag_input, threshold=threshold,
-                                                         cdf_z1=self.__cdf_z1, cdf_z2=self.__cdf_z2,
-                                                         cdf_rho=self.__cdf_rho, cdf_table=self.__cdf_table)
-            plt.subplot(211)
-            plt.plot(EIBV1, label="Analytical")
-            plt.subplot(212)
-            plt.plot(EIBV2, label="Fast")
-            plt.legend()
-            plt.show()
-
-            print("eibv_temp1: ", eibv_temp1)
-            print("eibv_temp2: ", eibv_temp2)
-            eibv.append(eibv_temp1)
-
-            # eibv.append(ibv)
-        return np.array(eibv)
+            # eibv_temp1, EBV1 = self.__get_eibv_analytical(mu=mu_input, sigma_diag=sigma_diag_input,
+            #                                                vr_diag=vr_diag_input, threshold=threshold)
+            eibv[i] = self.__get_eibv_analytical_fast(mu=mu_input, sigma_diag=sigma_diag_input,
+                                                      vr_diag=vr_diag_input, threshold=threshold)
+        return eibv
 
     def get_ind_from_location(self, loc: np.ndarray) -> Union[int, np.ndarray, None]:
         """
@@ -289,58 +241,48 @@ class GMRF:
                 - np.array([vr1, vr2, ...])
         """
         eibv = .0
-        EIBV = []
-        for i in range(len(mu)):
-            sn2 = sigma_diag[i]
-            vn2 = vr_diag[i]
+        EBV = []
+        sn2 = sigma_diag
+        vn2 = vr_diag
+        sn = np.sqrt(sn2)
 
-            sn = np.sqrt(sn2)
-            m = mu[i]
+        mur = (threshold - mu) / sn
 
-            mur = (threshold - m) / sn
+        sig2r_1 = sn2 + vn2
+        sig2r = vn2
 
-            sig2r_1 = sn2 + vn2
-            sig2r = vn2
+        z1 = mur
+        z2 = -mur
+        rho = -sig2r / sig2r_1
+        for i in range(len(z1)):
+            ebv = multivariate_normal.cdf([z1[i], z2[i]], mean=[0, 0], cov=[[1, rho[i]], [rho[i], 1]])
+            eibv += ebv
+            EBV.append(ebv)
 
-            eibv_temp = multivariate_normal.cdf(np.array([0, 0]), np.array([-mur, mur]).squeeze(),
-                                                np.array([[sig2r_1, -sig2r], [-sig2r, sig2r_1]]).squeeze())
-            EIBV.append(eibv_temp)
-            eibv += eibv_temp
+        return eibv
 
-        return eibv, EIBV
-
-    @staticmethod
-    @njit
-    def __get_eibv_analytical_fast(mu: np.ndarray, sigma_diag: np.ndarray, vr_diag: np.ndarray,
-                                   threshold: float, cdf_z1: np.ndarray, cdf_z2: np.ndarray,
-                                   cdf_rho: np.ndarray, cdf_table: np.ndarray) -> float:
+    def __get_eibv_analytical_fast(self, mu: np.ndarray, sigma_diag: np.ndarray,
+                                   vr_diag: np.ndarray, threshold: float) -> float:
         """
         Calculate the eibv using the analytical formula but using a loaded cdf dataset.
         """
-        eibv = .0
-        EIBV = []
-        for i in range(len(mu)):
-            sn2 = sigma_diag[i]
-            vn2 = vr_diag[i]
+        # s1, calculate the z1, z2, rho
+        sn2 = sigma_diag
+        vn2 = vr_diag
+        sn = np.sqrt(sn2)
+        mur = (np.ones_like(mu) * threshold - mu) / sn
+        sig2r_1 = sn2 + vn2
+        sig2r = vn2
+        z1 = mur
+        z2 = -mur
+        rho = -sig2r / sig2r_1
+        grid = np.stack((rho, z1, z2), axis=1)
 
-            sn = np.sqrt(sn2)
-            m = mu[i]
-
-            mur = (threshold - m) / sn
-
-            sig2r_1 = sn2 + vn2
-            sig2r = vn2
-
-            z1 = mur
-            z2 = -mur
-            rho = -sig2r / sig2r_1
-
-            ind1 = np.argmin(np.abs(z1 - cdf_z1))
-            ind2 = np.argmin(np.abs(z2 - cdf_z2))
-            ind3 = np.argmin(np.abs(rho - cdf_rho))
-            eibv += cdf_table[ind1][ind2][ind3]
-            EIBV.append(cdf_table[ind1][ind2][ind3])
-        return eibv, EIBV
+        # s2, query the cdf from the loaded interpolators
+        ebv = np.array([self.query(rho, z1, z2) for rho, z1, z2 in grid])
+        ebv[ebv < 0] = 0
+        eibv = np.sum(ebv)
+        return eibv
 
     def get_location_from_ind(self, ind: Union[int, list]) -> np.ndarray:
         """
