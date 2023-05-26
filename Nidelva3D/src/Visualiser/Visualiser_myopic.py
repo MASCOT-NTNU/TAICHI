@@ -80,7 +80,7 @@ class Visualiser:
         ))
 
         id = self.myopic.get_current_index()
-        wp = self.myopic.wp.get_waypoint_from_ind(id)
+        wp = self.myopic.waypoint_graph.get_waypoint_from_ind(id)
         wp = np.dot(self.RR, wp)
         fig.add_trace(go.Scatter3d(
             name="Current waypoint",
@@ -99,7 +99,7 @@ class Visualiser:
         )
 
         id = self.myopic.get_next_index()
-        wp = self.myopic.wp.get_waypoint_from_ind(id)
+        wp = self.myopic.waypoint_graph.get_waypoint_from_ind(id)
         wp = np.dot(self.RR, wp)
         fig.add_trace(go.Scatter3d(
             name="Next waypoint",
@@ -118,7 +118,7 @@ class Visualiser:
         )
 
         id = self.myopic.get_pioneer_index()
-        wp = self.myopic.wp.get_waypoint_from_ind(id)
+        wp = self.myopic.waypoint_graph.get_waypoint_from_ind(id)
         wp = np.dot(self.RR, wp)
         fig.add_trace(go.Scatter3d(
             name="Pioneer waypoint",
@@ -138,7 +138,7 @@ class Visualiser:
 
         id = self.myopic.get_trajectory_indices()
         if len(id) > 0:
-            wp = self.myopic.wp.get_waypoint_from_ind(id)
+            wp = self.myopic.waypoint_graph.get_waypoint_from_ind(id)
             wp = (self.RR @ wp.T).T
             fig.add_trace(go.Scatter3d(
                 name="Trajectory",

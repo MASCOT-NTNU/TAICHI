@@ -81,9 +81,8 @@ class WaypointGraph:
         self.__neighbour_distance = neighbour_distance
         self.__depths = depths
         self.__polygon_border = polygon_border
-        self.__polygon_obstacles = polygon_obstacles
         self.__polygon_border_shapely = Polygon(self.__polygon_border)
-        self.__polygon_obstacles_shapely = [Polygon(polygon_obstacle) for polygon_obstacle in self.__polygon_obstacles]
+        self.__polygon_obstacles = polygon_obstacles
 
         ''' To be deleted '''
         self.__num_of_depth_layers = len(self.__depths)
@@ -95,6 +94,8 @@ class WaypointGraph:
 
         if not is_list_empty(self.__polygon_obstacles):
             self.obs_free = False
+            self.__polygon_obstacles_shapely = [Polygon(polygon_obstacle) for polygon_obstacle in
+                                                self.__polygon_obstacles]
         else:
             self.obs_free = True
         self.construct_waypoints()

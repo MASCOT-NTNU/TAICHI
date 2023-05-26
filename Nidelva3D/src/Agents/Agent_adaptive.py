@@ -2,6 +2,10 @@
 Agent object abstract the entire adaptive agent by wrapping all the other components together inside the class.
 It handles the procedure of the execution by integrating all essential modules and expand its functionalities.
 
+Author: Yaolin Ge
+Email: geyaolin@gmail.com
+Date: 2023-05-26
+
 The goal of the agent is to conduct the autonomous sampling operation by using the following procedure:
 - Sense
 - Plan
@@ -22,7 +26,7 @@ class Agent:
 
     __loc_start = np.array([0, 0, 0])
     __loc_end = np.array([0, 0, 0])
-    __NUM_STEP = 50
+    __NUM_STEP = 60
     __counter = 0
 
     def __init__(self) -> None:
@@ -44,7 +48,7 @@ class Agent:
         """
 
         # c1: start the operation from scratch.
-        id_start = np.random.randint(0, len(self.myopic.wp.get_waypoints()))
+        id_start = np.random.randint(0, len(self.myopic.waypoint_graph.get_waypoints()))
         id_curr = id_start
 
         # s1: setup the planner -> only once
@@ -52,7 +56,7 @@ class Agent:
         self.myopic.set_next_index(id_curr)
 
         # a1: move to current location
-        self.auv.move_to_location(self.myopic.wp.get_waypoint_from_ind(id_curr))
+        self.auv.move_to_location(self.myopic.waypoint_graph.get_waypoint_from_ind(id_curr))
 
         t_start = time.time()
         t_pop_last = time.time()
@@ -87,7 +91,7 @@ class Agent:
                     self.myopic.set_next_index(ind)
 
                     # p1: parallel move AUV to the first location
-                    loc = self.myopic.wp.get_waypoint_from_ind(ind)
+                    loc = self.myopic.waypoint_graph.get_waypoint_from_ind(ind)
                     self.auv.move_to_location(loc)
 
                     # s3: update planner -> so curr and next waypoint is updated
@@ -103,7 +107,7 @@ class Agent:
                     self.myopic.gmrf.assimilate_data(ctd_data)
                 else:
                     ind = self.myopic.get_current_index()
-                    loc = self.myopic.wp.get_waypoint_from_ind(ind)
+                    loc = self.myopic.waypoint_graph.get_waypoint_from_ind(ind)
                     self.auv.move_to_location(loc)
 
                     # a1: gather AUV data

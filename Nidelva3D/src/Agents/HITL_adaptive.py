@@ -44,7 +44,7 @@ class Agent:
 
         # c1: start the operation from scratch.
 
-        id_start = self.myopic.wp.get_ind_from_waypoint(self.__loc_start)
+        id_start = self.myopic.waypoint_graph.get_ind_from_waypoint(self.__loc_start)
         id_curr = id_start
 
         # s1: setup the planner -> only once
@@ -58,7 +58,7 @@ class Agent:
         iridium = self.auv.get_iridium()
 
         # a1: move to current location
-        wp = self.myopic.wp.get_waypoint_from_ind(id_curr)
+        wp = self.myopic.waypoint_graph.get_waypoint_from_ind(id_curr)
         lat, lon = WGS.xy2latlon(wp[0], wp[1])
         self.auv.auv_handler.setWaypoint(math.radians(lat), math.radians(lon), wp[2], speed=speed)
 
@@ -94,7 +94,7 @@ class Agent:
                         self.myopic.set_next_index(ind)
 
                         # p1: parallel move AUV to the first location
-                        loc = self.myopic.wp.get_waypoint_from_ind(ind)
+                        loc = self.myopic.waypoint_graph.get_waypoint_from_ind(ind)
                         lat, lon = WGS.xy2latlon(loc[0], loc[1])
                         self.auv.auv_handler.setWaypoint(math.radians(lat), math.radians(lon), loc[2], speed=speed)
                         update_time = rospy.get_time()
@@ -113,7 +113,7 @@ class Agent:
                         ctd_data = []
                     else:
                         ind = self.myopic.get_current_index()
-                        loc = self.myopic.wp.get_waypoint_from_ind(ind)
+                        loc = self.myopic.waypoint_graph.get_waypoint_from_ind(ind)
                         lat, lon = WGS.xy2latlon(loc[0], loc[1])
                         self.auv.auv_handler.setWaypoint(math.radians(lat), math.radians(lon), loc[2], speed=speed)
                         update_time = rospy.get_time()

@@ -20,7 +20,7 @@ class TestSINMOD(TestCase):
 
     def test_get_data_from_sinmod(self) -> None:
         # c1: one depth layer
-        N = 40
+        N = 100
         lat = np.linspace(63.447973, 63.463720, N)
         lon = np.linspace(10.395031, 10.425818, N)
         # depth = np.random.uniform(0.5, 5.5, 5)
@@ -37,7 +37,7 @@ class TestSINMOD(TestCase):
         plt.show()
 
         # c2: many depth layers
-        N = 30
+        N = 100
         lat = np.linspace(63.447973, 63.463720, N)
         lon = np.linspace(10.395031, 10.425818, N)
         depth = np.linspace(0.5, 5.5, 3)
@@ -57,5 +57,4 @@ class TestSINMOD(TestCase):
                         cmap=get_cmap("BrBG", 10), vmin=10, vmax=30)
             plt.colorbar()
         plt.show()
-
 

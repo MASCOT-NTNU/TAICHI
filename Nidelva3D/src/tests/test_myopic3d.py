@@ -1,7 +1,5 @@
 """ Unit test for Myopic3D
-
 This module tests the myopic3d object.
-
 """
 
 from unittest import TestCase
@@ -13,6 +11,8 @@ from WaypointGraph import WaypointGraph
 import numpy as np
 import os
 import time
+import plotly
+import plotly.graph_objects as go
 
 
 class TestMyopic(TestCase):
@@ -21,8 +21,8 @@ class TestMyopic(TestCase):
 
     def setUp(self) -> None:
         self.myopic = Myopic3D()
-        self.wp = self.myopic.wp
-        self.waypoints = self.wp.get_waypoints()
+        self.waypoint_graph = self.myopic.waypoint_graph
+        self.waypoints = self.waypoint_graph.get_waypoints()
 
     def test_get_candidates(self):
         """
@@ -32,15 +32,15 @@ class TestMyopic(TestCase):
         # c1: one waypoint.
         self.myopic.set_next_index(10)
         id_next = self.myopic.get_next_index()
-        id_neigh = self.wp.get_ind_neighbours(id_next)
+        id_neigh = self.waypoint_graph.get_ind_neighbours(id_next)
         id_curr = id_neigh[0]
         # id_curr = id_neigh[np.random.randint(0, len(id_neigh))]
-        wp_curr = self.wp.get_waypoint_from_ind(id_curr)
-        wp_next = self.wp.get_waypoint_from_ind(id_next)
+        wp_curr = self.waypoint_graph.get_waypoint_from_ind(id_curr)
+        wp_next = self.waypoint_graph.get_waypoint_from_ind(id_next)
         vec1 = WaypointGraph.get_vector_between_two_waypoints(wp_curr, wp_next)
         id_c, id_n = self.myopic.get_candidates_indices()
         for i in range(len(id_c)):
-            wp_i = self.wp.get_waypoint_from_ind(id_c[i])
+            wp_i = self.waypoint_graph.get_waypoint_from_ind(id_c[i])
             vec2 = WaypointGraph.get_vector_between_two_waypoints(wp_next, wp_i)
             dot_prod = vec1.T @ vec2
             if dot_prod < 0:
@@ -54,14 +54,14 @@ class TestMyopic(TestCase):
             self.myopic.set_next_index(id_nexts[i])
             id_next = self.myopic.get_next_index()
             wp_next = self.waypoints[id_next]
-            id_neigh = self.wp.get_ind_neighbours(id_next)
+            id_neigh = self.waypoint_graph.get_ind_neighbours(id_next)
             for j in range(len(id_neigh)):
                 self.myopic.set_current_index(id_neigh[j])
                 id_c, id_n = self.myopic.get_candidates_indices()
-                wp_curr = self.wp.get_waypoint_from_ind(self.myopic.get_current_index())
+                wp_curr = self.waypoint_graph.get_waypoint_from_ind(self.myopic.get_current_index())
                 vec1 = WaypointGraph.get_vector_between_two_waypoints(wp_curr, wp_next)
                 for k in range(len(id_c)):
-                    wp_i = self.wp.get_waypoint_from_ind(id_c[k])
+                    wp_i = self.waypoint_graph.get_waypoint_from_ind(id_c[k])
                     vec2 = WaypointGraph.get_vector_between_two_waypoints(wp_next, wp_i)
                     dot_prod = vec1.T @ vec2
                     if dot_prod < 0:
@@ -130,7 +130,7 @@ class TestMyopic(TestCase):
         # s4: get pioneer waypoint
         id_pion = self.myopic.get_pioneer_waypoint_index()
 
-        for i in range(50):
+        for i in range(5):
             print(i)
             t1 = time.time()
             # ss1: update planner
@@ -139,6 +139,104 @@ class TestMyopic(TestCase):
             id_pion = self.myopic.get_pioneer_waypoint_index()
             t2 = time.time()
             print("Each step takes: ", t2 - t1)
+
+            # p1: all waypoints
+            fig = go.Figure(data=[go.Scatter3d(
+                x=self.waypoints[:, 1],
+                y=self.waypoints[:, 0],
+                z=-self.waypoints[:, 2],
+                mode='markers',
+                marker=dict(
+                    size=1,
+                    color="black",
+                    opacity=.3,
+                ),
+            )])
+
+            # p2: current waypoint in red
+            id = self.myopic.get_current_index()
+            fig.add_trace(go.Scatter3d(
+                x=[self.waypoints[id, 1]],
+                y=[self.waypoints[id, 0]],
+                z=[-self.waypoints[id, 2]],
+                mode='markers',
+                marker=dict(
+                    size=10,
+                    color="red",
+                ),
+            ))
+
+            # p3: next waypoint in orange
+            id = self.myopic.get_next_index()
+            fig.add_trace(go.Scatter3d(
+                x=[self.waypoints[id, 1]],
+                y=[self.waypoints[id, 0]],
+                z=[-self.waypoints[id, 2]],
+                mode='markers',
+                marker=dict(
+                    size=10,
+                    color="orange",
+                ),
+            ))
+
+            # p4: pioneer waypoint in green
+            id = self.myopic.get_pioneer_index()
+            fig.add_trace(go.Scatter3d(
+                x=[self.waypoints[id, 1]],
+                y=[self.waypoints[id, 0]],
+                z=[-self.waypoints[id, 2]],
+                mode='markers',
+                marker=dict(
+                    size=10,
+                    color="green",
+                ),
+            ))
+
+            # p5: trajectory, needs to convert indices to locations.
+            id = self.myopic.get_trajectory_indices()
+            fig.add_trace(go.Scatter3d(
+                x=self.waypoints[id, 1],
+                y=self.waypoints[id, 0],
+                z=-self.waypoints[id, 2],
+                mode='markers + lines',
+                marker=dict(
+                    size=4,
+                    color="black",
+                ),
+                line=dict(
+                    width=2,
+                    color="blue"
+                )
+            ))
+
+            fig.update_layout(
+                title={
+                    'text': "Myopic3D planning illustration",
+                    'y': 0.9,
+                    'x': 0.5,
+                    'xanchor': 'center',
+                    'yanchor': 'top',
+                    'font': dict(size=30, family="Times New Roman"),
+                },
+                scene=dict(
+                    # xaxis=dict(range=[np.amin(points_int[:, 0]), np.amax(points_int[:, 0])]),
+                    # yaxis=dict(range=[np.amin(points_int[:, 1]), np.amax(points_int[:, 1])]),
+                    # zaxis=dict(nticks=4, range=[-6, .5], ),
+                    xaxis_tickfont=dict(size=14, family="Times New Roman"),
+                    yaxis_tickfont=dict(size=14, family="Times New Roman"),
+                    zaxis_tickfont=dict(size=14, family="Times New Roman"),
+                    xaxis_title=dict(text="Y", font=dict(size=18, family="Times New Roman")),
+                    yaxis_title=dict(text="X", font=dict(size=18, family="Times New Roman")),
+                    zaxis_title=dict(text="Z", font=dict(size=18, family="Times New Roman")),
+                ),
+                scene_aspectmode='manual',
+                scene_aspectratio=dict(x=1, y=1, z=.4),
+                # scene_camera=camera,
+            )
+
+            # p6: save it to image or html
+            figpath = os.getcwd() + "/../fig/Myopic3D/P_{:03d}.html".format(i)
+            plotly.offline.plot(fig, filename=figpath, auto_open=False)
 
         trajectory = self.waypoints[self.myopic.get_trajectory_indices()]
         dx = np.diff(trajectory[:, 0])
@@ -157,114 +255,10 @@ class TestMyopic(TestCase):
                 break
         self.assertFalse(sharp_turn)
 
+#% Separate part used for visualisation
+        # here comes the plotting
+        # p0: setup the plotting env
+        import matplotlib.pyplot as plt
 
 
-
-
-
-
-#%% Separate part used for visualisation
-#             # here comes the plotting
-#             # p0: setup the plotting env
-#             import matplotlib.pyplot as plt
-#             import plotly
-#             import plotly.graph_objects as go
-#
-#             # p1: all waypoints
-#             fig = go.Figure(data=[go.Scatter3d(
-#                 x=self.waypoints[:, 1],
-#                 y=self.waypoints[:, 0],
-#                 z=-self.waypoints[:, 2],
-#                 mode='markers',
-#                 marker=dict(
-#                     size=1,
-#                     color="black",
-#                     opacity=.3,
-#                 ),
-#             )])
-#
-#             # p2: current waypoint in red
-#             id = self.myopic.get_current_index()
-#             fig.add_trace(go.Scatter3d(
-#                 x=[self.waypoints[id, 1]],
-#                 y=[self.waypoints[id, 0]],
-#                 z=[-self.waypoints[id, 2]],
-#                 mode='markers',
-#                 marker=dict(
-#                     size=10,
-#                     color="red",
-#                 ),
-#             ))
-#
-#             # p3: next waypoint in orange
-#             id = self.myopic.get_next_index()
-#             fig.add_trace(go.Scatter3d(
-#                 x=[self.waypoints[id, 1]],
-#                 y=[self.waypoints[id, 0]],
-#                 z=[-self.waypoints[id, 2]],
-#                 mode='markers',
-#                 marker=dict(
-#                     size=10,
-#                     color="orange",
-#                 ),
-#             ))
-#
-#             # p4: pioneer waypoint in green
-#             id = self.myopic.get_pioneer_index()
-#             fig.add_trace(go.Scatter3d(
-#                 x=[self.waypoints[id, 1]],
-#                 y=[self.waypoints[id, 0]],
-#                 z=[-self.waypoints[id, 2]],
-#                 mode='markers',
-#                 marker=dict(
-#                     size=10,
-#                     color="green",
-#                 ),
-#             ))
-#
-#             # p5: trajectory, needs to convert indices to locations.
-#             id = self.myopic.get_trajectory_indices()
-#             fig.add_trace(go.Scatter3d(
-#                 x=self.waypoints[id, 1],
-#                 y=self.waypoints[id, 0],
-#                 z=-self.waypoints[id, 2],
-#                 mode='markers + lines',
-#                 marker=dict(
-#                     size=4,
-#                     color="black",
-#                 ),
-#                 line=dict(
-#                     width=2,
-#                     color="blue"
-#                 )
-#             ))
-#
-#             fig.update_layout(
-#                 title={
-#                     'text': "Myopic3D planning illustration",
-#                     'y': 0.9,
-#                     'x': 0.5,
-#                     'xanchor': 'center',
-#                     'yanchor': 'top',
-#                     'font': dict(size=30, family="Times New Roman"),
-#                 },
-#                 scene=dict(
-#                     # xaxis=dict(range=[np.amin(points_int[:, 0]), np.amax(points_int[:, 0])]),
-#                     # yaxis=dict(range=[np.amin(points_int[:, 1]), np.amax(points_int[:, 1])]),
-#                     # zaxis=dict(nticks=4, range=[-6, .5], ),
-#                     xaxis_tickfont=dict(size=14, family="Times New Roman"),
-#                     yaxis_tickfont=dict(size=14, family="Times New Roman"),
-#                     zaxis_tickfont=dict(size=14, family="Times New Roman"),
-#                     xaxis_title=dict(text="Y", font=dict(size=18, family="Times New Roman")),
-#                     yaxis_title=dict(text="X", font=dict(size=18, family="Times New Roman")),
-#                     zaxis_title=dict(text="Z", font=dict(size=18, family="Times New Roman")),
-#                 ),
-#                 scene_aspectmode='manual',
-#                 scene_aspectratio=dict(x=1, y=1, z=.4),
-#                 # scene_camera=camera,
-#             )
-#
-#             # p6: save it to image or html
-#             figpath = os.getcwd() + "/../fig/Myopic3D/P_{:03d}.html".format(i)
-#             plotly.offline.plot(fig, filename=figpath, auto_open=False)
 

@@ -11,7 +11,7 @@ from scipy import sparse
 from sksparse.cholmod import cholesky
 import os
 FILEPATH = os.getcwd() + "/GMRF/"
-DEFAULT_NUM_SAMPLES = 1000
+DEFAULT_NUM_SAMPLES = 250
 
 
 class spde:

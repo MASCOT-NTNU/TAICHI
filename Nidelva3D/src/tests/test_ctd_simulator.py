@@ -67,5 +67,3 @@ class TestCTDSimulator(TestCase):
         loc_wgs = np.vstack((lat, lon, loc[:, 2])).T
         ve = self.sinmod.get_data_at_coordinates(loc_wgs)[:, -1]
         self.assertIsNone(testing.assert_array_almost_equal(v, ve))
-
-

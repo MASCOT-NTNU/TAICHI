@@ -26,6 +26,7 @@ from typing import Union
 import numpy as np
 from scipy.spatial.distance import cdist
 from scipy.stats import multivariate_normal
+from pykdtree.kdtree import KDTree
 import os
 import pandas as pd
 import time
@@ -95,6 +96,7 @@ class GMRF:
         z = depth
         self.__gmrf_grid = np.stack((x, y, z), axis=1)
         self.__N_gmrf_grid = self.__gmrf_grid.shape[0]
+        self.__gmrf_grid_kdtree = KDTree(self.__gmrf_grid)
 
         """
         Get the rotation of the grid, used for later plotting.
@@ -116,7 +118,7 @@ class GMRF:
         t2 = time.time()
         print("Loading interpolators finished, time cost: {:.2f} s".format(t2 - t1))
 
-    def query(self, rho, z1, z2) -> np.ndarray:
+    def __query_cdf(self, rho, z1, z2) -> np.ndarray:
         # s1, Find the index of the closest rho layer
         i = np.abs(self.__rho_values - rho).argmin()
         # s2, Use the interpolator for this layer to interpolate the value
@@ -125,31 +127,24 @@ class GMRF:
     def assimilate_data(self, dataset: np.ndarray) -> tuple:
         """
         Assimilate dataset to spde kernel.
-        It computes the distance matrix between gmrf grid and dataset grid. Then the values are averged to each cell.
+
         Args:
             dataset: np.array([x, y, z, sal])
+
+        Methodology:
+            1. Remove the noise layer.
+            2. Compute the distance matrix between gmrf grid and dataset grid.
+            3. Update the spde kernel.
         """
         # ss1: save raw ctd
         df = pd.DataFrame(dataset, columns=['x', 'y', 'z', 'salinity'])
         df.to_csv(self.__foldername_ctd + "D_{:03d}.csv".format(self.__cnt))
         ind_remove_noise_layer = np.where(np.abs(dataset[:, 2]) >= self.__MIN_DEPTH_FOR_DATA_ASSIMILATION)[0]
         dataset = dataset[ind_remove_noise_layer, :]
-        xd = dataset[:, 0].reshape(-1, 1)
-        yd = dataset[:, 1].reshape(-1, 1)
-        zd = dataset[:, 2].reshape(-1, 1)
-        Fgmrf = np.ones([1, self.__N_gmrf_grid])
-        Fdata = np.ones([dataset.shape[0], 1])
-        xg = self.__gmrf_grid[:, 0].reshape(-1, 1)
-        yg = self.__gmrf_grid[:, 1].reshape(-1, 1)
-        zg = self.__gmrf_grid[:, 2].reshape(-1, 1)
-        # t1 = time.time()
-        dx = (xd @ Fgmrf - Fdata @ xg.T) ** 2
-        dy = (yd @ Fgmrf - Fdata @ yg.T) ** 2
-        dz = ((zd @ Fgmrf - Fdata @ zg.T) * self.__GMRF_DISTANCE_NEIGHBOUR) ** 2
-        dist = dx + dy + dz
-        ind_min_distance = np.argmin(dist, axis=1)  # used only for unittest.
+        distance_min, ind_min_distance = self.__gmrf_grid_kdtree.query(dataset[:, :3], k=1)
         ind_assimilated = np.unique(ind_min_distance)
         salinity_assimilated = np.zeros([len(ind_assimilated), 1])
+
         for i in range(len(ind_assimilated)):
             ind_selected = np.where(ind_min_distance == ind_assimilated[i])[0]
             salinity_assimilated[i] = np.mean(dataset[ind_selected, 3])
@@ -208,25 +203,6 @@ class GMRF:
                                                       vr_diag=vr_diag_input, threshold=threshold)
         return eibv
 
-    def get_ind_from_location(self, loc: np.ndarray) -> Union[int, np.ndarray, None]:
-        """
-        Args:
-            loc: np.array([xp, yp, zp])
-        Returns: index of the closest waypoint.
-        """
-        if len(loc) > 0:
-            dm = loc.ndim
-            if dm == 1:
-                d = cdist(self.__gmrf_grid, loc.reshape(1, -1))
-                return np.argmin(d, axis=0)
-            elif dm == 2:
-                d = cdist(self.__gmrf_grid, loc)
-                return np.argmin(d, axis=0)
-            else:
-                return None
-        else:
-            return None
-
     def __get_eibv_analytical(self, mu: np.ndarray, sigma_diag: np.ndarray, vr_diag: np.ndarray,
                               threshold: float) -> float:
         """
@@ -258,7 +234,6 @@ class GMRF:
             ebv = multivariate_normal.cdf([z1[i], z2[i]], mean=[0, 0], cov=[[1, rho[i]], [rho[i], 1]])
             eibv += ebv
             EBV.append(ebv)
-
         return eibv
 
     def __get_eibv_analytical_fast(self, mu: np.ndarray, sigma_diag: np.ndarray,
@@ -279,10 +254,27 @@ class GMRF:
         grid = np.stack((rho, z1, z2), axis=1)
 
         # s2, query the cdf from the loaded interpolators
-        ebv = np.array([self.query(rho, z1, z2) for rho, z1, z2 in grid])
+        ebv = np.array([self.__query_cdf(rho, z1, z2) for rho, z1, z2 in grid])
         ebv[ebv < 0] = 0
         eibv = np.sum(ebv)
         return eibv
+
+    def get_ind_from_location(self, loc: np.ndarray) -> Union[int, np.ndarray, None]:
+        """
+        Args:
+            loc: np.array([xp, yp, zp])
+        Returns: index of the closest waypoint.
+        """
+        if len(loc) > 0:
+            dm = loc.ndim
+            if dm == 1:
+                return self.__gmrf_grid_kdtree.query(loc.reshape(1, -1))[1]
+            elif dm == 2:
+                return self.__gmrf_grid_kdtree.query(loc)[1]
+            else:
+                return None
+        else:
+            return None
 
     def get_location_from_ind(self, ind: Union[int, list]) -> np.ndarray:
         """
@@ -302,19 +294,19 @@ class GMRF:
         """
         return self.__gmrf_grid
 
-    def get_rotated_angle(self):
+    def get_rotated_angle(self) -> float:
         """
         Returns: rotated angle of the gmrf grid.
         """
         return self.__rotated_angle
 
-    def get_mu(self):
+    def get_mu(self) -> np.ndarray:
         """
         Returns: conditional mean of the GMRF field.
         """
         return self.__spde.mu
 
-    def get_mvar(self):
+    def get_mvar(self) -> np.ndarray:
         """
         Returns: conditional mariginal variance of the GMRF field.
         """

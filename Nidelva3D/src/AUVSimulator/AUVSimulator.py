@@ -2,6 +2,10 @@
 AUVSimulator module simulates the data collection behaviour of an AUV in the mission.
 It only emulates the resulting trajectory of an AUV, not the detailed behaviour.
 
+Author: Yaolin Ge
+Email: geyaolin@gmail.com
+Date: 2023-05-26
+
 # Args:
 #      __loc: current location at [x, y, z]
 #      __loc_prev: previous location at [xp, yp, zp]
