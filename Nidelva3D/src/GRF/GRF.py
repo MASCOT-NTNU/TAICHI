@@ -1,5 +1,5 @@
 """
-Gaussian Random Field module handles the data assimilation and the cost valley computation.
+Gaussian Random Field module handles the data assimilation and EIBV calculation associated with locations.
 
 Author: Yaolin Ge
 Email: geyaolin@gmail.com
@@ -23,7 +23,6 @@ Methodology:
         2.2. Update the prior covariance matrix.
     3. Calculate the EIBV for given locations.
         3.1. Compute the EIBV for given locations.
-
 """
 from GMRF.spde import spde
 from WaypointGraph import WaypointGraph
@@ -35,7 +34,9 @@ import numpy as np
 from pykdtree.kdtree import KDTree
 from typing import Union
 from scipy.stats import norm, multivariate_normal
+from scipy.interpolate import RegularGridInterpolator
 from joblib import Parallel, delayed
+import joblib
 import time
 import pandas as pd
 import os
@@ -56,9 +57,6 @@ class GRF:
         """
         Set up the Gaussian Random Field (GRF) kernel.
         """
-        self.__create_data_folders()
-        self.__cnt = 0
-
         self.__spde = spde()
         self.__sinmod = SINMOD()
 
@@ -69,10 +67,15 @@ class GRF:
         self.__eta = 4.5 / self.__LATERAL_RANGE  # decay factor
         self.__tau = np.sqrt(self.__nugget)  # measurement noise
 
-        self.__construct_grf_kernel()
+        self.__create_data_folders()
+        self.__discretize_grf_grid()
+        self.__construct_covariance_matrix()
         self.__construct_prior_mean()
+        self.__load_cdf_interpolator()
         self.__mu_prior = self.__mu
         self.__Sigma_prior = self.__Sigma
+        self.__rotated_angle = 0
+        self.__cnt = 0
 
     def __create_data_folders(self) -> None:
         """
@@ -87,12 +90,29 @@ class GRF:
         f = os.getcwd()
         self.__foldername = f + "/GRF/data/{:d}/".format(t)
         self.__foldername_ctd = f + "/GRF/raw_ctd/{:d}/".format(t)
-        # self.__foldername_thres = f + "/GRF/threshold/{:d}/".format(t)
         checkfolder(self.__foldername)
         checkfolder(self.__foldername_ctd)
-        # checkfolder(self.__foldername_thres)
 
-    def __construct_grf_kernel(self) -> None:
+    def __discretize_grf_grid(self) -> None:
+        """
+        Discretize and construct the GRF grid.
+        """
+        self.__polygon_border_wgs = sort_polygon_vertices(np.load(os.getcwd() + "/GMRF/models/grid.npy")[:, 2:])
+        self.__polygon_border = np.stack((WGS.latlon2xy(self.__polygon_border_wgs[:, 0],
+                                                        self.__polygon_border_wgs[:, 1])), axis=1)
+        self.__polygon_obstacles = [[[]]]
+        waypoint_graph = WaypointGraph(neighbour_distance=self.__GRF_NEIGHBOUR_DISTANCE,
+                                       depths=self.__GRF_DEPTHS,
+                                       polygon_border=self.__polygon_border,
+                                       polygon_obstacles=self.__polygon_obstacles)
+        self.__grf_grid = waypoint_graph.get_waypoints()
+        self.__grf_grid_kdtree = KDTree(self.__grf_grid)
+        self.__n_grf_grid = self.__grf_grid.shape[0]
+
+        self.__rotated_angle = np.math.atan2(self.__polygon_border[1, 0] - self.__polygon_border[0, 0],
+                                             self.__polygon_border[1, 1] - self.__polygon_border[0, 1])
+
+    def __construct_covariance_matrix(self) -> None:
         """
         Construct distance matrix and thus Covariance matrix for the kernel.
 
@@ -103,22 +123,7 @@ class GRF:
             2. Construct the covariance matrix.
                 .. math::
                     \Sigma_{ij} = \sigma^2 (1 + \eta d_{ij}) \exp(-\eta d_{ij})
-
         """
-        # s1, get the grid for the GRF kernel. The grid is a 3D array with shape (n, 3).
-        polygon_border_wgs = np.load(os.getcwd() + "/GMRF/models/grid.npy")[:, 2:]
-        polygon_border = np.stack((WGS.latlon2xy(polygon_border_wgs[:, 0], polygon_border_wgs[:, 1])), axis=1)
-        polygon_border = sort_polygon_vertices(polygon_border)
-        polygon_obstacles = [[[]]]
-        waypoint_graph = WaypointGraph(neighbour_distance=self.__GRF_NEIGHBOUR_DISTANCE,
-                                       depths=self.__GRF_DEPTHS,
-                                       polygon_border=polygon_border,
-                                       polygon_obstacles=polygon_obstacles)
-        self.__grf_grid = waypoint_graph.get_waypoints()
-        self.__grf_grid_kdtree = KDTree(self.__grf_grid)
-        self.__n_grf_grid = self.__grf_grid.shape[0]
-
-        # s2, construct the distance matrix.
         def __cal_distance_matrix(grid1, grid2, ksi):
             dx = (grid1[:, 0].reshape(-1, 1) @ np.ones((1, grid2.shape[0])) -
                   np.ones((grid1.shape[0], 1)) @ grid2[:, 0].reshape(1, -1))
@@ -129,8 +134,6 @@ class GRF:
             d = np.sqrt(dx ** 2 + dy ** 2 + (ksi * dz) ** 2)
             return d
         self.__distance_matrix = __cal_distance_matrix(self.__grf_grid, self.__grf_grid, self.__KSI)
-
-        # s3, construct the covariance matrix.
         self.__Sigma = self.__sigma ** 2 * ((1 + self.__eta * self.__distance_matrix) *
                                             np.exp(-self.__eta * self.__distance_matrix))
 
@@ -145,11 +148,19 @@ class GRF:
         Returns:
             None
         """
-        lat, lon = WGS.xy2latlon(self.__grf_grid[:, 0], self.__grf_grid[:, 1])
-        coordinates = np.stack((lat, lon, self.__grf_grid[:, 2]), axis=1)
-        self.__mu = self.__sinmod.get_data_at_coordinates(coordinates)[:, -1].reshape(-1, 1)
+        self.__mu = self.__sinmod.get_data_at_locations(self.__grf_grid)[:, -1].reshape(-1, 1)
 
-    def assimilate_data(self, dataset: np.ndarray) -> None:
+    def __load_cdf_interpolator(self) -> None:
+        t1 = time.time()
+        self.__rho_values, self.__z1_values, self.__z2_values, self.__cdf_values = joblib.load(
+            os.getcwd() + "/GMRF/interpolator_large.joblib")
+        self.__interpolators = [
+            RegularGridInterpolator((self.__z1_values, self.__z2_values), self.__cdf_values[i, :, :],
+                                    bounds_error=False, fill_value=None) for i in range(self.__rho_values.size)]
+        t2 = time.time()
+        print("Loading interpolators finished, time cost: {:.2f} s".format(t2 - t1))
+
+    def assimilate_data(self, dataset: np.ndarray) -> tuple:
         """
         Assimilate dataset to GRF kernel.
 
@@ -188,6 +199,7 @@ class GRF:
         # t2 = time.time()
         # print("Data assimilation takes: ", t2 - t1, " seconds")
         self.__cnt += 1
+        return ind_assimilated, salinity_assimilated, ind_min_distance
 
     def __update(self, ind_measured: np.ndarray, salinity_measured: np.ndarray) -> None:
         """
@@ -238,39 +250,30 @@ class GRF:
             1. Get the indices of the locations.
             2. Calculate the EIBV using the analytical formula with fast approximation.
         """
-        indices_candidates = self.__get_ind_from_location(locations)
+        indices_candidates = self.get_ind_from_location(locations)
+        eibv = np.zeros([len(indices_candidates), 1])
+        for i in range(len(indices_candidates)):
+            sigma_diag, vr_diag = self.__get_posterior_sigma_diag_vr_diag(indices_candidates[i])
+            eibv[i] = self.__cal_analytical_eibv_fast(self.__mu, sigma_diag, vr_diag, self.__threshold)
+            # eibv2[i] = self.__cal_analytical_eibv(self.__mu, sigma_diag, vr_diag, self.__threshold)
+        return eibv
 
-        pass
-
-    def __get_ind_from_location(self, loc: np.ndarray) -> Union[int, np.ndarray, None]:
+    def __get_posterior_sigma_diag_vr_diag(self, ind: int) -> tuple:
         """
-        Args:
-            loc: np.array([xp, yp, zp])
-        Returns: index of the closest waypoint.
+        Calculate the diagonal of the posterior covariance matrix and the diagonal of the VR matrix.
         """
-        if len(loc) > 0:
-            dm = loc.ndim
-            if dm == 1:
-                return self.__grf_grid_kdtree.query(loc.reshape(1, -1))[1]
-            elif dm == 2:
-                return self.__grf_grid_kdtree.query(loc)[1]
-            else:
-                return None
-        else:
-            return None
-
-    def __get_posterior_variance(self, ind: np.ndarray) -> np.ndarray:
-        msamples = ind.shape[0]
-        F = np.zeros([msamples, self.__n_grf_grid])
-        for i in range(msamples):
-            F[i, ind[i]] = True
-        R = np.eye(msamples) * self.__tau ** 2
+        F = np.zeros([1, self.__n_grf_grid])
+        F[0, ind] = True
+        R = np.eye(1) * self.__tau ** 2
         C = F @ self.__Sigma @ F.T + R
-        Sigma_posterior = self.__Sigma - self.__Sigma @ F.T @ np.linalg.solve(C, F @ self.__Sigma)
+        VR = self.__Sigma @ F.T @ np.linalg.solve(C, F @ self.__Sigma)
+        Sigma_posterior = self.__Sigma - VR
+        sigma_diag = np.diag(Sigma_posterior)
+        vr_diag = np.diag(VR)
+        return sigma_diag, vr_diag
 
-        pass
-
-    def __get_eibv(self, mu: np.ndarray, sigma_diag: np.ndarray, vr_diag: np.ndarray) -> float:
+    def __cal_analytical_eibv_fast(self, mu: np.ndarray, sigma_diag: np.ndarray,
+                                   vr_diag: np.ndarray, threshold: float) -> float:
         """
         Calculate the eibv using the analytical formula with a bivariate cumulative dentisty function.
 
@@ -291,68 +294,93 @@ class GRF:
 
         Examples:
             >>> grf = GRF()
-            >>> eibv = grf.__get_eibv(grf.__mu, grf.__sigma_diag, grf.__vr_diag)
-
+            >>> eibv = grf.__cal_analytical_eibv_fast(grf.__mu, grf.__sigma_diag, grf.__vr_diag)
         """
-        eibv = .0
-        for i in range(len(mu)):
-            sn2 = sigma_diag[i]
-            vn2 = vr_diag[i]
+        # s1, calculate the z1, z2, rho
+        mu = mu.squeeze()
+        sn2 = sigma_diag
+        vn2 = vr_diag
+        sn = np.sqrt(sn2)
+        mur = (np.ones_like(mu) * threshold - mu) / sn
+        sig2r_1 = sn2 + vn2
+        sig2r = vn2
+        z1 = mur
+        z2 = -mur
+        rho = -sig2r / sig2r_1
+        grid = np.stack((rho, z1, z2), axis=1)
 
-            sn = np.sqrt(sn2)
-            m = mu[i]
-
-            mur = (self.__threshold - m) / sn
-
-            sig2r_1 = sn2 + vn2
-            sig2r = vn2
-
-            eibv += multivariate_normal.cdf(np.array([0, 0]), np.array([-mur, mur]).squeeze(),
-                                            np.array([[sig2r_1, -sig2r],
-                                                      [-sig2r, sig2r_1]]).squeeze())
+        # s2, query the cdf from the loaded interpolators
+        ebv = np.array([self.__query_cdf(rho, z1, z2) for rho, z1, z2 in grid])
+        ebv[ebv < 0] = 0
+        eibv = np.sum(ebv)
         return eibv
 
-    def set_sigma(self, value: float) -> None:
+    def __cal_analytical_eibv(self, mu: np.ndarray, sigma_diag: np.ndarray,
+                              vr_diag: np.ndarray, threshold: float) -> float:
         """
-        Set space variability.
+        Calculate the eibv using the analytical formula with a bivariate cumulative dentisty function.
 
+        Input:
+            - mu: mean of the posterior marginal distribution.
+                - np.array([mu1, mu2, ...])
+            - sigma_diag: diagonal elements of the posterior marginal variance.
+                - np.array([sigma1, sigma2, ...])
+            - vr_diag: diagonal elements of the variance reduction.
+                - np.array([vr1, vr2, ...])
+        """
+        mu = mu.squeeze()
+        eibv = .0
+        EBV = []
+        sn2 = sigma_diag
+        vn2 = vr_diag
+        sn = np.sqrt(sn2)
+
+        mur = (threshold - mu) / sn
+
+        sig2r_1 = sn2 + vn2
+        sig2r = vn2
+
+        z1 = mur
+        z2 = -mur
+        rho = -sig2r / sig2r_1
+        for i in range(len(z1)):
+            ebv = multivariate_normal.cdf([z1[i], z2[i]], mean=[0, 0], cov=[[1, rho[i]], [rho[i], 1]])
+            eibv += ebv
+            EBV.append(ebv)
+        return eibv
+
+    def __query_cdf(self, rho, z1, z2) -> np.ndarray:
+        # s1, Find the index of the closest rho layer
+        i = np.abs(self.__rho_values - rho).argmin()
+        # s2, Use the interpolator for this layer to interpolate the value
+        return self.__interpolators[i]([[z1, z2]])
+
+    def get_ind_from_location(self, loc: np.ndarray) -> Union[int, np.ndarray, None]:
+        """
         Args:
-            value: space variability
-
-        Examples:
-            >>> grf = GRF()
-            >>> grf.set_sigma(0.1)
-
+            loc: np.array([xp, yp, zp])
+        Returns: index of the closest waypoint.
         """
-        self.__sigma = value
+        if len(loc) > 0:
+            dm = loc.ndim
+            if dm == 1:
+                return self.__grf_grid_kdtree.query(loc.reshape(1, -1))[1]
+            elif dm == 2:
+                return self.__grf_grid_kdtree.query(loc)[1]
+            else:
+                return None
+        else:
+            return None
 
-    def set_lateral_range(self, value: float) -> None:
+    def get_location_from_ind(self, ind: Union[int, list]) -> np.ndarray:
         """
-        Set lateral range.
-
         Args:
-            value: lateral range
+            ind: index of the locations.
 
-        Examples:
-            >>> grf = GRF()
-            >>> grf.set_lateral_range(0.1)
+        Returns: locations of the given indices.
 
         """
-        self.__lateral_range = value
-
-    def set_nugget(self, value: float) -> None:
-        """
-        Set nugget.
-
-        Args:
-            value: nugget
-
-        Examples:
-            >>> grf = GRF()
-            >>> grf.set_nugget(0.1)
-
-        """
-        self.__nugget = value
+        return self.__grf_grid[ind, :]
 
     def set_threshold(self, value: float) -> None:
         """
@@ -368,62 +396,17 @@ class GRF:
         """
         self.__threshold = value
 
-    def set_mu(self, value: np.ndarray) -> None:
+    def get_grid(self) -> np.ndarray:
         """
-        Set mean of the field.
-
-        Args:
-            value: mean of the field
-
-        Examples:
-            >>> grf = GRF()
-            >>> grf.set_mu(np.array([0.1, 0.2, 0.3]))
-
+        Return grid of the GRF kernel.
         """
-        self.__mu = value
+        return self.__grf_grid
 
-    def get_sigma(self) -> float:
+    def get_rotated_angle(self) -> float:
         """
-        Return variability of the field.
-
-        Returns:
-            sigma: space variability
-
-        Examples:
-            >>> grf = GRF()
-            >>> grf.get_sigma()
-            1.0
+        Return rotated angle for the field.
         """
-        return self.__sigma
-
-    def get_lateral_range(self) -> float:
-        """
-        Return lateral range.
-
-        Returns:
-            lateral_range: lateral range
-
-        Examples:
-            >>> grf = GRF()
-            >>> grf.get_lateral_range()
-            600.0
-        """
-        return self.__lateral_range
-
-    def get_nugget(self) -> float:
-        """
-        Return nugget of the field.
-
-        Returns:
-            nugget: nugget
-
-        Examples:
-            >>> grf = GRF()
-            >>> grf.get_nugget()
-            0.0
-
-        """
-        return self.__nugget
+        return self.__rotated_angle
 
     def get_threshold(self) -> float:
         """
@@ -436,7 +419,6 @@ class GRF:
             >>> grf = GRF()
             >>> grf.get_threshold()
             27.0
-
         """
         return self.__threshold
 

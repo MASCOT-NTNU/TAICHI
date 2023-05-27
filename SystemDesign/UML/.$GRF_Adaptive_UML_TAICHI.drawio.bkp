@@ -1,6 +1,6 @@
-<mxfile host="Electron" modified="2023-05-27T14:10:30.727Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.2.8 Chrome/112.0.5615.165 Electron/24.2.0 Safari/537.36" etag="rxYFBTbyaSj1yX-q4GvH" version="21.2.8" type="device">
+<mxfile host="Electron" modified="2023-05-27T14:10:24.451Z" agent="Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) draw.io/21.2.8 Chrome/112.0.5615.165 Electron/24.2.0 Safari/537.36" etag="PL9zpfU1I0h6GECUOoQF" version="21.2.8" type="device">
   <diagram id="C5RBs43oDa-KdzZeNtuy" name="Page-1">
-    <mxGraphModel dx="881" dy="449" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="4681" pageHeight="3300" math="0" shadow="0">
+    <mxGraphModel dx="858" dy="438" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="4681" pageHeight="3300" math="0" shadow="0">
       <root>
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-0" />
         <mxCell id="WIyWlLk6GJQsqaUBKTNV-1" parent="WIyWlLk6GJQsqaUBKTNV-0" />
@@ -327,7 +327,7 @@
         <mxCell id="e51tBfpOWioPl-1S9L4V-45" value="+ get_mu(): np.ndarray" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="34ha0xALZhQaqSOPqyUO-15" vertex="1">
           <mxGeometry y="1064" width="655" height="30" as="geometry" />
         </mxCell>
-        <mxCell id="e51tBfpOWioPl-1S9L4V-46" value="+ get_covariance_matrix(): np.ndarray" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="34ha0xALZhQaqSOPqyUO-15" vertex="1">
+        <mxCell id="e51tBfpOWioPl-1S9L4V-46" value="+ get_mvar(): np.ndarray" style="text;html=1;strokeColor=none;fillColor=none;align=left;verticalAlign=middle;whiteSpace=wrap;rounded=0;" parent="34ha0xALZhQaqSOPqyUO-15" vertex="1">
           <mxGeometry y="1094" width="655" height="30" as="geometry" />
         </mxCell>
         <mxCell id="34ha0xALZhQaqSOPqyUO-26" value="" style="endArrow=diamondThin;endFill=1;endSize=24;html=1;rounded=0;exitX=0.5;exitY=0;exitDx=0;exitDy=0;entryX=0.5;entryY=1;entryDx=0;entryDy=0;" parent="WIyWlLk6GJQsqaUBKTNV-1" source="34ha0xALZhQaqSOPqyUO-15" target="34ha0xALZhQaqSOPqyUO-8" edge="1">

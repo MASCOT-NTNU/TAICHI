@@ -20,7 +20,7 @@ class TestMyopic(TestCase):
     """
 
     def setUp(self) -> None:
-        self.myopic = Myopic3D()
+        self.myopic = Myopic3D(kernel="GRF")
         self.waypoint_graph = self.myopic.waypoint_graph
         self.waypoints = self.waypoint_graph.get_waypoints()
 
@@ -254,11 +254,3 @@ class TestMyopic(TestCase):
                 sharp_turn = True
                 break
         self.assertFalse(sharp_turn)
-
-#% Separate part used for visualisation
-        # here comes the plotting
-        # p0: setup the plotting env
-        import matplotlib.pyplot as plt
-
-
-

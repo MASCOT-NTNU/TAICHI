@@ -4,7 +4,7 @@
 from unittest import TestCase
 from WGS import WGS
 from AUVSimulator.CTDSimulator import CTDSimulator
-from AUVSimulator.SINMOD import SINMOD
+from SINMOD import SINMOD
 from Planner.Myopic3D import Myopic3D
 import numpy as np
 from numpy import testing
@@ -34,7 +34,7 @@ class TestCTDSimulator(TestCase):
         loc = np.vstack((x, y, z)).T
         v = self.ctd.get_salinity_at_loc(loc)
         loc_wgs = np.vstack((lat, lon, z)).T
-        ve = self.sinmod.get_data_at_coordinates(loc_wgs)[:, -1]
+        ve = self.sinmod.get_data_at_locations(loc_wgs)[:, -1]
         self.assertIsNone(testing.assert_array_almost_equal(v, ve))
 
         # c2: value within the field

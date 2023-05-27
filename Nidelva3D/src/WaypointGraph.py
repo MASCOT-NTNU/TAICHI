@@ -75,7 +75,7 @@ class WaypointGraph:
 
     def __init__(self, neighbour_distance: float = 0, depths: np.ndarray = np.array([0]),
                  polygon_border: np.ndarray = np.array([[0, 0], [0, 0]]),
-                 polygon_obstacles: list = None) -> None:
+                 polygon_obstacles: list = None, cal_neighbour_hash: bool = True) -> None:
         self.__waypoints = np.empty([0, 3])  # put it inside the initialisation to avoid mutation.
         self.__neighbour_hash_table = {}
         self.__neighbour_distance = neighbour_distance
@@ -99,7 +99,8 @@ class WaypointGraph:
         else:
             self.obs_free = True
         self.construct_waypoints()
-        self.construct_hash_neighbours()
+        if cal_neighbour_hash:
+            self.construct_hash_neighbours()
 
     def construct_waypoints(self) -> None:
         """ Construct the waypoints for the 3D waypoint graph given the border and obstacles.

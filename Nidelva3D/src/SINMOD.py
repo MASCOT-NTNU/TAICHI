@@ -1,11 +1,17 @@
 """
-SINMOD handles data extraction from SINMOD data files. It loads the latest SINMOD datafile from a bunch of netCDF4 files
-Then the data will be extracted to the desired coordinates by using minimum distance assignment.
-"""
+SINMOD module handles the data interpolation for a given set of coordinates.
 
+Author: Yaolin Ge
+Email: geyaolin@gmail.com
+Date: 2023-05-26
+
+Methodology:
+    1. Read SINMOD data from netCDF file.
+    2. Construct KDTree for the SINMOD grid.
+    3. For a given set of coordinates, find the nearest SINMOD grid point.
+    4. Interpolate the data using the nearest SINMOD grid point.
+"""
 from WGS import WGS
-from Planner.Myopic3D import Myopic3D
-from GMRF.GMRF import GMRF
 from pykdtree.kdtree import KDTree
 import os
 import re
@@ -13,12 +19,11 @@ import numpy as np
 import netCDF4
 from datetime import datetime
 import time
-import pandas as pd
 
 
 class SINMOD:
     """
-    SINMOD handler
+    SINMOD class handles the data interpolation for a given set of coordinates.
     """
     __SINMOD_MAX_DEPTH_LAYER = 10
     __sinmod_filepath = os.getcwd() + "/../sinmod/"
@@ -45,8 +50,10 @@ class SINMOD:
                 __df_sinmod.append([__lat_sinmod[i, j], __lon_sinmod[i, j],
                                     __depth_sinmod[k], __salinity_time_ave[k, i, j]])
     __df_sinmod = np.array(__df_sinmod)
+    x, y = WGS.latlon2xy(__df_sinmod[:, 0], __df_sinmod[:, 1])
+    __data_sinmod = np.hstack((x.reshape(-1, 1), y.reshape(-1, 1), __df_sinmod[:, 2:]))
     t1 = time.time()
-    __sinmod_grid_tree = KDTree(__df_sinmod[:, :3])
+    __sinmod_grid_tree = KDTree(__data_sinmod[:, :3])
     t2 = time.time()
     print("KDTree construction time: ", t2 - t1)
 
@@ -80,127 +87,27 @@ class SINMOD:
         dy = np.dot(np.ones([len(s1), 1]), s2.T)
         return dx - dy
 
-    def get_data_at_coordinates(self, coordinates: np.array) -> np.ndarray:
+    def get_data_at_locations(self, locations: np.array) -> np.ndarray:
         """
-        Get sinmod data from coordinates.
-        Args:
-            coordinates: np.array([[lat1, lon1, depth1],
-                                   [lat2, lon2, depth2],
-                                   ...
-                                   [latn, lonn, depthn]])
-        Returns:
-            data frame containing interpolated data values and coordinates.
-            np.array([[lat1, lon1, depth1, sal1],
-                      [lat2, lon2, depth2, sal2],
-                      ...
-                      [latn, lonn, depthn, saln]])
-        """
-        # Method 1, using distance matrix
-        # lat_sinmod = self.__df_sinmod[:, 0]
-        # lon_sinmod = self.__df_sinmod[:, 1]
-        # depth_sinmod = self.__df_sinmod[:, 2]
-        # salinity_sinmod = self.__df_sinmod[:, 3]
-        #
-        # print("Coordinates shape: ", coordinates.shape)
-        # lat_coordinates = coordinates[:, 0]
-        # lon_coordinates = coordinates[:, 1]
-        # depth_coordinates = coordinates[:, 2]
-        # ts = time.time()
-        # x_coordinates, y_coordinates = WGS.latlon2xy(lat_coordinates, lon_coordinates)
-        # x_sinmod, y_sinmod = WGS.latlon2xy(lat_sinmod, lon_sinmod)
-        # x_coordinates, y_coordinates, depth_coordinates, x_sinmod, y_sinmod, depth_sinmod = \
-        #     map(self.__vectorize, [x_coordinates, y_coordinates, depth_coordinates,
-        #                            x_sinmod, y_sinmod, depth_sinmod])
-        #
-        # t1 = time.time()
-        # DistanceMatrix_x = self.__get_distance_matrix(x_coordinates, x_sinmod)
-        # t2 = time.time()
-        # print("Distance matrix - x finished, time consumed: ", t2 - t1)
-        #
-        # t1 = time.time()
-        # DistanceMatrix_y = self.__get_distance_matrix(y_coordinates, y_sinmod)
-        # t2 = time.time()
-        # print("Distance matrix - y finished, time consumed: ", t2 - t1)
-        #
-        # t1 = time.time()
-        # DistanceMatrix_depth = self.__get_distance_matrix(depth_coordinates, depth_sinmod)
-        # t2 = time.time()
-        # print("Distance matrix - depth finished, time consumed: ", t2 - t1)
-        #
-        # t1 = time.time()
-        # DistanceMatrix = DistanceMatrix_x ** 2 + DistanceMatrix_y ** 2 + DistanceMatrix_depth ** 2
-        # t2 = time.time()
-        # print("Distance matrix - total finished, time consumed: ", t2 - t1)
-        #
-        # t1 = time.time()
-        # ind_interpolated = np.argmin(DistanceMatrix, axis=1) # interpolated vectorised indices
-        # t2 = time.time()
-        # print("Interpolation finished, time consumed: ", t2 - t1)
+        Get SINMOD data values at given locations.
 
-        # Method 2, using KDTree
+        Args:
+            location: x, y, depth coordinates
+            Example: np.array([[x1, y1, depth1],
+                               [x2, y2, depth2],
+                               ...
+                               [xn, yn, depthn]])
+        Returns:
+            SINMOD data values at given locations.
+        """
         ts = time.time()
-        dist, ind = self.__sinmod_grid_tree.query(coordinates.astype(np.float32))
+        dist, ind = self.__sinmod_grid_tree.query(locations.astype(np.float32))
         sal_interpolated = self.__df_sinmod[ind, -1].reshape(-1, 1)
-        df_interpolated = np.hstack((coordinates, sal_interpolated))
+        df_interpolated = np.hstack((locations, sal_interpolated))
         te = time.time()
         print("Data is interpolated successfully! Time consumed: ", te - ts)
         return df_interpolated
 
-    # def get_df(self) -> np.ndarray:
-    #     return self.__df_sinmod
-
 
 if __name__ == "__main__":
     s = SINMOD()
-
-    # load data from SINMOD
-    gmrf = GMRF()
-    grid_xy = gmrf.get_gmrf_grid()
-    lat, lon = WGS.xy2latlon(grid_xy[:, 0], grid_xy[:, 1])
-    grid_wgs = np.stack((lat, lon, grid_xy[:, 2]), axis=1)
-
-    df_sinmod = s.get_data_at_coordinates(grid_wgs)
-
-    import plotly
-    import plotly.graph_objs as go
-    from plotly.subplots import make_subplots
-
-    # make 3D scatter plot
-    fig = make_subplots(rows=1, cols=1,
-                        specs=[[{'type': 'scatter3d'}]])
-
-    fig.add_trace(go.Scatter3d(
-        x=df_sinmod[:, 1],
-        y=df_sinmod[:, 0],
-        z=-df_sinmod[:, 2],
-        mode='markers',
-        marker=dict(
-            size=10,
-            color=df_sinmod[:, -1],
-            cmin=0,
-            cmax=35,
-            colorscale='Viridis',
-            # opacity=0.8
-            showscale=True
-        )
-    ), row=1, col=1)
-
-    fig.update_layout(
-        scene=dict(
-            xaxis=dict(title='Longitude'),
-            yaxis=dict(title='Latitude'),
-            zaxis=dict(title='Depth'),
-        ),
-        title='SINMOD salinity data',
-        autosize=True,
-        width=1000,
-        height=1000,
-        margin=dict(l=65, r=50, b=65, t=90)
-    )
-
-    plotly.offline.plot(fig, filename='/Users/yaolin/Downloads/sinmod.html', auto_open=True)
-
-
-
-
-

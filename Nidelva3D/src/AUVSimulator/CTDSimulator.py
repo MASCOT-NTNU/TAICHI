@@ -2,7 +2,8 @@
 CTDSimulator module simulates CTD sensor.
 """
 from GMRF.GMRF import GMRF
-from AUVSimulator.SINMOD import SINMOD
+from GRF.GRF import GRF
+from SINMOD import SINMOD
 from WGS import WGS
 import os
 import numpy as np
@@ -25,12 +26,11 @@ class CTDSimulator:
         Set up the CTD simulated truth field.
         """
         gmrf = GMRF()
+        grf = GRF()
         sinmod = SINMOD()
-        grid_xy = gmrf.get_gmrf_grid()
-        lat, lon = WGS.xy2latlon(grid_xy[:, 0], grid_xy[:, 1])
-        grid_wgs = np.stack((lat, lon, grid_xy[:, 2]), axis=1)
-        grid_salinity = sinmod.get_data_at_coordinates(grid_wgs)[:, -1]
-        self.__field = np.hstack((grid_xy, grid_salinity.reshape(-1, 1)))
+        grid = grf.get_grid()
+        grid_salinity = sinmod.get_data_at_locations(grid)[:, -1]
+        self.__field = np.hstack((grid, grid_salinity.reshape(-1, 1)))
         self.__field_grid = self.__field[:, :3]
         self.__field_grid_tree = KDTree(self.__field_grid)
         self.__field_salinity = self.__field[:, -1]

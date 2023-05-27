@@ -15,6 +15,7 @@ Methodology:
 from Planner.Planner import Planner
 from WaypointGraph import WaypointGraph
 from GMRF.GMRF import GMRF
+from GRF.GRF import GRF
 from WGS import WGS
 from usr_func.sort_polygon_vertices import sort_polygon_vertices
 from usr_func.is_list_empty import is_list_empty
@@ -35,13 +36,18 @@ class Myopic3D(Planner):
     __DEPTHS = np.array([0.5, 1.5, 2.5, 3.5, 4.5, 5.5])
     __NEIGHBOUR_DISTANCE = 120
 
-    def __init__(self) -> None:
+    def __init__(self, kernel: str = "GMRF") -> None:
         super().__init__()
         self.waypoint_graph = WaypointGraph(neighbour_distance=self.__NEIGHBOUR_DISTANCE,
                                             depths=self.__DEPTHS,
                                             polygon_border=self.__POLYGON_BORDER,
                                             polygon_obstacles=self.__POLYGON_OBSTACLE)
-        self.gmrf = GMRF()
+        if kernel == "GMRF":
+            self.kernel = GMRF()
+        elif kernel == "GRF":
+            self.kernel = GRF()
+        else:
+            raise ValueError("Kernel must be either GMRF or GRF.")
 
     def get_candidates_indices(self) -> tuple:
         """
@@ -98,7 +104,7 @@ class Myopic3D(Planner):
             # s1: get candidate locations
             locs = self.waypoint_graph.get_waypoint_from_ind(id_smooth)
             # s2: get eibv at that waypoint
-            eibv = self.gmrf.get_eibv_at_locations(locs)
+            eibv = self.kernel.get_eibv_at_locations(locs)
             id_pioneer = id_smooth[np.argmin(eibv)]
             # wp_pioneer = locs[np.argmin(eibv)]
         else:

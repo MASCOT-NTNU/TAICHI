@@ -29,12 +29,12 @@ class Agent:
     __NUM_STEP = 60
     __counter = 0
 
-    def __init__(self) -> None:
+    def __init__(self, kernel: str = "GMRF") -> None:
         """
         Set up the planning strategies and the AUV simulator for the operation.
         """
         # s1: setup planner.
-        self.myopic = Myopic3D()
+        self.myopic = Myopic3D(kernel=kernel)
 
         # s2: setup AUV simulator.
         self.auv = AUVSimulator()

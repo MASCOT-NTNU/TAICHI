@@ -58,7 +58,7 @@ class GMRF:
         self.__spde = spde()
         self.__create_data_folders()
         self.__construct_gmrf_grid()
-        self.__load_interpolator()
+        self.__load_cdf_interpolator()
 
     def __create_data_folders(self) -> None:
         """
@@ -108,7 +108,7 @@ class GMRF:
         self.__rotated_angle = np.math.atan2(polygon[1, 0] - polygon[0, 0],
                                              polygon[1, 1] - polygon[0, 1])
 
-    def __load_interpolator(self) -> None:
+    def __load_cdf_interpolator(self) -> None:
         t1 = time.time()
         self.__rho_values, self.__z1_values, self.__z2_values, self.__cdf_values = joblib.load(
             os.getcwd() + "/GMRF/interpolator_large.joblib")
@@ -288,7 +288,7 @@ class GMRF:
         """
         return self.__gmrf_grid[ind]
 
-    def get_gmrf_grid(self) -> np.ndarray:
+    def get_grid(self) -> np.ndarray:
         """
         Returns: gmrf_grid (private variable)
         """
