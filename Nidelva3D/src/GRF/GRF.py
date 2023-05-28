@@ -176,7 +176,7 @@ class GRF:
             None
 
         Examples:
-            >>> dataset = np.array([[0, 0, 0], [1, 1, 1]])
+            >>> dataset = np.array([[0, 0, 0, 0], [1, 1, 1, 1]])
             >>> grf = GRF()
             >>> grf.assimilate_data(dataset)
             >>> grf.get_mu()
@@ -436,6 +436,18 @@ class GRF:
 
         """
         return self.__mu
+
+    def get_mvar(self) -> np.ndarray:
+        """
+        Return marginal variance.
+        """
+        return np.diag(self.__Sigma)
+
+    def interpolate_mu4locations(self, locations: np.ndarray) -> np.ndarray:
+        """
+        Interpolate mu at the given locations.
+        """
+        return self.__mu[self.__grf_grid_kdtree.query(locations)[1]]
 
     def get_covariance_matrix(self) -> np.ndarray:
         """

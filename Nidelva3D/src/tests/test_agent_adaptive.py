@@ -12,9 +12,11 @@ class TestAgent(TestCase):
     """
 
     def setUp(self) -> None:
-        self.agent = Agent()
+        kernel = "GMRF"
+        random_seed = 0
+        num_steps = 10
+        self.agent = Agent(kernel=kernel, num_steps=num_steps, random_seed=random_seed, debug=True)
 
     def test_run(self):
         self.agent.run()
-
-
+        ibv, vr, rmse = self.agent.get_metrics()

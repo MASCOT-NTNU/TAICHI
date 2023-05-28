@@ -25,8 +25,8 @@ class AUVSimulator:
     __arrival = False
     __popup = False
 
-    def __init__(self):
-        self.ctd = CTDSimulator()
+    def __init__(self, random_seed: int = 0):
+        self.ctd = CTDSimulator(random_seed=random_seed)
         self.messenger = Messenger()
 
     def move_to_location(self, loc: np.ndarray):
@@ -94,11 +94,12 @@ class AUVSimulator:
         """
         x_start, y_start, z_start = self.__loc_prev
         x_end, y_end, z_end = self.__loc
-        dx = x_end - x_start
-        dy = y_end - y_start
-        dz = z_end - z_start
-        dist = np.sqrt(dx ** 2 + dy ** 2 + dz ** 2)
-        N = int(np.ceil(dist / self.__speed) * 2)
+        # dx = x_end - x_start
+        # dy = y_end - y_start
+        # dz = z_end - z_start
+        # dist = np.sqrt(dx ** 2 + dy ** 2 + dz ** 2)
+        # N = int(np.ceil(dist / self.__speed) * 2)
+        N = 20  # default number of data points
         if N != 0:
             x_path = np.linspace(x_start, x_end, N)
             y_path = np.linspace(y_start, y_end, N)

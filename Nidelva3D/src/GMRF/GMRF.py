@@ -24,7 +24,6 @@ from usr_func.sort_polygon_vertices import sort_polygon_vertices
 from usr_func.checkfolder import checkfolder
 from typing import Union
 import numpy as np
-from scipy.spatial.distance import cdist
 from scipy.stats import multivariate_normal
 from pykdtree.kdtree import KDTree
 import os
@@ -311,6 +310,18 @@ class GMRF:
         Returns: conditional mariginal variance of the GMRF field.
         """
         return self.__spde.mvar()
+
+    def get_threshold(self) -> float:
+        """
+        Returns: threshold for the EIBV calculation.
+        """
+        return self.__spde.threshold
+
+    def interpolate_mu4locations(self, locations: np.ndarray) -> np.ndarray:
+        """
+        Interpolate the conditional mean of the GMRF field at given locations.
+        """
+        return self.__spde.mu[self.__gmrf_grid_kdtree.query(locations)[1]]
 
 
 if __name__ == "__main__":

@@ -17,6 +17,9 @@ on the updated knowledge for the field. Therefore, it can act according to the p
 from Planner.Myopic3D import Myopic3D
 from AUVSimulator.AUVSimulator import AUVSimulator
 from Visualiser.Visualiser_myopic import Visualiser
+from usr_func.checkfolder import checkfolder
+from sklearn.metrics import mean_squared_error
+from scipy.stats import norm
 import numpy as np
 import time
 import os
@@ -24,29 +27,57 @@ import os
 
 class Agent:
 
-    __loc_start = np.array([0, 0, 0])
-    __loc_end = np.array([0, 0, 0])
-    __NUM_STEP = 60
+    __loc_start = np.array([2200, 800, 0.5])
     __counter = 0
 
-    def __init__(self, kernel: str = "GMRF") -> None:
+    def __init__(self, kernel: str = "GMRF", num_steps: int = 5,
+                 random_seed: int = 0, debug: bool = True) -> None:
         """
         Set up the planning strategies and the AUV simulator for the operation.
         """
+        print("Number of steps: ", num_steps)
+        self.__num_steps = num_steps
+
         # s1: setup planner.
         self.myopic = Myopic3D(kernel=kernel)
 
         # s2: setup AUV simulator.
-        self.auv = AUVSimulator()
+        self.auv = AUVSimulator(random_seed=random_seed)
+        self.grid = self.auv.ctd.grid
 
-        # s3: setup Visualiser.
-        self.visualiser = Visualiser(self, figpath=os.getcwd() + "/../fig/Myopic3D/")
+        # s3, set up the metrics.
+        self.__mu_truth = self.auv.ctd.mu_truth
+        self.__threshold = self.myopic.kernel.get_threshold()
+        self.__ibv = np.zeros([self.__num_steps, 1])
+        self.__vr = np.zeros([self.__num_steps, 1])
+        self.__rmse = np.zeros([self.__num_steps, 1])
+        self.update_metrics()
+
+        self.debug = debug
+        if self.debug:
+            # s3: setup Visualiser.
+            figpath = os.getcwd() + "/../fig/Myopic3D/" + str(random_seed) + "/" + kernel + "/"
+            check_folder = checkfolder(figpath)
+
+            truth = self.auv.ctd.mu_truth
+            grid = self.grid
+            ind_surface = np.where(grid[:, 2] == 0.5)[0]
+            truth_surface = truth[ind_surface]
+            import matplotlib.pyplot as plt
+            from matplotlib.pyplot import get_cmap
+            plt.figure()
+            plt.scatter(grid[ind_surface, 1], grid[ind_surface, 0], c=truth_surface, cmap=get_cmap("BrBG", 10),
+                        vmin=0, vmax=33)
+            plt.colorbar()
+            plt.savefig(figpath + 'truth.png')
+            plt.close("all")
+
+            self.visualiser = Visualiser(self, figpath=figpath)
 
     def run(self):
         """
         Run the autonomous operation according to Sense, Plan, Act philosophy.
         """
-
         # c1: start the operation from scratch.
         id_start = np.random.randint(0, len(self.myopic.waypoint_graph.get_waypoints()))
         id_curr = id_start
@@ -61,7 +92,8 @@ class Agent:
         t_start = time.time()
         t_pop_last = time.time()
 
-        self.visualiser.plot_agent()
+        if self.debug:
+            self.visualiser.plot_agent()
 
         while True:
             t_end = time.time()
@@ -104,7 +136,7 @@ class Agent:
                     ctd_data = self.auv.get_ctd_data()
 
                     # # s5: assimilate data
-                    self.myopic.gmrf.assimilate_data(ctd_data)
+                    self.myopic.kernel.assimilate_data(ctd_data)
                 else:
                     ind = self.myopic.get_current_index()
                     loc = self.myopic.waypoint_graph.get_waypoint_from_ind(ind)
@@ -114,7 +146,7 @@ class Agent:
                     ctd_data = self.auv.get_ctd_data()
 
                     # a2: update GMRF field
-                    self.myopic.gmrf.assimilate_data(ctd_data)
+                    self.myopic.kernel.assimilate_data(ctd_data)
 
                     # ss2: update planner
                     self.myopic.update_planner()
@@ -122,16 +154,46 @@ class Agent:
                     # ss3: plan ahead.
                     self.myopic.get_pioneer_waypoint_index()
 
-                    if self.__counter == self.__NUM_STEP:
+                    if self.__counter == self.__num_steps:
+                        print("Mission complete!")
                         break
+
                 print("counter: ", self.__counter)
                 print(self.myopic.get_current_index())
                 print(self.myopic.get_trajectory_indices())
-                self.visualiser.plot_agent()
+                self.update_metrics()
                 self.__counter += 1
+
+                if self.debug:
+                    self.visualiser.plot_agent()
+
+    def update_metrics(self) -> None:
+        mu = self.myopic.kernel.get_mu()
+        sigma_diag = self.myopic.kernel.get_mvar()
+        self.__ibv[self.__counter] = self.__get_ibv(self.__threshold, mu, sigma_diag)
+        self.__vr[self.__counter] = np.sum(sigma_diag)
+        self.__rmse[self.__counter] = mean_squared_error(self.__mu_truth,
+                                                         self.myopic.kernel.interpolate_mu4locations(self.grid),
+                                                         squared=False)
+
+    @staticmethod
+    def __get_ibv(threshold: float, mu: np.ndarray, sigma_diag: np.ndarray) -> np.ndarray:
+        """ !!! Be careful with dimensions, it can lead to serious problems.
+        !!! Be careful with standard deviation is not variance, so it does not cause significant issues tho.
+        :param mu: n x 1 dimension
+        :param sigma_diag: n x 1 dimension
+        :return:
+        """
+        p = norm.cdf(threshold, mu.squeeze(), np.sqrt(sigma_diag))
+        bv = p * (1 - p)
+        ibv = np.sum(bv)
+        return ibv
 
     def get_counter(self):
         return self.__counter
+
+    def get_metrics(self) -> tuple:
+        return self.__ibv, self.__vr, self.__rmse
 
 
 if __name__ == "__main__":

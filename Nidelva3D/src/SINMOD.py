@@ -25,7 +25,7 @@ class SINMOD:
     """
     SINMOD class handles the data interpolation for a given set of coordinates.
     """
-    __SINMOD_MAX_DEPTH_LAYER = 10
+    # __SINMOD_MAX_DEPTH_LAYER = -1
     __sinmod_filepath = os.getcwd() + "/../sinmod/"
     __sinmod_files = os.listdir(__sinmod_filepath)
     __sinmod_files.sort()
@@ -40,9 +40,9 @@ class SINMOD:
 
     __lat_sinmod = np.array(__sinmod_data['gridLats'])
     __lon_sinmod = np.array(__sinmod_data['gridLons'])
-    __depth_sinmod = np.array(__sinmod_data['zc'])[:__SINMOD_MAX_DEPTH_LAYER]
+    __depth_sinmod = np.array(__sinmod_data['zc'])
 
-    __salinity_time_ave = np.mean(np.array(__sinmod_data['salinity'])[:, :__SINMOD_MAX_DEPTH_LAYER, :, :], axis=0)
+    __salinity_time_ave = np.mean(np.array(__sinmod_data['salinity'])[:, :, :, :], axis=0)
     __df_sinmod = []
     for i in range(__lat_sinmod.shape[0]):
         for j in range(__lat_sinmod.shape[1]):

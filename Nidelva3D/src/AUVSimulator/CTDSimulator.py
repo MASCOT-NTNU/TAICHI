@@ -1,15 +1,14 @@
 """
-CTDSimulator module simulates CTD sensor.
+CTDSimulator simulates the CTD sensor sampling in the ground truth field.
+
+Author: Yaolin Ge
+Email: geyaolin@gmail.com
+Date: 2023-05-28
+
 """
-from GMRF.GMRF import GMRF
 from GRF.GRF import GRF
-from SINMOD import SINMOD
-from WGS import WGS
-import os
 import numpy as np
-import pandas as pd
 from typing import Union
-from scipy.spatial.distance import cdist
 from pykdtree.kdtree import KDTree
 
 
@@ -17,21 +16,19 @@ class CTDSimulator:
     """
     CTD module handles the simulated truth value at each specific location.
     """
-    __field = None
-    __field_grid = None
-    __field_salinity = None
-
-    def __init__(self):
+    def __init__(self, random_seed: int = 0):
         """
         Set up the CTD simulated truth field.
         """
-        gmrf = GMRF()
+        np.random.seed(random_seed)
+
         grf = GRF()
-        sinmod = SINMOD()
-        grid = grf.get_grid()
-        grid_salinity = sinmod.get_data_at_locations(grid)[:, -1]
-        self.__field = np.hstack((grid, grid_salinity.reshape(-1, 1)))
-        self.__field_grid = self.__field[:, :3]
+        self.grid = grf.get_grid()
+        mu_prior = grf.get_mu()
+        Sigma_prior = grf.get_covariance_matrix()
+        self.mu_truth = mu_prior + np.linalg.cholesky(Sigma_prior) @ np.random.randn(len(mu_prior)).reshape(-1, 1)
+        self.__field = np.hstack((self.grid, self.mu_truth))
+        self.__field_grid = self.grid
         self.__field_grid_tree = KDTree(self.__field_grid)
         self.__field_salinity = self.__field[:, -1]
 

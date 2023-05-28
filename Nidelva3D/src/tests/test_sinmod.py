@@ -66,7 +66,7 @@ class TestSINMOD(TestCase):
     def test_get_data_for_gmrf_grid(self) -> None:
         from GMRF.GMRF import GMRF
         gmrf = GMRF()
-        grid = gmrf.get_gmrf_grid()
+        grid = gmrf.get_grid()
         df_sinmod = self.sinmod.get_data_at_locations(grid)
 
         import plotly

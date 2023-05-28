@@ -10,6 +10,7 @@ import plotly.graph_objects as go
 from plotly.subplots import make_subplots
 import numpy as np
 from usr_func.interpolate_3d import interpolate_3d
+from usr_func.checkfolder import checkfolder
 from usr_func.vectorize import vectorize
 
 
@@ -19,15 +20,17 @@ class Visualiser:
 
     def __init__(self, agent, figpath) -> None:
         self.agent = agent
+        checkfolder(figpath + "mu/")
+        checkfolder(figpath + "mvar/")
         self.figpath = figpath
         self.myopic = self.agent.myopic
-        self.gmrf = self.myopic.gmrf
-        self.grid = self.myopic.gmrf.get_gmrf_grid()
+        self.kernel = self.myopic.kernel
+        self.grid = self.myopic.kernel.get_grid()
 
         self.ind_remove_top_layer = np.where(self.grid[:, 2] > 0)[0]
         self.xgrid = self.grid[self.ind_remove_top_layer, 0]
         self.ygrid = self.grid[self.ind_remove_top_layer, 1]
-        self.rotated_angle = self.gmrf.get_rotated_angle()
+        self.rotated_angle = self.kernel.get_rotated_angle()
         self.xrotated = self.xgrid * np.cos(self.rotated_angle) - self.ygrid * np.sin(self.rotated_angle)
         self.yrotated = self.xgrid * np.sin(self.rotated_angle) + self.ygrid * np.cos(self.rotated_angle)
         self.xplot = self.yrotated
@@ -37,8 +40,8 @@ class Visualiser:
                             [0, 0, 1]])
 
     def plot_agent(self):
-        mu = self.gmrf.get_mu()
-        mvar = self.gmrf.get_mvar()
+        mu = self.kernel.get_mu()
+        mvar = self.kernel.get_mvar()
         self.cnt = self.agent.get_counter()
         mu[mu < 0] = 0
         ind_selected_to_plot = np.where(mu[self.ind_remove_top_layer] >= 0)[0]
