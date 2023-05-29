@@ -63,6 +63,7 @@ class Agent:
             grid = self.grid
             ind_surface = np.where(grid[:, 2] == 0.5)[0]
             truth_surface = truth[ind_surface]
+
             import matplotlib.pyplot as plt
             from matplotlib.pyplot import get_cmap
             plt.figure()
@@ -79,12 +80,14 @@ class Agent:
         Run the autonomous operation according to Sense, Plan, Act philosophy.
         """
         # c1: start the operation from scratch.
-        id_start = np.random.randint(0, len(self.myopic.waypoint_graph.get_waypoints()))
+        # id_start = np.random.randint(0, len(self.myopic.waypoint_graph.get_waypoints()))
+        id_start = self.myopic.waypoint_graph.get_ind_from_waypoint(self.__loc_start)
         id_curr = id_start
 
         # s1: setup the planner -> only once
         self.myopic.set_current_index(id_curr)
         self.myopic.set_next_index(id_curr)
+        self.myopic.set_pioneer_index(id_curr)
 
         # a1: move to current location
         self.auv.move_to_location(self.myopic.waypoint_graph.get_waypoint_from_ind(id_curr))

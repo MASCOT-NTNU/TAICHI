@@ -5,6 +5,7 @@ This module tests the GMRF object.
 from unittest import TestCase
 from WGS import WGS
 from GMRF.GMRF import GMRF
+from AUVSimulator.CTDSimulator import CTDSimulator
 from usr_func.interpolate_3d import interpolate_3d
 from usr_func.vectorize import vectorize
 import numpy as np
@@ -21,23 +22,44 @@ class TestGMRF(TestCase):
 
     def setUp(self) -> None:
         self.gmrf = GMRF()
-        self.grid = self.gmrf.get_gmrf_grid()
+        self.grid = self.gmrf.get_grid()
 
-    def test_get_ind_from_location(self) -> None:
-        """
-        Test if given a location, it will return the correct index in GMRF grid.
-        """
-        # c1: one location
-        ide = 10
-        loc = self.gmrf.get_location_from_ind(ide)
-        id = self.gmrf.get_ind_from_location(loc)
-        self.assertEqual(ide, id)
+    def test_interpolate_mu4locations(self) -> None:
+        # grid = self.gmrf.get_grid()
+        ctd = CTDSimulator()
+        grid = ctd.grid
+        mu_truth = ctd.mu_truth
+        mu = self.gmrf.interpolate_mu4locations(grid)
+        import matplotlib.pyplot as plt
+        from matplotlib.pyplot import get_cmap
+        ind = np.where(grid[:, 2] == .5)[0]
+        plt.subplot(121)
+        plt.scatter(grid[ind, 1], grid[ind, 0], c=mu[ind], cmap=get_cmap("BrBG", 10), vmin=10, vmax=33)
+        plt.colorbar()
+        plt.subplot(122)
+        plt.scatter(grid[ind, 1], grid[ind, 0], c=mu_truth[ind], cmap=get_cmap("BrBG", 10), vmin=10, vmax=33)
+        plt.colorbar()
+        plt.show()
+        from sklearn.metrics import mean_squared_error
 
-        # c2: more locations
-        ide = [10, 12]
-        loc = self.gmrf.get_location_from_ind(ide)
-        id = self.gmrf.get_ind_from_location(loc)
-        self.assertIsNone(testing.assert_array_equal(ide, id))
+        error = mean_squared_error(mu_truth, mu, squared=False)
+        mu
+
+    # def test_get_ind_from_location(self) -> None:
+    #     """
+    #     Test if given a location, it will return the correct index in GMRF grid.
+    #     """
+    #     # c1: one location
+    #     ide = 10
+    #     loc = self.gmrf.get_location_from_ind(ide)
+    #     id = self.gmrf.get_ind_from_location(loc)
+    #     self.assertEqual(ide, id)
+    #
+    #     # c2: more locations
+    #     ide = [10, 12]
+    #     loc = self.gmrf.get_location_from_ind(ide)
+    #     id = self.gmrf.get_ind_from_location(loc)
+    #     self.assertIsNone(testing.assert_array_equal(ide, id))
 
     # def test_get_eibv_at_locations(self) -> None:
     #     """

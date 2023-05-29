@@ -43,8 +43,10 @@ class Myopic3D(Planner):
                                             polygon_border=self.__POLYGON_BORDER,
                                             polygon_obstacles=self.__POLYGON_OBSTACLE)
         if kernel == "GMRF":
+            print("KERNEL: GMRF")
             self.kernel = GMRF()
         elif kernel == "GRF":
+            print("KERNEL: GRF")
             self.kernel = GRF()
         else:
             raise ValueError("Kernel must be either GMRF or GRF.")

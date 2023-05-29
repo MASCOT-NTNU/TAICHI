@@ -21,10 +21,11 @@ class Planner:
     """
     Planner module is the parent class of all the planners. It provides the basic functions for the planner.
     """
-    __id_curr = 0
-    __id_next = 0
-    __id_pion = 0
-    __traj = []
+    def __init__(self) -> None:
+        self.__id_curr = 0
+        self.__id_next = 0
+        self.__id_pion = 0
+        self.__traj = []
 
     def update_planner(self) -> None:
         """

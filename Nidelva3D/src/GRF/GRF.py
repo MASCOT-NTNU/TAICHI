@@ -74,7 +74,6 @@ class GRF:
         self.__load_cdf_interpolator()
         self.__mu_prior = self.__mu
         self.__Sigma_prior = self.__Sigma
-        self.__rotated_angle = 0
         self.__cnt = 0
 
     def __create_data_folders(self) -> None:
