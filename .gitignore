@@ -25,3 +25,13 @@ __pycache__/
 *.feather
 **/*.feather
 **/**.feather
+
+**.npz
+*.npz
+**/*.npz
+**/**.npz
+
+**.npy
+*.npy
+**/*.npy
+**/**.npy
