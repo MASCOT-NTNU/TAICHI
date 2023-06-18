@@ -58,7 +58,7 @@ class Agent:
         # s1: setup the planner -> only once
         self.myopic.set_current_index(id_curr)
         self.myopic.set_next_index(id_curr)
-        self.myopic.set_pioneer_index(id_curr)
+        # self.myopic.set_pioneer_index(id_curr)
 
         """ Set the AUV parameters """
         speed = self.auv.get_speed()
