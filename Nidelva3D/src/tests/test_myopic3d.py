@@ -20,7 +20,7 @@ class TestMyopic(TestCase):
     """
 
     def setUp(self) -> None:
-        self.myopic = Myopic3D(kernel="GRF")
+        self.myopic = Myopic3D(kernel="GMRF")
         self.waypoint_graph = self.myopic.waypoint_graph
         self.waypoints = self.waypoint_graph.get_waypoints()
 

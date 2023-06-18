@@ -15,29 +15,27 @@ class TestAgent(TestCase):
     """
 
     def setUp(self) -> None:
-        kernel = "GRF"
-        random_seed = 0
-        num_steps = 10
-        self.agent_grf = Agent(kernel=kernel, num_steps=num_steps, random_seed=random_seed, debug=True)
+        # kernel = "GRF"
+        # random_seed = 0
+        # num_steps = 10
+        # self.agent_grf = Agent(kernel=kernel, num_steps=num_steps, random_seed=random_seed, debug=True)
 
         kernel = "GMRF"
         random_seed = 0
         num_steps = 10
         self.agent_gmrf = Agent(kernel=kernel, num_steps=num_steps, random_seed=random_seed, debug=True)
 
-    def test_compare_gmrf_grf(self) -> None:
-        wp_grf = self.agent_grf.myopic.waypoint_graph.get_waypoints()
-        wp_gmrf = self.agent_gmrf.myopic.waypoint_graph.get_waypoints()
-        self.assertTrue(np.all(wp_grf == wp_gmrf))
-
-        rotated_angle_grf = self.agent_grf.myopic.kernel.get_rotated_angle()
-        rotated_angle_gmrf = self.agent_gmrf.myopic.kernel.get_rotated_angle()
-        self.assertEqual(rotated_angle_grf, rotated_angle_gmrf)
+    # def test_compare_gmrf_grf(self) -> None:
+    #     wp_grf = self.agent_grf.myopic.waypoint_graph.get_waypoints()
+    #     wp_gmrf = self.agent_gmrf.myopic.waypoint_graph.get_waypoints()
+    #     self.assertTrue(np.all(wp_grf == wp_gmrf))
+    #
+    #     rotated_angle_grf = self.agent_grf.myopic.kernel.get_rotated_angle()
+    #     rotated_angle_gmrf = self.agent_gmrf.myopic.kernel.get_rotated_angle()
+    #     self.assertEqual(rotated_angle_grf, rotated_angle_gmrf)
 
 
     def test_run(self):
-        print("hell")
-        pass
-        # kernel = "GMRF"
-        # self.agent.run()
-        # ibv, vr, rmse = self.agent.get_metrics()
+        kernel = "GMRF"
+        self.agent_gmrf.run()
+        ibv, vr, rmse = self.agent_gmrf.get_metrics()

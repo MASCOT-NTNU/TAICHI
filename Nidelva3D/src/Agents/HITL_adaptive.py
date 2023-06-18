@@ -2,6 +2,10 @@
 Agent object abstract the entire adaptive agent by wrapping all the other components together inside the class.
 It handles the procedure of the execution by integrating all essential modules and expand its functionalities.
 
+Author: Yaolin Ge
+Email: geyaolin@gmail.com
+Date: 2023-06-18
+
 The goal of the agent is to conduct the autonomous sampling operation by using the following procedure:
 - Sense
 - Plan
@@ -12,7 +16,8 @@ on the updated knowledge for the field. Therefore, it can act according to the p
 """
 
 from Planner.Myopic3D import Myopic3D
-from AUV.AUV1 import AUV
+from math import radians
+from AUV.AUV import AUV
 from WGS import WGS
 import numpy as np
 import time
@@ -23,7 +28,10 @@ import rospy
 
 class Agent:
 
-    __loc_start = np.array([63.449292, 10.415054, 0.5])
+    __loc_start_wgs = np.array([63.446308, 10.409656, 0.5])
+    x, y = WGS.latlon2xy(__loc_start_wgs[0], __loc_start_wgs[1])
+    __loc_start = np.array([x, y, 0.5])
+
     __NUM_STEP = 50
     __counter = 0
 
@@ -32,7 +40,7 @@ class Agent:
         Set up the planning strategies and the AUV simulator for the operation.
         """
         # s1: setup planner.
-        self.myopic = Myopic3D()
+        self.myopic = Myopic3D(kernel="GMRF")
 
         # s2: setup AUV.
         self.auv = AUV()
@@ -50,17 +58,20 @@ class Agent:
         # s1: setup the planner -> only once
         self.myopic.set_current_index(id_curr)
         self.myopic.set_next_index(id_curr)
+        self.myopic.set_pioneer_index(id_curr)
 
+        """ Set the AUV parameters """
         speed = self.auv.get_speed()
         max_submerged_time = self.auv.get_submerged_time()
         popup_time = self.auv.get_popup_time()
         phone = self.auv.get_phone_number()
         iridium = self.auv.get_iridium()
+        """ End of setting AUV parameters """
 
         # a1: move to current location
         wp = self.myopic.waypoint_graph.get_waypoint_from_ind(id_curr)
         lat, lon = WGS.xy2latlon(wp[0], wp[1])
-        self.auv.auv_handler.setWaypoint(math.radians(lat), math.radians(lon), wp[2], speed=speed)
+        self.auv.auv_handler.setWaypoint(radians(lat), radians(lon), np.abs(wp[2]), speed=speed)
 
         t_pop_last = time.time()
         update_time = rospy.get_time()
@@ -96,7 +107,7 @@ class Agent:
                         # p1: parallel move AUV to the first location
                         loc = self.myopic.waypoint_graph.get_waypoint_from_ind(ind)
                         lat, lon = WGS.xy2latlon(loc[0], loc[1])
-                        self.auv.auv_handler.setWaypoint(math.radians(lat), math.radians(lon), loc[2], speed=speed)
+                        self.auv.auv_handler.setWaypoint(radians(lat), radians(lon), np.abs(loc[2]), speed=speed)
                         update_time = rospy.get_time()
 
                         # s3: update planner -> so curr and next waypoint is updated
@@ -109,20 +120,20 @@ class Agent:
                         ctd_data = np.array(ctd_data)
 
                         # s6: assimilate data
-                        self.myopic.gmrf.assimilate_data(ctd_data)
+                        self.myopic.kernel.assimilate_data(ctd_data)
                         ctd_data = []
                     else:
                         ind = self.myopic.get_current_index()
                         loc = self.myopic.waypoint_graph.get_waypoint_from_ind(ind)
                         lat, lon = WGS.xy2latlon(loc[0], loc[1])
-                        self.auv.auv_handler.setWaypoint(math.radians(lat), math.radians(lon), loc[2], speed=speed)
+                        self.auv.auv_handler.setWaypoint(radians(lat), radians(lon), np.abs(loc[2]), speed=speed)
                         update_time = rospy.get_time()
 
                         # a1: gather AUV data
                         ctd_data = np.array(ctd_data)
 
                         # a2: update GMRF field
-                        self.myopic.gmrf.assimilate_data(ctd_data)
+                        self.myopic.kernel.assimilate_data(ctd_data)
                         ctd_data = []
 
                         # ss2: update planner

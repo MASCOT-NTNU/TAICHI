@@ -13,7 +13,6 @@ import numpy as np
 import os
 
 
-
 num_replicates = 2
 num_cores = 2
 num_steps = 10
