@@ -56,9 +56,15 @@ class Agent:
         id_curr = id_start
 
         # s1: setup the planner -> only once
+
+        id_cand = self.myopic.waypoint_graph.get_ind_neighbours(id_curr)
+        id_next = id_cand[np.random.randint(0, len(id_cand))]
+        id_cand = self.myopic.waypoint_graph.get_ind_neighbours(id_next)
+        id_pion = id_cand[np.random.randint(0, len(id_cand))]
+
         self.myopic.set_current_index(id_curr)
-        self.myopic.set_next_index(id_curr)
-        # self.myopic.set_pioneer_index(id_curr)
+        self.myopic.set_next_index(id_next)
+        self.myopic.set_pioneer_index(id_pion)
 
         """ Set the AUV parameters """
         speed = self.auv.get_speed()
@@ -99,58 +105,58 @@ class Agent:
                                                    phone_number=phone, iridium_dest=iridium)
                         t_pop_last = time.time()
 
-                    if self.__counter == 0:
-                        # s2: get next index using get_pioneer_waypoint
-                        ind = self.myopic.get_pioneer_waypoint_index()
-                        self.myopic.set_next_index(ind)
+                    # if self.__counter == 0:
+                    #     # s2: get next index using get_pioneer_waypoint
+                    #     ind = self.myopic.get_pioneer_waypoint_index()
+                    #     self.myopic.set_next_index(ind)
+                    #
+                    #     # p1: parallel move AUV to the first location
+                    #     loc = self.myopic.waypoint_graph.get_waypoint_from_ind(ind)
+                    #     lat, lon = WGS.xy2latlon(loc[0], loc[1])
+                    #     self.auv.auv_handler.setWaypoint(radians(lat), radians(lon), np.abs(loc[2]), speed=speed)
+                    #     update_time = rospy.get_time()
+                    #
+                    #     # s3: update planner -> so curr and next waypoint is updated
+                    #     self.myopic.update_planner()
+                    #
+                    #     # s4: get pioneer waypoint
+                    #     self.myopic.get_pioneer_waypoint_index()
+                    #
+                    #     # s5: obtain CTD data
+                    #     ctd_data = np.array(ctd_data)
+                    #
+                    #     # s6: assimilate data
+                    #     self.myopic.kernel.assimilate_data(ctd_data)
+                    #     ctd_data = []
+                    # else:
+                    ind = self.myopic.get_current_index()
+                    loc = self.myopic.waypoint_graph.get_waypoint_from_ind(ind)
+                    lat, lon = WGS.xy2latlon(loc[0], loc[1])
+                    self.auv.auv_handler.setWaypoint(radians(lat), radians(lon), np.abs(loc[2]), speed=speed)
+                    update_time = rospy.get_time()
 
-                        # p1: parallel move AUV to the first location
-                        loc = self.myopic.waypoint_graph.get_waypoint_from_ind(ind)
-                        lat, lon = WGS.xy2latlon(loc[0], loc[1])
-                        self.auv.auv_handler.setWaypoint(radians(lat), radians(lon), np.abs(loc[2]), speed=speed)
-                        update_time = rospy.get_time()
+                    # a1: gather AUV data
+                    ctd_data = np.array(ctd_data)
 
-                        # s3: update planner -> so curr and next waypoint is updated
-                        self.myopic.update_planner()
+                    # a2: update GMRF field
+                    self.myopic.kernel.assimilate_data(ctd_data)
+                    ctd_data = []
 
-                        # s4: get pioneer waypoint
-                        self.myopic.get_pioneer_waypoint_index()
+                    # ss2: update planner
+                    self.myopic.update_planner()
 
-                        # s5: obtain CTD data
-                        ctd_data = np.array(ctd_data)
+                    # ss3: plan ahead.
+                    self.myopic.get_pioneer_waypoint_index()
 
-                        # s6: assimilate data
-                        self.myopic.kernel.assimilate_data(ctd_data)
-                        ctd_data = []
-                    else:
-                        ind = self.myopic.get_current_index()
-                        loc = self.myopic.waypoint_graph.get_waypoint_from_ind(ind)
-                        lat, lon = WGS.xy2latlon(loc[0], loc[1])
-                        self.auv.auv_handler.setWaypoint(radians(lat), radians(lon), np.abs(loc[2]), speed=speed)
-                        update_time = rospy.get_time()
+                    if self.__counter >= self.__NUM_STEP:
+                        self.auv.auv_handler.PopUp(sms=True, iridium=True, popup_duration=popup_time,
+                                                   phone_number=phone,
+                                                   iridium_dest=iridium)  # self.ada_state = "surfacing"
 
-                        # a1: gather AUV data
-                        ctd_data = np.array(ctd_data)
-
-                        # a2: update GMRF field
-                        self.myopic.kernel.assimilate_data(ctd_data)
-                        ctd_data = []
-
-                        # ss2: update planner
-                        self.myopic.update_planner()
-
-                        # ss3: plan ahead.
-                        self.myopic.get_pioneer_waypoint_index()
-
-                        if self.__counter >= self.__NUM_STEP:
-                            self.auv.auv_handler.PopUp(sms=True, iridium=True, popup_duration=popup_time,
-                                                       phone_number=phone,
-                                                       iridium_dest=iridium)  # self.ada_state = "surfacing"
-
-                            print("Mission complete! Congrates!")
-                            self.auv.send_SMS_mission_complete()
-                            rospy.signal_shutdown("Mission completed!!!")
-                            break
+                        print("Mission complete! Congrates!")
+                        self.auv.send_SMS_mission_complete()
+                        rospy.signal_shutdown("Mission completed!!!")
+                        break
                     print("counter: ", self.__counter)
                     print(self.myopic.get_current_index())
                     print(self.myopic.get_trajectory_indices())
