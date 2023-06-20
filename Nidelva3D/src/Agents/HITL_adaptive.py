@@ -98,6 +98,7 @@ class Agent:
                                                    phone_number=phone, iridium_dest=iridium)
                         t_pop_last = time.time()
 
+                print("vehicle state: ", self.auv.auv_handler.getState())
                 if ((self.auv.auv_handler.getState() == "waiting") and
                         (rospy.get_time() - update_time) > 5.):
                     if t_now - t_pop_last >= max_submerged_time:
@@ -132,6 +133,7 @@ class Agent:
                     ind = self.myopic.get_current_index()
                     loc = self.myopic.waypoint_graph.get_waypoint_from_ind(ind)
                     lat, lon = WGS.xy2latlon(loc[0], loc[1])
+                    print("Moving to: ", lat, lon, np.abs(loc[2]))
                     self.auv.auv_handler.setWaypoint(radians(lat), radians(lon), np.abs(loc[2]), speed=speed)
                     update_time = rospy.get_time()
 
@@ -139,14 +141,23 @@ class Agent:
                     ctd_data = np.array(ctd_data)
 
                     # a2: update GMRF field
+                    t1 = time.time()
                     self.myopic.kernel.assimilate_data(ctd_data)
+                    t2 = time.time()
+                    print("Time to update GMRF: ", t2 - t1)
                     ctd_data = []
 
                     # ss2: update planner
+                    t1 = time.time()
                     self.myopic.update_planner()
+                    t2 = time.time()
+                    print("Time to update planner: ", t2 - t1)
 
                     # ss3: plan ahead.
+                    t1 = time.time()
                     self.myopic.get_pioneer_waypoint_index()
+                    t2 = time.time()
+                    print("Time to plan ahead: ", t2 - t1)
 
                     if self.__counter >= self.__NUM_STEP:
                         self.auv.auv_handler.PopUp(sms=True, iridium=True, popup_duration=popup_time,
