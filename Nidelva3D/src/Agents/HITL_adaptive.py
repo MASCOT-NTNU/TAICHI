@@ -32,7 +32,7 @@ class Agent:
     x, y = WGS.latlon2xy(__loc_start_wgs[0], __loc_start_wgs[1])
     __loc_start = np.array([x, y, 0.5])
 
-    __NUM_STEP = 50
+    __NUM_STEP = 40
     __counter = 0
 
     def __init__(self) -> None:

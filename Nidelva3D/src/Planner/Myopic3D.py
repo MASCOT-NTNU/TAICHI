@@ -40,7 +40,7 @@ class Myopic3D(Planner):
 
     __POLYGON_OBSTACLE = [[[]]]
     __DEPTHS = np.array([0.5, 1.5, 2.5, 3.5, 4.5, 5.5])
-    __NEIGHBOUR_DISTANCE = 120
+    __NEIGHBOUR_DISTANCE = 240
 
     def __init__(self, kernel: str = "GMRF") -> None:
         super().__init__()
@@ -87,6 +87,7 @@ class Myopic3D(Planner):
 
         # s2: get all neighbours.
         id_neighbours = self.waypoint_graph.get_ind_neighbours(id_next)
+        print("All neighbours: ", id_neighbours)
 
         # s3: smooth neighbour locations.
         id_smooth = []
@@ -108,6 +109,7 @@ class Myopic3D(Planner):
             id_pioneer: designed pioneer waypoint index.
         """
         id_smooth, id_neighbours = self.get_candidates_indices()
+        print("id_smooth: ", id_smooth)
         if not is_list_empty(id_smooth):
             # s1: get candidate locations
             locs = self.waypoint_graph.get_waypoint_from_ind(id_smooth)
