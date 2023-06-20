@@ -26,7 +26,7 @@ class spde:
         """
         self.M = 45
         self.N = 45
-        self.P = 10
+        self.P = 6
         self.n = self.M*self.N*self.P
         self.mu = np.load(FILEPATH + 'models/prior.npy')
         self.Stot = sparse.eye(self.n).tocsc()
@@ -122,12 +122,12 @@ class spde:
         """Set threshold for Excursion set
         """
         ind = np.load(FILEPATH + 'models/boundary.npy')
-        self.threshold = 25.8 #self.mu[ind].mean()
+        self.threshold = self.mu[ind].mean()
         print('Treshold is set to %.2f'%(self.threshold))
 
     def getThreshold(self) -> np.ndarray:
         """ Get updated threshold """
         ind = np.load(FILEPATH + 'models/boundary.npy')
-        threshold = 25.8 #self.mu[ind].mean()
+        threshold = self.mu[ind].mean()
         return threshold
 
