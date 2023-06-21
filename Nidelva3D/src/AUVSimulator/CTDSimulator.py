@@ -26,6 +26,7 @@ class CTDSimulator:
         self.grid = grf.get_grid()
         mu_prior = grf.get_mu()
         Sigma_prior = grf.get_covariance_matrix()
+        # self.mu_truth = np.array([np.random.uniform(10, 20) for i in range(self.grid.shape[0])]).reshape(-1, 1)
         self.mu_truth = mu_prior + np.linalg.cholesky(Sigma_prior) @ np.random.randn(len(mu_prior)).reshape(-1, 1)
         self.__field = np.hstack((self.grid, self.mu_truth))
         self.__field_grid = self.grid

@@ -12,7 +12,7 @@ on the updated knowledge for the field. Therefore, it can act according to the p
 """
 import math
 from Planner.ZigZag import ZigZag
-from AUV.AUV2 import AUV
+from AUV.AUV import AUV
 from WGS import WGS
 import numpy as np
 import time

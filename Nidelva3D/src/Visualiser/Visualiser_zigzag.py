@@ -22,7 +22,7 @@ class Visualiser:
         self.figpath = figpath
         self.gmrf = GMRF()
         self.path = self.agent.zz.get_zigzag_path()
-        self.grid = self.gmrf.get_gmrf_grid()
+        self.grid = self.gmrf.get_grid()
 
         self.ind_remove_top_layer = np.where(self.grid[:, 2] > 0)[0]
         self.xgrid = self.grid[self.ind_remove_top_layer, 0]

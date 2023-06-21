@@ -20,9 +20,9 @@ class TestAgent(TestCase):
         # num_steps = 10
         # self.agent_grf = Agent(kernel=kernel, num_steps=num_steps, random_seed=random_seed, debug=True)
 
-        kernel = "GMRF"
-        random_seed = 0
-        num_steps = 15
+        kernel = "GRF"
+        random_seed = 2023030
+        num_steps = 50
         self.agent_gmrf = Agent(kernel=kernel, num_steps=num_steps, random_seed=random_seed, debug=True)
 
     # def test_compare_gmrf_grf(self) -> None:
@@ -34,9 +34,7 @@ class TestAgent(TestCase):
     #     rotated_angle_gmrf = self.agent_gmrf.myopic.kernel.get_rotated_angle()
     #     self.assertEqual(rotated_angle_grf, rotated_angle_gmrf)
 
-
     def test_run(self):
-        kernel = "GMRF"
         self.agent_gmrf.run()
         ibv, vr, rmse = self.agent_gmrf.get_metrics()
         ibv

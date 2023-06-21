@@ -31,7 +31,7 @@ class TestZigZag(TestCase):
         self.zz.construct_path()
         path = self.zz.get_zigzag_path()
         path[:, 2] = -path[:, 2]
-        grid = self.g.get_gmrf_grid()
+        grid = self.g.get_grid()
         grid[:, 2] = -grid[:, 2]
 
         import plotly
@@ -111,7 +111,8 @@ class TestZigZag(TestCase):
             ),
         ))
 
-        id = 150
+        # id = 150
+        id = 70
         fig.add_trace(go.Scatter3d(
             x=[path[id, 1]],
             y=[path[id, 0]],
@@ -123,7 +124,7 @@ class TestZigZag(TestCase):
             ),
         ))
 
-        id = 200
+        id = 80
         fig.add_trace(go.Scatter3d(
             x=[path[id, 1]],
             y=[path[id, 0]],

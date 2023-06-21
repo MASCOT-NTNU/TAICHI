@@ -18,7 +18,7 @@ class Visualiser:
 
     agent = None
 
-    def __init__(self, agent, figpath) -> None:
+    def __init__(self, agent: 'Agent', figpath: 'str') -> None:
         self.agent = agent
         checkfolder(figpath + "mu/")
         checkfolder(figpath + "mvar/")

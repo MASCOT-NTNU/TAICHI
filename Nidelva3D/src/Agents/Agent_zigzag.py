@@ -43,7 +43,7 @@ class Agent:
         """
 
         # a0: get starting location
-        path = self.zz.get_zigzag_path()
+        path = self.zz.get_zigzag_path()[10:-20]
         loc_start = path[0]
 
         # a1: move to current location
