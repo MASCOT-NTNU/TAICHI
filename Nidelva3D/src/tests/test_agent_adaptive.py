@@ -22,7 +22,7 @@ class TestAgent(TestCase):
 
         kernel = "GMRF"
         random_seed = 0
-        num_steps = 10
+        num_steps = 15
         self.agent_gmrf = Agent(kernel=kernel, num_steps=num_steps, random_seed=random_seed, debug=True)
 
     # def test_compare_gmrf_grf(self) -> None:
@@ -39,3 +39,4 @@ class TestAgent(TestCase):
         kernel = "GMRF"
         self.agent_gmrf.run()
         ibv, vr, rmse = self.agent_gmrf.get_metrics()
+        ibv
