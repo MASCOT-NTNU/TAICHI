@@ -137,7 +137,7 @@ class GMRF:
         """
         # ss1: save raw ctd
         df = pd.DataFrame(dataset, columns=['x', 'y', 'z', 'salinity'])
-        df.to_csv(self.__foldername_ctd + "D_{:03d}.csv".format(self.__cnt))
+        df.to_csv(self.__foldername_ctd + "D_{:03d}.csv".format(self.__cnt), index=False)
         ind_remove_noise_layer = np.where(np.abs(dataset[:, 2]) >= self.__MIN_DEPTH_FOR_DATA_ASSIMILATION)[0]
         dataset = dataset[ind_remove_noise_layer, :]
         distance_min, ind_min_distance = self.__gmrf_grid_kdtree.query(dataset[:, :3], k=1)
@@ -188,7 +188,8 @@ class GMRF:
         marginal_variance = self.__spde.candidate(ks=indices_candidates)
         prior_variance = self.__spde.mvar()
 
-        eibv = np.zeros_like(indices_candidates)
+        eibv = []
+        # eibv2 = []
         for i in range(len(indices_candidates)):
             variance_reduction = prior_variance - marginal_variance[:, i]
             mu_input = self.__spde.mu
@@ -198,9 +199,13 @@ class GMRF:
 
             # eibv_temp1, EBV1 = self.__get_eibv_analytical(mu=mu_input, sigma_diag=sigma_diag_input,
             #                                                vr_diag=vr_diag_input, threshold=threshold)
-            eibv[i] = self.__get_eibv_analytical_fast(mu=mu_input, sigma_diag=sigma_diag_input,
-                                                      vr_diag=vr_diag_input, threshold=threshold)
-        return eibv
+            eibv_temp = self.__get_eibv_analytical_fast(mu=mu_input, sigma_diag=sigma_diag_input,
+                                                        vr_diag=vr_diag_input, threshold=threshold)
+            eibv.append(eibv_temp)
+            # eibv_temp2 = self.__get_eibv_analytical(mu=mu_input, sigma_diag=sigma_diag_input, vr_diag=vr_diag_input,
+            #                                         threshold=threshold)
+            # eibv2.append(eibv_temp2)
+        return np.array(eibv)
 
     def __get_eibv_analytical(self, mu: np.ndarray, sigma_diag: np.ndarray, vr_diag: np.ndarray,
                               threshold: float) -> float:
@@ -236,7 +241,7 @@ class GMRF:
         return eibv
 
     def __get_eibv_analytical_fast(self, mu: np.ndarray, sigma_diag: np.ndarray,
-                                   vr_diag: np.ndarray, threshold: float) -> float:
+                                   vr_diag: np.ndarray, threshold: float) -> np.ndarray:
         """
         Calculate the eibv using the analytical formula but using a loaded cdf dataset.
         """
@@ -322,6 +327,10 @@ class GMRF:
         Interpolate the conditional mean of the GMRF field at given locations.
         """
         return self.__spde.mu[self.__gmrf_grid_kdtree.query(locations)[1]]
+
+    def get_spde(self) -> 'SPDE':
+        """ Return SPDE """
+        return self.__spde
 
 
 if __name__ == "__main__":

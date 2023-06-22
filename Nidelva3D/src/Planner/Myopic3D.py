@@ -88,12 +88,15 @@ class Myopic3D(Planner):
         # s2: get all neighbours.
         id_neighbours = self.waypoint_graph.get_ind_neighbours(id_next)
 
+        # s3: get visited locations.
+        id_visited = self.get_trajectory_indices()
+
         # s3: smooth neighbour locations.
         id_smooth = []
         for iid in id_neighbours:
             wp_n = self.waypoint_graph.get_waypoint_from_ind(iid)
             vec2 = self.waypoint_graph.get_vector_between_two_waypoints(wp_next, wp_n)
-            if vec1.T @ vec2 >= 0:
+            if vec1.T @ vec2 >= 0 and iid not in id_visited:
                 id_smooth.append(iid)
         return id_smooth, id_neighbours
 
@@ -113,6 +116,7 @@ class Myopic3D(Planner):
             locs = self.waypoint_graph.get_waypoint_from_ind(id_smooth)
             # s2: get eibv at that waypoint
             eibv = self.kernel.get_eibv_at_locations(locs)
+            print("EIBV: ", eibv)
             id_pioneer = id_smooth[np.argmin(eibv)]
             # wp_pioneer = locs[np.argmin(eibv)]
         else:

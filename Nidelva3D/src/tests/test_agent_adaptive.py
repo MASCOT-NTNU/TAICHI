@@ -20,9 +20,9 @@ class TestAgent(TestCase):
         # num_steps = 10
         # self.agent_grf = Agent(kernel=kernel, num_steps=num_steps, random_seed=random_seed, debug=True)
 
-        kernel = "GRF"
-        random_seed = 2023030
-        num_steps = 50
+        kernel = "GMRF"
+        random_seed = 5
+        num_steps = 40
         self.agent_gmrf = Agent(kernel=kernel, num_steps=num_steps, random_seed=random_seed, debug=True)
 
     # def test_compare_gmrf_grf(self) -> None:
