@@ -6,6 +6,7 @@ Email: geyaolin@gmail.com
 Date: 2023-05-28
 
 """
+from GRF.GRF import GRF
 from GMRF.GMRF import GMRF
 import numpy as np
 from typing import Union
@@ -27,12 +28,19 @@ class CTDSimulator:
         self.mu_truth = np.zeros([len(self.grid), 1])
         depths = np.unique(self.grid[:, -1])
 
-        values = [1, 2, 3, 10, 15, 30]
-        for i in range(len(depths)):
-            ind = np.where(self.grid[:, -1] == depths[i])[0]
-            self.mu_truth[ind] = np.ones([len(ind), 1]) * values[i]
+        # values = [1, 2, 3, 10, 15, 30]
+        # for i in range(len(depths)):
+        #     ind = np.where(self.grid[:, -1] == depths[i])[0]
+        #     self.mu_truth[ind] = np.ones([len(ind), 1]) * values[i]
         # self.mu_truth = np.array([np.random.uniform(10, 20) for i in range(self.grid.shape[0])]).reshape(-1, 1)
+
+        grf = GRF()
+        self.grid = grf.get_grid()
+        mu_prior = grf.get_mu()
+        Sigma_prior = grf.get_covariance_matrix()
+        self.mu_truth = mu_prior + np.linalg.cholesky(Sigma_prior) @ np.random.randn(len(mu_prior)).reshape(-1, 1)
         # self.mu_truth = mu_prior + np.linalg.cholesky(Sigma_prior) @ np.random.randn(len(mu_prior)).reshape(-1, 1)
+
         self.__field = np.hstack((self.grid, self.mu_truth))
         self.__field_grid = self.grid
         self.__field_grid_tree = KDTree(self.__field_grid)
