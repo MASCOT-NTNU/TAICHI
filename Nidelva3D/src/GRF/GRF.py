@@ -58,8 +58,7 @@ class GRF:
         Set up the Gaussian Random Field (GRF) kernel.
         """
         self.__spde = spde()
-        filepath_sinmod = "/Users/yaolin/Library/CloudStorage/OneDrive-NTNU/MASCOT_PhD/" \
-                          "Data/Nidelva/SINMOD_DATA/samples/samples_2020.05.04.nc"
+        filepath_sinmod = os.getcwd() + "/../sinmod/grf_samples_2022.05.04.nc"
         self.__sinmod = SINMOD(filepath_sinmod)
 
         """ Empirical parameters """

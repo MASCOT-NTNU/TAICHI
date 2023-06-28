@@ -6,6 +6,8 @@ Email: geyaolin@gmail.com
 Date: 2023-05-28
 
 """
+import os
+
 from SINMOD import SINMOD
 import numpy as np
 from typing import Union
@@ -22,8 +24,7 @@ class CTDSimulator:
         """
         np.random.seed(random_seed)
 
-        filepath_sinmod = "/Users/yaolin/Library/CloudStorage/OneDrive-NTNU/MASCOT_PhD/Data/" \
-                          "Nidelva/SINMOD_DATA/samples/samples_2022.09.08.nc"
+        filepath_sinmod = os.getcwd() + "/../sinmod/truth_samples_2022.09.08.nc"
         self.sinmod = SINMOD(filepath_sinmod)
         self.data_sinmod = self.sinmod.get_data()
 

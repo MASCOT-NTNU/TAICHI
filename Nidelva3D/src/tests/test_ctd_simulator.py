@@ -18,8 +18,7 @@ class TestCTDSimulator(TestCase):
         self.ctd = CTDSimulator()
         # path = os.getcwd() + "/AUVSimulator/simulated_truth_wgs.csv"
         # self.truth = pd.read_csv(path).to_numpy()
-        filepath_sinmod = "/Users/yaolin/Library/CloudStorage/OneDrive-NTNU/MASCOT_PhD/Data/" \
-                          "Nidelva/SINMOD_DATA/samples/samples_2022.09.08.nc"
+        filepath_sinmod = os.getcwd() + "/../sinmod/truth_samples_2022.09.08.nc"
         self.sinmod = SINMOD(filepath_sinmod)
 
     def test_get_salinity_at_loc(self):

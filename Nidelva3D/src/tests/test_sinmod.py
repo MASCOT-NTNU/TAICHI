@@ -1,6 +1,6 @@
 """ Unit test for SINMOD data handler
 """
-
+import os
 from unittest import TestCase
 from SINMOD import SINMOD
 from WGS import WGS
@@ -17,7 +17,7 @@ class TestSINMOD(TestCase):
 
     """
     def setUp(self) -> None:
-        sinmod_path = "/Users/yaolin/Library/CloudStorage/OneDrive-NTNU/MASCOT_PhD/Data/Nidelva/SINMOD_DATA/samples/samples_2022.09.08.nc"
+        sinmod_path = os.getcwd() + "/../sinmod/truth_samples_2022.09.08.nc"
         self.sinmod = SINMOD(sinmod_path)
 
     def test_get_data_from_sinmod(self) -> None:
