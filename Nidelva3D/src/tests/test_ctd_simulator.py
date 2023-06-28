@@ -18,7 +18,9 @@ class TestCTDSimulator(TestCase):
         self.ctd = CTDSimulator()
         # path = os.getcwd() + "/AUVSimulator/simulated_truth_wgs.csv"
         # self.truth = pd.read_csv(path).to_numpy()
-        self.sinmod = SINMOD()
+        filepath_sinmod = "/Users/yaolin/Library/CloudStorage/OneDrive-NTNU/MASCOT_PhD/Data/" \
+                          "Nidelva/SINMOD_DATA/samples/samples_2022.09.08.nc"
+        self.sinmod = SINMOD(filepath_sinmod)
 
     def test_get_salinity_at_loc(self):
         """
@@ -33,8 +35,7 @@ class TestCTDSimulator(TestCase):
         z = .5 * np.ones_like(x)
         loc = np.vstack((x, y, z)).T
         v = self.ctd.get_salinity_at_loc(loc)
-        loc_wgs = np.vstack((lat, lon, z)).T
-        ve = self.sinmod.get_data_at_locations(loc_wgs)[:, -1]
+        ve = self.sinmod.get_data_at_locations(loc)[:, -1]
         self.assertIsNone(testing.assert_array_almost_equal(v, ve))
 
         # # c2: value within the field

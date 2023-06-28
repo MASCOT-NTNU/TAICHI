@@ -17,7 +17,8 @@ class TestSINMOD(TestCase):
 
     """
     def setUp(self) -> None:
-        self.sinmod = SINMOD()
+        sinmod_path = "/Users/yaolin/Library/CloudStorage/OneDrive-NTNU/MASCOT_PhD/Data/Nidelva/SINMOD_DATA/samples/samples_2022.09.08.nc"
+        self.sinmod = SINMOD(sinmod_path)
 
     def test_get_data_from_sinmod(self) -> None:
         # c1: one depth layer

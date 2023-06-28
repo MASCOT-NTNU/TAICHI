@@ -6,8 +6,7 @@ Email: geyaolin@gmail.com
 Date: 2023-05-28
 
 """
-from GRF.GRF import GRF
-from GMRF.GMRF import GMRF
+from SINMOD import SINMOD
 import numpy as np
 from typing import Union
 from pykdtree.kdtree import KDTree
@@ -23,10 +22,15 @@ class CTDSimulator:
         """
         np.random.seed(random_seed)
 
-        gmrf = GMRF()
-        self.grid = gmrf.get_grid()
-        self.mu_truth = np.zeros([len(self.grid), 1])
-        depths = np.unique(self.grid[:, -1])
+        filepath_sinmod = "/Users/yaolin/Library/CloudStorage/OneDrive-NTNU/MASCOT_PhD/Data/" \
+                          "Nidelva/SINMOD_DATA/samples/samples_2022.09.08.nc"
+        self.sinmod = SINMOD(filepath_sinmod)
+        self.data_sinmod = self.sinmod.get_data()
+
+        # gmrf = GMRF()
+        # self.grid = gmrf.get_grid()
+        # self.mu_truth = np.zeros([len(self.grid), 1])
+        # depths = np.unique(self.grid[:, -1])
 
         # values = [1, 2, 3, 10, 15, 30]
         # for i in range(len(depths)):
@@ -34,17 +38,17 @@ class CTDSimulator:
         #     self.mu_truth[ind] = np.ones([len(ind), 1]) * values[i]
         # self.mu_truth = np.array([np.random.uniform(10, 20) for i in range(self.grid.shape[0])]).reshape(-1, 1)
 
-        grf = GRF()
-        self.grid = grf.get_grid()
-        mu_prior = grf.get_mu()
-        Sigma_prior = grf.get_covariance_matrix()
-        self.mu_truth = mu_prior + np.linalg.cholesky(Sigma_prior) @ np.random.randn(len(mu_prior)).reshape(-1, 1)
+        # grf = GRF()
+        # self.grid = grf.get_grid()
+        # mu_prior = grf.get_mu()
+        # Sigma_prior = grf.get_covariance_matrix()
+        # self.mu_truth = mu_prior + np.linalg.cholesky(Sigma_prior) @ np.random.randn(len(mu_prior)).reshape(-1, 1)
         # self.mu_truth = mu_prior + np.linalg.cholesky(Sigma_prior) @ np.random.randn(len(mu_prior)).reshape(-1, 1)
 
-        self.__field = np.hstack((self.grid, self.mu_truth))
-        self.__field_grid = self.grid
-        self.__field_grid_tree = KDTree(self.__field_grid)
-        self.__field_salinity = self.__field[:, -1]
+        # self.__field = np.hstack((self.grid, self.mu_truth))
+        # self.__field_grid = self.grid
+        self.__field_grid_tree = KDTree(self.data_sinmod[:, :-1])
+        self.__field_salinity = self.data_sinmod[:, -1]
 
     def __get_ind_from_location(self, loc: np.ndarray) -> Union[int, np.ndarray, None]:
         """

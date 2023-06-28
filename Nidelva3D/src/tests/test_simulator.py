@@ -14,7 +14,7 @@ import numpy as np
 class TestSimulator(TestCase):
 
     def setUp(self) -> None:
-        num_steps = 40
+        num_steps = 20
         random_seed = 55
         debug = True
         self.simulator = Simulator(num_steps=num_steps, random_seed=random_seed, debug=debug)
@@ -37,8 +37,8 @@ class TestSimulator(TestCase):
         plt.legend()
         plt.title("VR")
         plt.subplot(133)
-        plt.plot(rmse[:, 0], label="GRF")
-        plt.plot(rmse[:, 1], label="GMRF")
+        plt.plot(rmse[:, 0]/np.amax(rmse[:, 0]), label="GRF")
+        plt.plot(rmse[:, 1]/np.amax(rmse[:, 1]), label="GMRF")
         plt.legend()
         plt.title("RMSE")
         plt.show()

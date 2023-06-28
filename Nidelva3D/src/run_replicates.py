@@ -19,7 +19,7 @@ num_steps = 10
 
 seeds = np.random.choice(10000, num_replicates, replace=False)
 
-datapath = os.getcwd() + "/../mafia2_simulation_result/"
+datapath = os.getcwd() + "/../mafia2_simulation_result/S_eibv/"
 
 
 def run_replicates(i: int = 0):

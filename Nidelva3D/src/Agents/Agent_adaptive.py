@@ -40,13 +40,15 @@ class Agent:
 
         # s1: setup planner.
         self.myopic = Myopic3D(kernel=kernel)
+        self.grid = self.myopic.kernel.get_grid()
 
         # s2: setup AUV simulator.
         self.auv = AUVSimulator(random_seed=random_seed)
-        self.grid = self.auv.ctd.grid
+        ctd = self.auv.ctd
+        self.mu_truth = ctd.get_salinity_at_loc(self.grid)
+        self.mu_truth[self.mu_truth < 0] = 0
 
         # s3, set up the metrics.
-        self.__mu_truth = self.auv.ctd.mu_truth
         self.__threshold = self.myopic.kernel.get_threshold()
         self.__ibv = np.zeros([self.__num_steps, 1])
         self.__vr = np.zeros([self.__num_steps, 1])
@@ -57,9 +59,9 @@ class Agent:
         if self.debug:
             # s3: setup Visualiser.
             figpath = os.getcwd() + "/../fig/Myopic3D/" + str(random_seed) + "/" + kernel + "/"
-            check_folder = checkfolder(figpath)
+            checkfolder(figpath)
 
-            truth = self.auv.ctd.mu_truth
+            truth = self.mu_truth
             grid = self.grid
             ind_surface = np.where(grid[:, 2] == 0.5)[0]
             truth_surface = truth[ind_surface]
@@ -175,9 +177,21 @@ class Agent:
         sigma_diag = self.myopic.kernel.get_mvar()
         self.__ibv[self.__counter] = self.__get_ibv(self.__threshold, mu, sigma_diag)
         self.__vr[self.__counter] = np.sum(sigma_diag)
-        self.__rmse[self.__counter] = mean_squared_error(self.__mu_truth,
-                                                         self.myopic.kernel.interpolate_mu4locations(self.grid),
-                                                         squared=False)
+
+        mu[mu < 0] = 0
+        # print("RMSE: ", mean_squared_error(self.mu_truth.flatten(), mu.flatten(), squared=False))
+        #
+        # import matplotlib.pyplot as plt
+        # plt.figure()
+        # plt.subplot(1, 2, 1)
+        # plt.plot(self.mu_truth, label="truth")
+        # plt.title("Truth")
+        # plt.subplot(1, 2, 2)
+        # plt.plot(mu, label="mu")
+        # plt.title("mu")
+        # plt.show()
+
+        self.__rmse[self.__counter] = mean_squared_error(self.mu_truth.flatten(), mu.flatten(), squared=False)
 
     @staticmethod
     def __get_ibv(threshold: float, mu: np.ndarray, sigma_diag: np.ndarray) -> np.ndarray:
