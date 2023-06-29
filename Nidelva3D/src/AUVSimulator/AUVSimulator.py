@@ -94,10 +94,11 @@ class AUVSimulator:
         """
         x_start, y_start, z_start = self.__loc_prev
         x_end, y_end, z_end = self.__loc
-        # dx = x_end - x_start
-        # dy = y_end - y_start
-        # dz = z_end - z_start
-        # dist = np.sqrt(dx ** 2 + dy ** 2 + dz ** 2)
+        dx = x_end - x_start
+        dy = y_end - y_start
+        dz = z_end - z_start
+        dist = np.sqrt(dx ** 2 + dy ** 2 + dz ** 2)
+        dt = dist / self.__speed
         # N = int(np.ceil(dist / self.__speed) * 2)
         N = 20  # default number of data points
         if N != 0:
@@ -105,7 +106,8 @@ class AUVSimulator:
             y_path = np.linspace(y_start, y_end, N)
             z_path = np.linspace(z_start, z_end, N)
             loc = np.stack((x_path, y_path, z_path), axis=1)
-            sal = self.ctd.get_salinity_at_loc(loc)
+            # sal = self.ctd.get_salinity_at_loc(loc)
+            sal = self.ctd.get_salinity_at_dt_loc(dt, loc)
             self.__ctd_data = np.stack((x_path, y_path, z_path, sal), axis=1)
 
     def arrive(self):

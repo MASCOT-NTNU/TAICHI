@@ -7,7 +7,7 @@ Date: 2023-05-28
 
 """
 import os
-
+from datetime import datetime
 from SINMOD import SINMOD
 import numpy as np
 from typing import Union
@@ -25,6 +25,7 @@ class CTDSimulator:
         np.random.seed(random_seed)
 
         filepath_sinmod = os.getcwd() + "/../sinmod/truth_samples_2022.09.08.nc"
+        self.timestamp = datetime(2022, 9, 8, 0, 0, 0).timestamp()
         self.sinmod = SINMOD(filepath_sinmod)
         self.data_sinmod = self.sinmod.get_data()
 
@@ -83,6 +84,14 @@ class CTDSimulator:
             return self.__field_salinity[ind]
         else:
             return None
+
+    def get_salinity_at_dt_loc(self, dt: float, loc: np.ndarray) -> None:
+        """
+        Get CTD measurement at a specific location and timestamp.
+        """
+        self.timestamp += dt
+        self.sinmod.get_data_at_timestamp_and_locations()
+        pass
 
 
 if __name__ == "__main__":
