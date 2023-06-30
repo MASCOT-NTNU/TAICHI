@@ -25,7 +25,7 @@ class AUVSimulator:
     __arrival = False
     __popup = False
 
-    def __init__(self, random_seed: int = 0):
+    def __init__(self, random_seed: int = 0) -> None:
         self.ctd = CTDSimulator(random_seed=random_seed)
         self.messenger = Messenger()
 

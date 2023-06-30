@@ -45,7 +45,7 @@ class Agent:
         # s2: setup AUV simulator.
         self.auv = AUVSimulator(random_seed=random_seed)
         ctd = self.auv.ctd
-        self.mu_truth = ctd.get_salinity_at_loc(self.grid)
+        self.mu_truth = ctd.get_salinity_at_dt_loc(dt=0, loc=self.grid)
         self.mu_truth[self.mu_truth < 0] = 0
 
         # s3, set up the metrics.
