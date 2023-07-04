@@ -179,18 +179,6 @@ class Agent:
         self.__vr[self.__counter] = np.sum(sigma_diag)
 
         mu[mu < 0] = 0
-        # print("RMSE: ", mean_squared_error(self.mu_truth.flatten(), mu.flatten(), squared=False))
-        #
-        # import matplotlib.pyplot as plt
-        # plt.figure()
-        # plt.subplot(1, 2, 1)
-        # plt.plot(self.mu_truth, label="truth")
-        # plt.title("Truth")
-        # plt.subplot(1, 2, 2)
-        # plt.plot(mu, label="mu")
-        # plt.title("mu")
-        # plt.show()
-
         self.__rmse[self.__counter] = mean_squared_error(self.mu_truth.flatten(), mu.flatten(), squared=False)
 
     @staticmethod

@@ -29,7 +29,7 @@ class CTDSimulator:
         np.random.seed(random_seed)
         filepath_sinmod = filepath
         # date_string = filepath_sinmod.split("/")[-1].split("_")[-1][:-3]
-        self.timestamp = datetime.strptime("2022-09-08 00:00:00", "%Y-%m-%d %H:%M:%S").timestamp()
+        self.timestamp = datetime.strptime("2022-09-08 10:00:00", "%Y-%m-%d %H:%M:%S").timestamp()
         self.sinmod = SINMOD(filepath_sinmod)
 
         self.timestamp_sinmod = self.sinmod.get_timestamp()

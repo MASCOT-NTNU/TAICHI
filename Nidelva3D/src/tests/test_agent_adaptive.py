@@ -16,7 +16,7 @@ class TestAgent(TestCase):
 
     def setUp(self) -> None:
         kernel = "GRF"
-        random_seed = 8
+        random_seed = 9
         num_steps = 10
         debug = True
         self.agent_grf = Agent(kernel=kernel, num_steps=num_steps, random_seed=random_seed, debug=debug)
