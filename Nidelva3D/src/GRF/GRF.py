@@ -153,7 +153,7 @@ class GRF:
     def __load_cdf_interpolator(self) -> None:
         t1 = time.time()
         self.__rho_values, self.__z1_values, self.__z2_values, self.__cdf_values = joblib.load(
-            os.getcwd() + "/GMRF/interpolator_large.joblib")
+            os.getcwd() + "/GMRF/interpolator_medium.joblib")
         self.__interpolators = [
             RegularGridInterpolator((self.__z1_values, self.__z2_values), self.__cdf_values[i, :, :],
                                     bounds_error=False, fill_value=None) for i in range(self.__rho_values.size)]

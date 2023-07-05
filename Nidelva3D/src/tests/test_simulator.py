@@ -14,8 +14,8 @@ import numpy as np
 class TestSimulator(TestCase):
 
     def setUp(self) -> None:
-        num_steps = 15
-        random_seed = 14
+        num_steps = 20
+        random_seed = 15
         debug = True
         self.simulator = Simulator(num_steps=num_steps, random_seed=random_seed, debug=debug)
 
@@ -27,13 +27,17 @@ class TestSimulator(TestCase):
 
         plt.figure(figsize=(25, 8))
         plt.subplot(131)
-        plt.plot(ibv[:, 0]/np.amax(ibv[:, 0]), label="GRF")
-        plt.plot(ibv[:, 1]/np.amax(ibv[:, 1]), label="GMRF")
+        plt.plot(ibv[:, 0], label="GRF")
+        plt.plot(ibv[:, 1], label="GMRF")
+        # plt.plot(ibv[:, 0]/np.amax(ibv[:, 0]), label="GRF")
+        # plt.plot(ibv[:, 1]/np.amax(ibv[:, 1]), label="GMRF")
         plt.legend()
         plt.title("IBV")
         plt.subplot(132)
-        plt.plot(vr[:, 0]/np.amax(vr[:, 0]), label="GRF")
-        plt.plot(vr[:, 1]/np.amax(vr[:, 1]), label="GMRF")
+        plt.plot(vr[:, 0], label="GRF")
+        plt.plot(vr[:, 1], label="GMRF")
+        # plt.plot(vr[:, 0]/np.amax(vr[:, 0]), label="GRF")
+        # plt.plot(vr[:, 1]/np.amax(vr[:, 1]), label="GMRF")
         plt.legend()
         plt.title("VR")
         plt.subplot(133)
