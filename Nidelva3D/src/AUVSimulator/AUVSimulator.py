@@ -20,7 +20,7 @@ from AUVSimulator.Messenger import Messenger
 class AUVSimulator:
     __loc = np.array([0, 0, 0])
     __loc_prev = np.array([0, 0, 0])
-    __speed = 1.2
+    __speed = 1.0
     __ctd_data = np.empty([0, 4])
     __arrival = False
     __popup = False

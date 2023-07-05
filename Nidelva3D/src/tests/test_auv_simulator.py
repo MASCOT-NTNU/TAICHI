@@ -23,10 +23,11 @@ class TestAUVSimulator(TestCase):
         self.polygon_border_wgs = pd.read_csv(os.getcwd() + "/polygon_border.csv").to_numpy()
         x, y = WGS.latlon2xy(self.polygon_border_wgs[:, 0], self.polygon_border_wgs[:, 1])
         self.polygon_border = np.stack((x, y), axis=1)
+        plt.figure()
+        plt.plot(y, x, 'k-.')
+        plt.show()
 
     def test_get_ctd_data_at_dt_loc(self) -> None:
-
-
         def plot_data_on_path(loc, counter=0):
             self.auv.move_to_location(loc)
             df = self.auv.get_ctd_data()

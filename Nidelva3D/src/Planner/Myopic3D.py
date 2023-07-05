@@ -40,7 +40,7 @@ class Myopic3D(Planner):
 
     __POLYGON_OBSTACLE = [[[]]]
     __DEPTHS = np.array([0.5, 1.5, 2.5, 3.5, 4.5, 5.5])
-    __NEIGHBOUR_DISTANCE = 240
+    __NEIGHBOUR_DISTANCE = 120
 
     def __init__(self, kernel: str = "GMRF") -> None:
         super().__init__()
