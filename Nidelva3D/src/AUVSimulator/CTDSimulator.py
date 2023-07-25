@@ -21,7 +21,7 @@ class CTDSimulator:
     CTD module handles the simulated truth value at each specific location.
     """
     def __init__(self, random_seed: int = 0,
-                 filepath: str = os.getcwd() + "/../sinmod/truth_samples_2022.09.09.nc") -> None:
+                 filepath: str = os.getcwd() + "/../sinmod/truth_samples_2022.06.21.nc") -> None:
         """
         Set up the CTD simulated truth field.
         """
@@ -29,7 +29,7 @@ class CTDSimulator:
         np.random.seed(random_seed)
         filepath_sinmod = filepath
         # date_string = filepath_sinmod.split("/")[-1].split("_")[-1][:-3]
-        self.timestamp = datetime.strptime("2022-09-09 10:00:00", "%Y-%m-%d %H:%M:%S").timestamp()
+        self.timestamp = datetime.strptime("2022-06-21 10:00:00", "%Y-%m-%d %H:%M:%S").timestamp()
         self.sinmod = SINMOD(filepath_sinmod)
 
         self.timestamp_sinmod = self.sinmod.get_timestamp()
@@ -37,6 +37,9 @@ class CTDSimulator:
         self.salinity_sinmod = self.sinmod.get_salinity()
         self.grid_sinmod = self.sinmod.get_data()[:, :3]
         self.grid_sinmod_tree = KDTree(self.grid_sinmod)
+
+        # Update the static truth field
+        self.truth_static_salinity = self.sinmod.get_data()[:, -1]
 
     def get_salinity_at_dt_loc(self, dt: float, loc: np.ndarray) -> Union[np.ndarray, None]:
         """
@@ -57,38 +60,45 @@ class CTDSimulator:
         print("Query salinity at timestamp and location takes: ", time() - t1)
         return sorted_salinity[ind_loc, 0] + np.random.normal() * self.sigma
 
-    def __get_ind_from_location(self, loc: np.ndarray) -> Union[int, np.ndarray, None]:
-        """
-        Args:
-            loc: np.array([xp, yp, zp])
-        Returns: index of the closest waypoint.
-        """
-        if len(loc) > 0:
-            dm = loc.ndim
-            if dm == 1:
-                return self.__field_grid_tree.query(loc.reshape(1, -1))[1]
-            elif dm == 2:
-                return self.__field_grid_tree.query(loc)[1]
-            else:
-                return None
-        else:
-            return None
-
     def get_salinity_at_loc(self, loc: np.ndarray) -> Union[np.ndarray, None]:
         """
         Get CTD measurement at a specific location.
-
-        Args:
-            loc: np.array([[x, y, z]])
-
-        Returns:
-            salinity value at loc
         """
-        ind = self.__get_ind_from_location(loc)
-        if ind is not None:
-            return self.__field_salinity[ind]
-        else:
-            return None
+        dist, ind_loc = self.grid_sinmod_tree.query(loc)
+        return self.truth_static_salinity[ind_loc] + np.random.normal() * self.sigma
+
+    # def __get_ind_from_location(self, loc: np.ndarray) -> Union[int, np.ndarray, None]:
+    #     """
+    #     Args:
+    #         loc: np.array([xp, yp, zp])
+    #     Returns: index of the closest waypoint.
+    #     """
+    #     if len(loc) > 0:
+    #         dm = loc.ndim
+    #         if dm == 1:
+    #             return self.__field_grid_tree.query(loc.reshape(1, -1))[1]
+    #         elif dm == 2:
+    #             return self.__field_grid_tree.query(loc)[1]
+    #         else:
+    #             return None
+    #     else:
+    #         return None
+
+    # def get_salinity_at_loc(self, loc: np.ndarray) -> Union[np.ndarray, None]:
+    #     """
+    #     Get CTD measurement at a specific location.
+    #
+    #     Args:
+    #         loc: np.array([[x, y, z]])
+    #
+    #     Returns:
+    #         salinity value at loc
+    #     """
+    #     ind = self.__get_ind_from_location(loc)
+    #     if ind is not None:
+    #         return self.__field_salinity[ind]
+    #     else:
+    #         return None
 
 
 if __name__ == "__main__":

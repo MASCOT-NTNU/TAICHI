@@ -15,9 +15,11 @@ class TestSimulator(TestCase):
 
     def setUp(self) -> None:
         num_steps = 20
-        random_seed = 15
+        random_seed = 16
         debug = True
-        self.simulator = Simulator(num_steps=num_steps, random_seed=random_seed, debug=debug)
+        temporal_truth = True
+        self.simulator = Simulator(num_steps=num_steps, random_seed=random_seed,
+                                   temporal_truth=temporal_truth, debug=debug)
 
     def test_run_simulator(self) -> None:
         df = self.simulator.run()

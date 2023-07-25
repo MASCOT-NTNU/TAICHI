@@ -20,9 +20,11 @@ import pandas as pd
 
 class Simulator:
 
-    def __init__(self, num_steps: int = 5, random_seed: int = 0, debug: bool = False) -> None:
-        self.grf_agent = Agent(kernel="GRF", num_steps=num_steps, random_seed=random_seed, debug=debug)
-        self.gmrf_agent = Agent(kernel="GMRF", num_steps=num_steps, random_seed=random_seed, debug=debug)
+    def __init__(self, num_steps: int = 5, random_seed: int = 0, temporal_truth: bool = True, debug: bool = False) -> None:
+        self.grf_agent = Agent(kernel="GRF", num_steps=num_steps, random_seed=random_seed,
+                               temporal_truth=temporal_truth, debug=debug)
+        self.gmrf_agent = Agent(kernel="GMRF", num_steps=num_steps, random_seed=random_seed,
+                                temporal_truth=temporal_truth, debug=debug)
 
     def run(self) -> 'pd.DataFrame':
         self.grf_agent.run()

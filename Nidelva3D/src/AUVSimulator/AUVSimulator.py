@@ -25,7 +25,8 @@ class AUVSimulator:
     __arrival = False
     __popup = False
 
-    def __init__(self, random_seed: int = 0) -> None:
+    def __init__(self, random_seed: int = 0, temporal_truth: bool = True) -> None:
+        self.temporal_truth = temporal_truth
         self.ctd = CTDSimulator(random_seed=random_seed)
         self.messenger = Messenger()
 
@@ -107,7 +108,12 @@ class AUVSimulator:
             z_path = np.linspace(z_start, z_end, N)
             loc = np.stack((x_path, y_path, z_path), axis=1)
             # sal = self.ctd.get_salinity_at_loc(loc)
-            sal = self.ctd.get_salinity_at_dt_loc(dt, loc)
+            if self.temporal_truth:
+                print("Temporal truth is on.")
+                sal = self.ctd.get_salinity_at_dt_loc(dt, loc)
+            else:
+                print("Temporal truth is off.")
+                sal = self.ctd.get_salinity_at_loc(loc)
             self.__ctd_data = np.stack((x_path, y_path, z_path, sal), axis=1)
 
     def arrive(self):

@@ -13,9 +13,11 @@ import numpy as np
 import os
 
 
-num_replicates = 2
-num_cores = 2
-num_steps = 10
+num_replicates = 5
+num_cores = 5
+num_steps = 20
+temporal_truth = True
+debug = True
 
 seeds = np.random.choice(10000, num_replicates, replace=False)
 
@@ -31,7 +33,7 @@ def run_replicates(i: int = 0):
     folderpath = datapath + "R_{:03d}/".format(i)
     checkfolder(folderpath)
 
-    simulator = Simulator(num_steps=num_steps, random_seed=seeds[i])
+    simulator = Simulator(num_steps=num_steps, random_seed=seeds[i], temporal_truth=temporal_truth, debug=debug)
     df = simulator.run()
     df.to_csv(folderpath + "metrics.csv", index=False)
 

@@ -32,10 +32,12 @@ class Agent:
     __counter = 0
 
     def __init__(self, kernel: str = "GMRF", num_steps: int = 5,
-                 random_seed: int = 0, debug: bool = True) -> None:
+                 random_seed: int = 0, temporal_truth: bool = True, debug: bool = True) -> None:
         """
         Set up the planning strategies and the AUV simulator for the operation.
         """
+        self.temporal_truth = temporal_truth
+
         print("Number of steps: ", num_steps)
         self.__num_steps = num_steps
 
@@ -44,9 +46,12 @@ class Agent:
         self.grid = self.myopic.kernel.get_grid()
 
         # s2: setup AUV simulator.
-        self.auv = AUVSimulator(random_seed=random_seed)
+        self.auv = AUVSimulator(random_seed=random_seed, temporal_truth=temporal_truth)
         ctd = self.auv.ctd
-        self.mu_truth = ctd.get_salinity_at_dt_loc(dt=0, loc=self.grid)
+        if self.temporal_truth:
+            self.mu_truth = ctd.get_salinity_at_dt_loc(dt=0, loc=self.grid)
+        else:
+            self.mu_truth = ctd.get_salinity_at_loc(loc=self.grid)
         self.mu_truth[self.mu_truth < 0] = 0
 
         # s3, set up the metrics.
