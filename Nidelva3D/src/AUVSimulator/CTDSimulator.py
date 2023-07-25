@@ -21,7 +21,7 @@ class CTDSimulator:
     CTD module handles the simulated truth value at each specific location.
     """
     def __init__(self, random_seed: int = 0,
-                 filepath: str = os.getcwd() + "/../sinmod/truth_samples_2021.05.29.nc") -> None:
+                 filepath: str = os.getcwd() + "/../sinmod/truth_samples_2022.09.09.nc") -> None:
         """
         Set up the CTD simulated truth field.
         """
@@ -29,7 +29,7 @@ class CTDSimulator:
         np.random.seed(random_seed)
         filepath_sinmod = filepath
         # date_string = filepath_sinmod.split("/")[-1].split("_")[-1][:-3]
-        self.timestamp = datetime.strptime("2021-05-29 10:00:00", "%Y-%m-%d %H:%M:%S").timestamp()
+        self.timestamp = datetime.strptime("2022-09-09 10:00:00", "%Y-%m-%d %H:%M:%S").timestamp()
         self.sinmod = SINMOD(filepath_sinmod)
 
         self.timestamp_sinmod = self.sinmod.get_timestamp()
