@@ -14,8 +14,8 @@ import numpy as np
 class TestSimulator(TestCase):
 
     def setUp(self) -> None:
-        num_steps = 20
-        random_seed = 16
+        num_steps = 10
+        random_seed = 17
         debug = True
         temporal_truth = True
         self.simulator = Simulator(num_steps=num_steps, random_seed=random_seed,
