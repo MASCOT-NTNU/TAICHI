@@ -29,10 +29,12 @@ class Simulator:
     def run(self) -> 'pd.DataFrame':
         self.grf_agent.run()
         self.gmrf_agent.run()
-        self.ibv_grf, self.vr_grf, self.rmse_grf = self.grf_agent.get_metrics()
-        self.ibv_gmrf, self.vr_gmrf, self.rmse_gmrf = self.gmrf_agent.get_metrics()
-        df = np.hstack((self.ibv_grf, self.vr_grf, self.rmse_grf, self.ibv_gmrf, self.vr_gmrf, self.rmse_gmrf))
-        df = pd.DataFrame(df, columns=["ibv_grf", "vr_grf", "rmse_grf", "ibv_gmrf", "vr_gmrf", "rmse_gmrf"])
+        self.ibv_grf, self.vr_grf, self.rmse_grf, self.corr_grf, self.ce_grf = self.grf_agent.get_metrics()
+        self.ibv_gmrf, self.vr_gmrf, self.rmse_gmrf, self.corr_gmrf, self.ce_gmrf = self.gmrf_agent.get_metrics()
+        df = np.hstack((self.ibv_grf, self.vr_grf, self.rmse_grf, self.corr_grf, self.ce_grf,
+                        self.ibv_gmrf, self.vr_gmrf, self.rmse_gmrf, self.corr_gmrf, self.ce_gmrf))
+        df = pd.DataFrame(df, columns=["ibv_grf", "vr_grf", "rmse_grf", "corr_grf", "ce_grf",
+                                       "ibv_gmrf", "vr_gmrf", "rmse_gmrf", "corr_gmrf", "ce_gmrf"])
         return df
 
 

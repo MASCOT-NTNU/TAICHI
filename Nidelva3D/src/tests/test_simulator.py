@@ -14,8 +14,8 @@ import numpy as np
 class TestSimulator(TestCase):
 
     def setUp(self) -> None:
-        num_steps = 10
-        random_seed = 18
+        num_steps = 20
+        random_seed = 19
         debug = True
         temporal_truth = True
         self.simulator = Simulator(num_steps=num_steps, random_seed=random_seed,
@@ -26,29 +26,41 @@ class TestSimulator(TestCase):
         ibv = np.stack((df["ibv_grf"], df["ibv_gmrf"]), axis=1)
         vr = np.stack((df["vr_grf"], df["vr_gmrf"]), axis=1)
         rmse = np.stack((df["rmse_grf"], df["rmse_gmrf"]), axis=1)
+        corr = np.stack((df["corr_grf"], df["corr_gmrf"]), axis=1)
+        ce = np.stack((df["ce_grf"], df["ce_gmrf"]), axis=1)
 
-        plt.figure(figsize=(25, 8))
-        plt.subplot(131)
+        plt.figure(figsize=(40, 8))
+        plt.subplot(151)
         plt.plot(ibv[:, 0], label="GRF")
         plt.plot(ibv[:, 1], label="GMRF")
         # plt.plot(ibv[:, 0]/np.amax(ibv[:, 0]), label="GRF")
         # plt.plot(ibv[:, 1]/np.amax(ibv[:, 1]), label="GMRF")
         plt.legend()
         plt.title("IBV")
-        plt.subplot(132)
+        plt.subplot(152)
         plt.plot(vr[:, 0], label="GRF")
         plt.plot(vr[:, 1], label="GMRF")
         # plt.plot(vr[:, 0]/np.amax(vr[:, 0]), label="GRF")
         # plt.plot(vr[:, 1]/np.amax(vr[:, 1]), label="GMRF")
         plt.legend()
         plt.title("VR")
-        plt.subplot(133)
+        plt.subplot(153)
         plt.plot(rmse[:, 0], label="GRF")
         plt.plot(rmse[:, 1], label="GMRF")
         # plt.plot(rmse[:, 0]/np.amax(rmse[:, 0]), label="GRF")
         # plt.plot(rmse[:, 1]/np.amax(rmse[:, 1]), label="GMRF")
         plt.legend()
         plt.title("RMSE")
+        plt.subplot(154)
+        plt.plot(corr[:, 0], label="GRF")
+        plt.plot(corr[:, 1], label="GMRF")
+        plt.legend()
+        plt.title("Correlation")
+        plt.subplot(155)
+        plt.plot(ce[:, 0], label="GRF")
+        plt.plot(ce[:, 1], label="GMRF")
+        plt.legend()
+        plt.title("CE")
         plt.show()
         print("stop")
 

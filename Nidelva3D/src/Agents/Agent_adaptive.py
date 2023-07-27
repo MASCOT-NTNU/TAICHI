@@ -59,6 +59,8 @@ class Agent:
         self.__ibv = np.zeros([self.__num_steps, 1])
         self.__vr = np.zeros([self.__num_steps, 1])
         self.__rmse = np.zeros([self.__num_steps, 1])
+        self.__ce = np.zeros([self.__num_steps, 1])
+        self.__corr_coef = np.zeros([self.__num_steps, 1])
         self.update_metrics()
 
         self.debug = debug
@@ -186,6 +188,35 @@ class Agent:
 
         mu[mu < 0] = 0
         self.__rmse[self.__counter] = mean_squared_error(self.mu_truth.flatten(), mu.flatten(), squared=False)
+        self.__corr_coef[self.__counter] = self.__cal_corr_coef(self.mu_truth.flatten(), mu.flatten())
+        self.__ce[self.__counter] = self.__cal_classification_error(self.mu_truth.flatten(),
+                                                                    mu.flatten(), self.__threshold)
+
+    @staticmethod
+    def __cal_corr_coef(x, y) -> float:
+        """
+        Calculate the correlation coefficient between two vectors.
+
+        Method:
+        1. Calculate the covariance matrix between two vectors.
+        2. Calculate the correlation coefficient.
+
+        """
+        d1 = x - np.mean(x)
+        d2 = y - np.mean(y)
+        cov = d1.T @ d2
+        corr = cov / np.linalg.norm(d1) / np.linalg.norm(d2)
+        return corr
+
+    @staticmethod
+    def __cal_classification_error(x, y, threshold) -> float:
+        """
+        Calculate the classification error between two vectors.
+        """
+        X = np.where(x > threshold, 1, 0)
+        Y = np.where(y > threshold, 1, 0)
+        CE = np.sum(np.abs(X - Y)) / len(X)
+        return CE
 
     @staticmethod
     def __get_ibv(threshold: float, mu: np.ndarray, sigma_diag: np.ndarray) -> np.ndarray:
@@ -204,7 +235,7 @@ class Agent:
         return self.__counter
 
     def get_metrics(self) -> tuple:
-        return self.__ibv, self.__vr, self.__rmse
+        return self.__ibv, self.__vr, self.__rmse, self.__corr_coef, self.__ce
 
 
 if __name__ == "__main__":
