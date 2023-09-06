@@ -24,7 +24,7 @@ class spde:
             method (int, optional): If model should contain fixed effects on the SINMOD mean. Defaults to 1.
             prev (bool, optional): Loading previous model (used to clear memory)
         """
-        self.M = 45
+        self.M = 50
         self.N = 45
         self.P = 6
         self.n = self.M*self.N*self.P
