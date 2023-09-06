@@ -29,14 +29,14 @@ class Myopic3D(Planner):
     """
     Myopic3D planner determines the next waypoint according to minimum EIBV criterion.
     """
-    # __BOX = np.load(os.getcwd() + "/GMRF/models/grid.npy")
-    # __POLYGON = __BOX[:, 2:]
-    # __POLYGON_XY = np.stack((WGS.latlon2xy(__POLYGON[:, 0], __POLYGON[:, 1])), axis=1)
-    # __POLYGON_BORDER = sort_polygon_vertices(__POLYGON_XY)
+    __BOX = np.load(os.getcwd() + "/GMRF/models/grid.npy")
+    __POLYGON = __BOX[:, 2:]
+    __POLYGON_XY = np.stack((WGS.latlon2xy(__POLYGON[:, 0], __POLYGON[:, 1])), axis=1)
+    __POLYGON_BORDER = sort_polygon_vertices(__POLYGON_XY)
 
-    __POLYGON_BORDER_WGS = pd.read_csv(os.getcwd() + "/polygon_border.csv").to_numpy()
-    x, y = WGS.latlon2xy(__POLYGON_BORDER_WGS[:, 0], __POLYGON_BORDER_WGS[:, 1])
-    __POLYGON_BORDER = np.stack((x, y), axis=1)
+    # __POLYGON_BORDER_WGS = pd.read_csv(os.getcwd() + "/polygon_border.csv").to_numpy()
+    # x, y = WGS.latlon2xy(__POLYGON_BORDER_WGS[:, 0], __POLYGON_BORDER_WGS[:, 1])
+    # __POLYGON_BORDER = np.stack((x, y), axis=1)
 
     __POLYGON_OBSTACLE = [[[]]]
     __DEPTHS = np.array([0.5, 1.5, 2.5, 3.5, 4.5, 5.5])

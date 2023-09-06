@@ -13,8 +13,8 @@ import numpy as np
 import os
 
 
-num_replicates = 5
-num_cores = 5
+num_replicates = 1
+num_cores = 1
 num_steps = 20
 temporal_truth = True
 debug = True

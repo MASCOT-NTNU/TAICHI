@@ -15,14 +15,17 @@ class TestAgent(TestCase):
     """
 
     def setUp(self) -> None:
-        kernel = "GRF"
-        random_seed = 9
-        num_steps = 10
+
+        random_seed = 21
+        num_steps = 30
         debug = True
+
+        kernel = "GRF"
         self.agent_grf = Agent(kernel=kernel, num_steps=num_steps, random_seed=random_seed, debug=debug)
 
         kernel = "GMRF"
         self.agent_gmrf = Agent(kernel=kernel, num_steps=num_steps, random_seed=random_seed, debug=debug)
+
 
     # def test_compare_gmrf_grf(self) -> None:
     #     wp_grf = self.agent_grf.myopic.waypoint_graph.get_waypoints()
@@ -35,8 +38,9 @@ class TestAgent(TestCase):
 
     def test_run(self):
         self.agent_gmrf.run()
-        ibv_gmrf, vr_gmrf, rmse_gmrf = self.agent_gmrf.get_metrics()
         self.agent_grf.run()
+
+        ibv_gmrf, vr_gmrf, rmse_gmrf = self.agent_gmrf.get_metrics()
         ibv_grf, vr_grf, rmse_grf = self.agent_grf.get_metrics()
         import matplotlib.pyplot as plt
         plt.figure(figsize=(25, 8))

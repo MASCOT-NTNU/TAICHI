@@ -27,7 +27,8 @@ import os
 
 class Agent:
 
-    __loc_start = np.array([2200, 800, 0.5])   # s1, starting location
+    __loc_start = np.array([2500, 1000, 0.5])   # s1, starting location
+    # __loc_start = np.array([2200, 800, 0.5])   # s1, starting location
     # __loc_start = np.array([3500, 800, 0.5])   # s1, starting location
     __counter = 0
 
