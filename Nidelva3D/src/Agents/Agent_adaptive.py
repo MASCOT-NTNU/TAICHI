@@ -184,6 +184,7 @@ class Agent:
     def update_metrics(self) -> None:
         mu = self.myopic.kernel.get_mu()
         sigma_diag = self.myopic.kernel.get_mvar()
+        self.mu_truth = self.auv.ctd.get_salinity_at_dt_loc(dt=0, loc=self.grid)
         self.__ibv[self.__counter] = self.__get_ibv(self.__threshold, mu, sigma_diag)
         self.__vr[self.__counter] = np.sum(sigma_diag)
 
