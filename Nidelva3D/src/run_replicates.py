@@ -13,7 +13,7 @@ import numpy as np
 import os
 
 
-num_replicates = 100
+num_replicates = 1
 num_cores = 1
 num_steps = 20
 temporal_truth = True
