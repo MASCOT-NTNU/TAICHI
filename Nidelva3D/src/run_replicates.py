@@ -17,7 +17,7 @@ num_replicates = 1
 num_cores = 1
 num_steps = 20
 temporal_truth = True
-debug = True
+debug = False
 
 seeds = np.random.choice(10000, num_replicates, replace=False)
 
