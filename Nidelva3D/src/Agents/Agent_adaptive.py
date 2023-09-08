@@ -18,7 +18,7 @@ from Planner.Myopic3D import Myopic3D
 from AUVSimulator.AUVSimulator import AUVSimulator
 from Visualiser.Visualiser_myopic import Visualiser
 from usr_func.checkfolder import checkfolder
-from sklearn.metrics import mean_squared_error
+from sklearn.metrics import mean_squared_error, roc_auc_score
 from scipy.stats import norm
 import numpy as np
 import time
@@ -59,9 +59,13 @@ class Agent:
         self.__threshold = self.myopic.kernel.get_threshold()
         self.__ibv = np.zeros([self.__num_steps, 1])
         self.__vr = np.zeros([self.__num_steps, 1])
-        self.__rmse = np.zeros([self.__num_steps, 1])
-        self.__ce = np.zeros([self.__num_steps, 1])
+        self.__rmse_temporal = np.zeros([self.__num_steps, 1])
+        self.__rmse_static = np.zeros([self.__num_steps, 1])
+        self.__ce_temporal = np.zeros([self.__num_steps, 1])
+        self.__ce_static = np.zeros([self.__num_steps, 1])
         self.__corr_coef = np.zeros([self.__num_steps, 1])
+        self.__auc_temporal = np.zeros([self.__num_steps, 1])
+        self.__auc_static = np.zeros([self.__num_steps, 1])
         self.update_metrics()
 
         self.debug = debug
@@ -184,15 +188,24 @@ class Agent:
     def update_metrics(self) -> None:
         mu = self.myopic.kernel.get_mu()
         sigma_diag = self.myopic.kernel.get_mvar()
-        self.mu_truth = self.auv.ctd.get_salinity_at_dt_loc(dt=0, loc=self.grid)
         self.__ibv[self.__counter] = self.__get_ibv(self.__threshold, mu, sigma_diag)
         self.__vr[self.__counter] = np.sum(sigma_diag)
 
         mu[mu < 0] = 0
-        self.__rmse[self.__counter] = mean_squared_error(self.mu_truth.flatten(), mu.flatten(), squared=False)
+
+        # s0, update static metrics
+        self.__rmse_static[self.__counter] = mean_squared_error(self.mu_truth.flatten(), mu.flatten(), squared=False)
+        self.__ce_static[self.__counter] = self.__cal_classification_error(self.mu_truth.flatten(),
+                                                                             mu.flatten(), self.__threshold)
+        self.__auc_static[self.__counter] = self.__cal_auc_roc(self.__threshold, mu, self.mu_truth, sigma_diag)
+
+        # s1, update temporal metrics
+        self.mu_truth = self.auv.ctd.get_salinity_at_dt_loc(dt=0, loc=self.grid)
+        self.__rmse_temporal[self.__counter] = mean_squared_error(self.mu_truth.flatten(), mu.flatten(), squared=False)
         self.__corr_coef[self.__counter] = self.__cal_corr_coef(self.mu_truth.flatten(), mu.flatten())
-        self.__ce[self.__counter] = self.__cal_classification_error(self.mu_truth.flatten(),
-                                                                    mu.flatten(), self.__threshold)
+        self.__ce_temporal[self.__counter] = self.__cal_classification_error(self.mu_truth.flatten(),
+                                                                             mu.flatten(), self.__threshold)
+        self.__auc_temporal[self.__counter] = self.__cal_auc_roc(self.__threshold, mu, self.mu_truth, sigma_diag)
 
     @staticmethod
     def __cal_corr_coef(x, y) -> float:
@@ -221,6 +234,16 @@ class Agent:
         return CE
 
     @staticmethod
+    def __cal_auc_roc(threshold: float, mu: np.ndarray, mu_truth: np.ndarray, sigma_diag: np.ndarray) -> float:
+        """
+        Calculate the area under the curve between two vectors.
+        """
+        p = norm.cdf(threshold, mu.squeeze(), np.sqrt(sigma_diag))
+        truth_labels = np.where(mu_truth < threshold, 1, 0)
+        auc_roc = roc_auc_score(truth_labels, p)
+        return auc_roc
+
+    @staticmethod
     def __get_ibv(threshold: float, mu: np.ndarray, sigma_diag: np.ndarray) -> np.ndarray:
         """ !!! Be careful with dimensions, it can lead to serious problems.
         !!! Be careful with standard deviation is not variance, so it does not cause significant issues tho.
@@ -237,7 +260,8 @@ class Agent:
         return self.__counter
 
     def get_metrics(self) -> tuple:
-        return self.__ibv, self.__vr, self.__rmse, self.__corr_coef, self.__ce
+        return self.__ibv, self.__vr, self.__rmse_temporal, self.__corr_coef, self.__ce_temporal, \
+            self.__auc_temporal, self.__rmse_static, self.__ce_static, self.__auc_static
 
 
 if __name__ == "__main__":

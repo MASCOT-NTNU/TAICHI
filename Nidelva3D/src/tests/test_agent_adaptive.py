@@ -16,7 +16,7 @@ class TestAgent(TestCase):
 
     def setUp(self) -> None:
 
-        random_seed = 21
+        random_seed = 22
         num_steps = 30
         debug = True
 
@@ -25,7 +25,6 @@ class TestAgent(TestCase):
 
         kernel = "GMRF"
         self.agent_gmrf = Agent(kernel=kernel, num_steps=num_steps, random_seed=random_seed, debug=debug)
-
 
     # def test_compare_gmrf_grf(self) -> None:
     #     wp_grf = self.agent_grf.myopic.waypoint_graph.get_waypoints()

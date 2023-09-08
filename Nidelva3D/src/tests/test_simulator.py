@@ -14,8 +14,8 @@ import numpy as np
 class TestSimulator(TestCase):
 
     def setUp(self) -> None:
-        num_steps = 20
-        random_seed = 19
+        num_steps = 30
+        random_seed = 25
         debug = True
         temporal_truth = True
         self.simulator = Simulator(num_steps=num_steps, random_seed=random_seed,
@@ -28,6 +28,7 @@ class TestSimulator(TestCase):
         rmse = np.stack((df["rmse_grf"], df["rmse_gmrf"]), axis=1)
         corr = np.stack((df["corr_grf"], df["corr_gmrf"]), axis=1)
         ce = np.stack((df["ce_grf"], df["ce_gmrf"]), axis=1)
+        auc = np.stack((df["auc_grf"], df["auc_gmrf"]), axis=1)
 
         plt.figure(figsize=(40, 8))
         plt.subplot(151)
@@ -52,10 +53,10 @@ class TestSimulator(TestCase):
         plt.legend()
         plt.title("RMSE")
         plt.subplot(154)
-        plt.plot(corr[:, 0], label="GRF")
-        plt.plot(corr[:, 1], label="GMRF")
+        plt.plot(auc[:, 0], label="GRF")
+        plt.plot(auc[:, 1], label="GMRF")
         plt.legend()
-        plt.title("Correlation")
+        plt.title("AUC")
         plt.subplot(155)
         plt.plot(ce[:, 0], label="GRF")
         plt.plot(ce[:, 1], label="GMRF")

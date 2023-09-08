@@ -29,12 +29,27 @@ class Simulator:
     def run(self) -> 'pd.DataFrame':
         self.grf_agent.run()
         self.gmrf_agent.run()
-        self.ibv_grf, self.vr_grf, self.rmse_grf, self.corr_grf, self.ce_grf = self.grf_agent.get_metrics()
-        self.ibv_gmrf, self.vr_gmrf, self.rmse_gmrf, self.corr_gmrf, self.ce_gmrf = self.gmrf_agent.get_metrics()
-        df = np.hstack((self.ibv_grf, self.vr_grf, self.rmse_grf, self.corr_grf, self.ce_grf,
-                        self.ibv_gmrf, self.vr_gmrf, self.rmse_gmrf, self.corr_gmrf, self.ce_gmrf))
-        df = pd.DataFrame(df, columns=["ibv_grf", "vr_grf", "rmse_grf", "corr_grf", "ce_grf",
-                                       "ibv_gmrf", "vr_gmrf", "rmse_gmrf", "corr_gmrf", "ce_gmrf"])
+        (self.ibv_grf, self.vr_grf, self.rmse_grf_temporal, self.corr_grf,
+         self.ce_grf_temporal, self.auc_grf_temporal, self.rmse_grf_static,
+         self.ce_grf_static, self.auc_grf_static) = self.grf_agent.get_metrics()
+
+        (self.ibv_gmrf, self.vr_gmrf, self.rmse_gmrf_temporal, self.corr_gmrf,
+         self.ce_gmrf_temporal, self.auc_gmrf_temporal, self.rmse_gmrf_static,
+         self.ce_gmrf_static, self.auc_gmrf_static) = self.gmrf_agent.get_metrics()
+
+        df = np.hstack((self.ibv_grf, self.vr_grf, self.rmse_grf_temporal, self.corr_grf,
+                        self.ce_grf_temporal, self.auc_grf_temporal, self.rmse_grf_static,
+                        self.ce_grf_static, self.auc_grf_static,
+                        self.ibv_gmrf, self.vr_gmrf, self.rmse_gmrf_temporal, self.corr_gmrf,
+                        self.ce_gmrf_temporal, self.auc_gmrf_temporal, self.rmse_gmrf_static,
+                        self.ce_gmrf_static, self.auc_gmrf_static))
+
+        df = pd.DataFrame(df, columns=["ibv_grf", "vr_grf", "rmse_grf_temporal", "corr_grf",
+                                        "ce_grf_temporal", "auc_grf_temporal", "rmse_grf_static",
+                                        "ce_grf_static", "auc_grf_static",
+                                        "ibv_gmrf", "vr_gmrf", "rmse_gmrf_temporal", "corr_gmrf",
+                                        "ce_gmrf_temporal", "auc_gmrf_temporal", "rmse_gmrf_static",
+                                        "ce_gmrf_static", "auc_gmrf_static"])
         return df
 
 

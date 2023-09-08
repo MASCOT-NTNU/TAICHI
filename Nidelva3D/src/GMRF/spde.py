@@ -128,6 +128,6 @@ class spde:
     def getThreshold(self) -> np.ndarray:
         """ Get updated threshold """
         ind = np.load(FILEPATH + 'models/boundary.npy')
-        threshold = self.mu[ind].mean()
+        threshold = 27.5  # self.mu[ind].mean()
         return threshold
 
