@@ -122,7 +122,7 @@ class spde:
         """Set threshold for Excursion set
         """
         ind = np.load(FILEPATH + 'models/boundary.npy')
-        self.threshold = self.mu[ind].mean()
+        self.threshold = 27.5  # self.mu[ind].mean()
         print('Treshold is set to %.2f'%(self.threshold))
 
     def getThreshold(self) -> np.ndarray:
