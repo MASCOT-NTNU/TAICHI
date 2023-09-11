@@ -47,7 +47,7 @@ class GRF:
     Gaussian Random Field module handles the data assimilation and EIBV calculation.
     """
     __MIN_DEPTH_FOR_DATA_ASSIMILATION = .25
-    __GRF_NEIGHBOUR_DISTANCE = 32
+    __GRF_NEIGHBOUR_DISTANCE = 120
     __LATERAL_RANGE = 550
     __VERTICAL_RANGE = 2
     __KSI = __LATERAL_RANGE / __VERTICAL_RANGE

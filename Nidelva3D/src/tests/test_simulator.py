@@ -16,7 +16,7 @@ class TestSimulator(TestCase):
 
     def setUp(self) -> None:
         num_steps = 30
-        random_seed = 25
+        random_seed = 26
         debug = True
         temporal_truth = True
         self.simulator = Simulator(num_steps=num_steps, random_seed=random_seed,
